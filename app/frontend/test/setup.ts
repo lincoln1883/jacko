@@ -32,14 +32,16 @@ Object.defineProperty(window, 'matchMedia', {
 };
 
 // Mock static assets
-vi.mock('/assets/inertia.svg', () => ({
-  default: '/assets/inertia.svg',
-}));
+if (typeof vi !== 'undefined') {
+  vi.mock('/assets/inertia.svg', () => ({
+    default: '/assets/inertia.svg',
+  }));
 
-vi.mock('/assets/react.svg', () => ({
-  default: '/assets/react.svg',
-}));
+  vi.mock('/assets/react.svg', () => ({
+    default: '/assets/react.svg',
+  }));
 
-vi.mock('/assets/vite_ruby.svg', () => ({
-  default: '/assets/vite_ruby.svg',
-}));
+  vi.mock('/assets/vite_ruby.svg', () => ({
+    default: '/assets/vite_ruby.svg',
+  }));
+}

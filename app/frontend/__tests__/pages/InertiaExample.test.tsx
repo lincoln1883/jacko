@@ -2,12 +2,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 
-import InertiaExample from './InertiaExample';
+import InertiaExample from '../../pages/InertiaExample';
 
 // Mock Inertia Head component
-vi.mock('@inertiajs/react', () => ({
-  Head: ({ title }: { title: string }) => <title>{title}</title>,
-}));
+if (typeof vi !== 'undefined') {
+  vi.mock('@inertiajs/react', () => ({
+    Head: ({ title }: { title: string }) => <title>{title}</title>,
+  }));
+}
 
 describe('InertiaExample', () => {
   it('renders with the provided name', () => {

@@ -9,4 +9,15 @@ export default defineConfig({
     tailwindcss(),
     RubyPlugin(),
   ],
+  build: {
+    rollupOptions: {
+      external: ['vitest'],
+    },
+  },
+  define: {
+    // Exclude test globals from production build
+    ...(process.env.NODE_ENV !== 'test' && {
+      global: 'globalThis',
+    }),
+  },
 })
