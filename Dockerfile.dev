@@ -2,10 +2,15 @@
 # Development Dockerfile for local development with hot reloading
 
 ARG RUBY_VERSION=3.3.8
+ARG NODE_VERSION=20
 FROM docker.io/library/ruby:$RUBY_VERSION-slim
 
 # Rails app lives here
 WORKDIR /rails
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
+    apt-get install -y nodejs
 
 # Install base packages for development
 RUN apt-get update -qq && \

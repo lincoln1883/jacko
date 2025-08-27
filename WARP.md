@@ -90,6 +90,30 @@ bin/rails generate model ModelName field:type
 bin/rails generate scaffold ModelName field:type
 ```
 
+### Testing (RSpec)
+```bash
+# Run all tests
+bundle exec rspec
+
+# Run specific test file
+bundle exec rspec spec/models/user_spec.rb
+
+# Run specific test
+bundle exec rspec spec/models/user_spec.rb:15
+
+# Run tests with specific tag
+bundle exec rspec --tag focus
+
+# Run tests in specific directory
+bundle exec rspec spec/models/
+
+# Run tests with documentation format
+bundle exec rspec --format documentation
+
+# Run only failed tests from last run
+bundle exec rspec --only-failures
+```
+
 ### Background Jobs (Solid Queue)
 ```bash
 # Check job queue status
@@ -156,6 +180,14 @@ bin/kamal dbc
 - Modern browser requirement with `allow_browser versions: :modern`
 - Test framework disabled (`config.generators.system_tests = nil`)
 - Auto-loading enabled for `lib` directory (excluding `assets` and `tasks`)
+
+### Testing Architecture
+- **RSpec** as the primary testing framework with FactoryBot for test data
+- **Test structure**: Standard Rails testing directories (`spec/models`, `spec/controllers`, `spec/requests`)
+- **FactoryBot** integration with automatic factory linting
+- **Faker** for generating realistic test data
+- **Configuration**: Optimized RSpec setup with focus filtering and documentation formatting
+- **Database**: Uses transactional fixtures for fast, isolated tests
 
 ### Security Features
 - Brakeman for security vulnerability scanning
