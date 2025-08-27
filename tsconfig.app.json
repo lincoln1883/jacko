@@ -23,5 +23,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
   },
-  "include": ["app/frontend"]
+  "include": ["app/frontend"],
+  "types": ["vitest/globals", "@testing-library/jest-dom"]
 }
