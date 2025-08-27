@@ -45,7 +45,11 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+# Create bootsnap cache directory
+RUN mkdir -p tmp/cache/bootsnap
 
+# Create version file for health checks
+RUN echo "$(git rev-parse HEAD 2>/dev/null || echo 'unknown')" > REVISION
 
 
 # Final stage for app image
