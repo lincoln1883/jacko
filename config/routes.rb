@@ -1,5 +1,19 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
-  get 'inertia-example', to: 'inertia_example#index'
+  get  "sign_in", to: "sessions#new"
+  post "sign_in", to: "sessions#create"
+  get  "sign_up", to: "registrations#new"
+  post "sign_up", to: "registrations#create"
+  resources :sessions, only: [:index, :show, :destroy]
+  resource  :password, only: [:edit, :update]
+  namespace :identity do
+    resource :email,              only: [:edit, :update]
+    resource :email_verification, only: [:show, :create]
+    resource :password_reset,     only: [:new, :edit, :create, :update]
+  end
+  root "home#index"
+  get "inertia-example", to: "inertia_example#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -11,5 +25,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "inertia_example#index"
+  # root "inertia_example#index"
 end
