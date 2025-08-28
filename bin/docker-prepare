@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+# Create storage directory if it doesn't exist
+mkdir -p storage
+
+# Set up the database if it doesn't exist
+if [ ! -f "storage/production.sqlite3" ]; then
+  echo "Setting up production database..."
+  bin/rails db:prepare
+fi
+
+echo "Database setup complete!"

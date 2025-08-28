@@ -2,7 +2,7 @@
 service: jacko
 
 # Name of the container image.
-image: <%= ENV['DOCKER_USERNAME'] || 'your-user' %>/jacko
+image: <%= ENV['DOCKER_USERNAME'] || 'lincolngibson7832' %>/jacko
 
 # Deploy to these servers.
 servers:
@@ -26,7 +26,7 @@ proxy:
 registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
-  username: <%= ENV['DOCKER_USERNAME'] || 'your-user' %>
+  username: <%= ENV['DOCKER_USERNAME'] || 'lincolngibson7832' %>
 
   # Always use an access token rather than real password when possible.
   password:
@@ -74,12 +74,12 @@ volumes:
 # version inside the asset_path.
 asset_path: /rails/public/assets
 
-# Health check configuration
-healthcheck:
-  path: /up
-  port: 80
-  max_attempts: 7
-  interval: 5s
+# Health check configuration (commented out temporarily)
+# healthcheck:
+#   path: "/up"
+#   port: 3000
+#   max_attempts: 7
+#   interval: "5s"
 
 # Configure the image builder.
 builder:

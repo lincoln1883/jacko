@@ -13,6 +13,8 @@ export default defineConfig({
     rollupOptions: {
       external: ['vitest'],
     },
+    sourcemap: false, // Disable sourcemaps in production for smaller bundle size
+    minify: 'terser', // Use terser for better minification
   },
   define: {
     // Exclude test globals from production build
@@ -20,4 +22,6 @@ export default defineConfig({
       global: 'globalThis',
     }),
   },
+  // Enable asset inlining for small files
+  assetsInclude: ['**/*.svg'],
 })

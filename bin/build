@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+# Build script for production assets
+echo "Building frontend assets for production..."
+
+# Install dependencies if needed
+if [ ! -d "node_modules" ]; then
+  echo "Installing npm dependencies..."
+  npm install
+fi
+
+# Build frontend assets
+echo "Running Vite build..."
+npm run build:vite
+
+echo "Frontend build complete!"
+echo "Assets built to: public/assets/"

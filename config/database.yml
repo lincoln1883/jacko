@@ -88,19 +88,19 @@ test:
 #
 production:
   primary: &primary_production
-    <<: *default
-    database: jacko_production
-    username: jacko
-    password: <%= ENV["JACKO_DATABASE_PASSWORD"] %>
+    adapter: sqlite3
+    database: storage/production.sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
   cache:
-    <<: *primary_production
-    database: jacko_production_cache
+    adapter: sqlite3
+    database: storage/production_cache.sqlite3
     migrations_paths: db/cache_migrate
   queue:
-    <<: *primary_production
-    database: jacko_production_queue
+    adapter: sqlite3
+    database: storage/production_queue.sqlite3
     migrations_paths: db/queue_migrate
   cable:
-    <<: *primary_production
-    database: jacko_production_cable
+    adapter: sqlite3
+    database: storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate
