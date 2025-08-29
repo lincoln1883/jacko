@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class RegistrationsController < ApplicationController
   skip_before_action :authenticate
 
   def new
-    render inertia: 'Auth/SignUp'
+    render inertia: "Auth/SignUp"
   end
 
   def create
@@ -10,23 +12,24 @@ class RegistrationsController < ApplicationController
 
     if @user.save
       session_record = @user.sessions.create!
-      cookies.signed.permanent[:session_token] = { value: session_record.id, httponly: true }
+      cookies.signed.permanent[:session_token] = {value: session_record.id, httponly: true}
 
       send_email_verification
       redirect_to root_path, notice: "Welcome! You have signed up successfully"
     else
-      render inertia: 'Auth/SignUp', props: {
+      render inertia: "Auth/SignUp", props: {
         errors: @user.errors.messages
       }, status: :unprocessable_content
     end
   end
 
   private
-    def user_params
-      params.permit(:email, :password, :password_confirmation)
-    end
 
-    def send_email_verification
-      UserMailer.with(user: @user).email_verification.deliver_later
-    end
+  def user_params
+    params.permit(:email, :password, :password_confirmation)
+  end
+
+  def send_email_verification
+    UserMailer.with(user: @user).email_verification.deliver_later
+  end
 end

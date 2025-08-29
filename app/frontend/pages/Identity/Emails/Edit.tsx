@@ -12,10 +12,12 @@ interface EmailEditProps extends PageProps {
 }
 
 const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
-  const { data, setData, patch, processing, reset } = useForm<IdentityFormData>({
-    email: user.email,
-    password_challenge: '',
-  });
+  const { data, setData, patch, processing, reset } = useForm<IdentityFormData>(
+    {
+      email: user.email,
+      password_challenge: '',
+    }
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +36,8 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                 Change Email Address
               </h1>
               <p className="mt-1 text-sm text-gray-600">
-                Update your email address. You'll need to verify your new email address before the change takes effect.
+                Update your email address. You'll need to verify your new email
+                address before the change takes effect.
               </p>
             </div>
 
@@ -70,7 +73,7 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                 >
                   ← Back to Dashboard
                 </Link>
-                
+
                 <div className="flex space-x-3">
                   <Button
                     type="button"
@@ -79,10 +82,7 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    type="submit"
-                    loading={processing}
-                  >
+                  <Button type="submit" loading={processing}>
                     Update Email
                   </Button>
                 </div>
@@ -93,8 +93,16 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
               <div className="bg-yellow-50 p-4 rounded-md">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    <svg
+                      className="h-5 w-5 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <div className="ml-3">
@@ -103,8 +111,9 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                     </h3>
                     <div className="mt-2 text-sm text-yellow-700">
                       <p>
-                        After changing your email, you'll receive a verification email at your new address. 
-                        You'll need to click the verification link to complete the change.
+                        After changing your email, you'll receive a verification
+                        email at your new address. You'll need to click the
+                        verification link to complete the change.
                       </p>
                     </div>
                   </div>

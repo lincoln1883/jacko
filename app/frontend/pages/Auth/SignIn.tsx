@@ -19,8 +19,8 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
   };
 
   return (
-    <AuthLayout 
-      title="Sign In" 
+    <AuthLayout
+      title="Sign In"
       description="Welcome back! Please sign in to your account."
     >
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -59,11 +59,7 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          loading={processing}
-        >
+        <Button type="submit" className="w-full" loading={processing}>
           Sign In
         </Button>
 

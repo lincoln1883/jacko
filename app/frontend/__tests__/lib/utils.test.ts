@@ -9,7 +9,7 @@ describe('Utils', () => {
     });
 
     it('handles conditional classes with clsx', () => {
-      const result = cn('base', { 'conditional': true, 'hidden': false });
+      const result = cn('base', { conditional: true, hidden: false });
       expect(result).toBe('base conditional');
     });
 
@@ -48,21 +48,18 @@ describe('Utils', () => {
     });
 
     it('handles complex conditional logic', () => {
-      const variant = 'primary';
-      const size = 'lg';
+      const variant: string = 'primary';
+      const size: string = 'lg';
       const disabled = true;
 
-      const result = cn(
-        'base-class',
-        {
-          'bg-blue-500': variant === 'primary',
-          'bg-gray-500': variant === 'secondary',
-          'text-sm': size === 'sm',
-          'text-lg': size === 'lg',
-          'opacity-50': disabled,
-          'cursor-not-allowed': disabled
-        }
-      );
+      const result = cn('base-class', {
+        'bg-blue-500': variant === 'primary',
+        'bg-gray-500': variant === 'secondary',
+        'text-sm': size === 'sm',
+        'text-lg': size === 'lg',
+        'opacity-50': disabled,
+        'cursor-not-allowed': disabled,
+      });
 
       expect(result).toContain('base-class');
       expect(result).toContain('bg-blue-500');
@@ -74,10 +71,7 @@ describe('Utils', () => {
     });
 
     it('resolves Tailwind responsive class conflicts', () => {
-      const result = cn(
-        'w-full md:w-1/2',
-        'w-auto md:w-1/3'
-      );
+      const result = cn('w-full md:w-1/2', 'w-auto md:w-1/3');
       // tailwind-merge correctly resolves conflicts - later classes override earlier ones
       expect(result).toBe('w-auto md:w-1/3');
     });
@@ -93,7 +87,7 @@ describe('Utils', () => {
     it('handles mixed input types', () => {
       const result = cn(
         'base',
-        { 'conditional': true },
+        { conditional: true },
         ['array1', 'array2'],
         undefined,
         'final-class'
@@ -102,14 +96,20 @@ describe('Utils', () => {
     });
 
     it('works with component variant patterns', () => {
-      const getButtonClasses = (variant: 'primary' | 'secondary', size: 'sm' | 'md' | 'lg', disabled?: boolean) => {
+      const getButtonClasses = (
+        variant: 'primary' | 'secondary',
+        size: 'sm' | 'md' | 'lg',
+        disabled?: boolean
+      ) => {
         return cn(
           // Base classes
           'inline-flex items-center justify-center rounded-md font-medium transition-colors',
           // Variant classes
           {
-            'bg-primary text-primary-foreground hover:bg-primary/90': variant === 'primary',
-            'bg-secondary text-secondary-foreground hover:bg-secondary/80': variant === 'secondary',
+            'bg-primary text-primary-foreground hover:bg-primary/90':
+              variant === 'primary',
+            'bg-secondary text-secondary-foreground hover:bg-secondary/80':
+              variant === 'secondary',
           },
           // Size classes
           {
@@ -165,7 +165,9 @@ describe('Utils', () => {
         'text-black dark:text-white',
         'dark:bg-gray-900'
       );
-      expect(result).toBe('bg-white text-black dark:text-white dark:bg-gray-900');
+      expect(result).toBe(
+        'bg-white text-black dark:text-white dark:bg-gray-900'
+      );
     });
   });
 
@@ -178,8 +180,14 @@ describe('Utils', () => {
     });
 
     it('handles special characters in class names', () => {
-      const result = cn('class-with-dashes', 'class_with_underscores', 'class.with.dots');
-      expect(result).toBe('class-with-dashes class_with_underscores class.with.dots');
+      const result = cn(
+        'class-with-dashes',
+        'class_with_underscores',
+        'class.with.dots'
+      );
+      expect(result).toBe(
+        'class-with-dashes class_with_underscores class.with.dots'
+      );
     });
 
     it('handles numeric class names', () => {
@@ -195,41 +203,47 @@ describe('Utils', () => {
 
   describe('Real-world usage scenarios', () => {
     it('works like shadcn/ui button component', () => {
-      const buttonVariants = (variant: 'default' | 'destructive', size: 'default' | 'sm') => {
-        const base = 'inline-flex items-center justify-center rounded-md text-sm font-medium';
+      const buttonVariants = (
+        variant: 'default' | 'destructive',
+        size: 'default' | 'sm'
+      ) => {
+        const base =
+          'inline-flex items-center justify-center rounded-md text-sm font-medium';
         const variants = {
           default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-          destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+          destructive:
+            'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         };
         const sizes = {
           default: 'h-10 px-4 py-2',
           sm: 'h-9 rounded-md px-3',
         };
-        
+
         return cn(base, variants[variant], sizes[size]);
       };
 
       const defaultButton = buttonVariants('default', 'default');
       expect(defaultButton).toContain('bg-primary');
       expect(defaultButton).toContain('h-10');
-      
+
       const smallDestructiveButton = buttonVariants('destructive', 'sm');
       expect(smallDestructiveButton).toContain('bg-destructive');
       expect(smallDestructiveButton).toContain('h-9');
     });
 
     it('works with form input styling', () => {
-      const inputClasses = (hasError: boolean, disabled: boolean) => cn(
-        'flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm',
-        'ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium',
-        'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2',
-        'focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-        {
-          'border-destructive focus-visible:ring-destructive': hasError,
-          'border-input': !hasError,
-        },
-        disabled && 'bg-muted'
-      );
+      const inputClasses = (hasError: boolean, disabled: boolean) =>
+        cn(
+          'flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm',
+          'ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium',
+          'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2',
+          'focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          {
+            'border-destructive focus-visible:ring-destructive': hasError,
+            'border-input': !hasError,
+          },
+          disabled && 'bg-muted'
+        );
 
       const normalInput = inputClasses(false, false);
       expect(normalInput).toContain('border-input');

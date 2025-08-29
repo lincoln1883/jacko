@@ -49,7 +49,7 @@ if (typeof vi !== 'undefined') {
   // Mock Inertia.js hooks and components globally
   vi.mock('@inertiajs/react', async () => {
     const actual = await vi.importActual('@inertiajs/react');
-    
+
     return {
       ...actual,
       useForm: vi.fn().mockImplementation((initialData = {}) => ({
@@ -72,7 +72,7 @@ if (typeof vi !== 'undefined') {
         transform: vi.fn(),
         isDirty: false,
       })),
-      
+
       usePage: vi.fn().mockReturnValue({
         component: 'TestComponent',
         props: {
@@ -84,8 +84,8 @@ if (typeof vi !== 'undefined') {
         url: '/test',
         version: '1',
       }),
-      
-      Head: vi.fn().mockImplementation(({ title, children }: any) => {
+
+      Head: vi.fn().mockImplementation(({ title }: any) => {
         if (typeof document !== 'undefined' && title) {
           document.title = title;
         }
@@ -94,16 +94,22 @@ if (typeof vi !== 'undefined') {
         if (title) titleElement.textContent = title;
         return null; // Head component doesn't render anything visible
       }),
-      
-      Link: vi.fn().mockImplementation(({ href, children, className, ...props }: any) => {
-        // Return a proper React element using React.createElement
-        return React.createElement('a', {
-          href,
-          className,
-          ...props
-        }, children);
-      }),
-      
+
+      Link: vi
+        .fn()
+        .mockImplementation(({ href, children, className, ...props }: any) => {
+          // Return a proper React element using React.createElement
+          return React.createElement(
+            'a',
+            {
+              href,
+              className,
+              ...props,
+            },
+            children
+          );
+        }),
+
       router: {
         get: vi.fn(),
         post: vi.fn(),

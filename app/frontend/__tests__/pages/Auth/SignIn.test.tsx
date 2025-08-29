@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import SignIn from '../../../pages/Auth/SignIn';
-import { 
-  renderWithInertia, 
-  createFormErrors, 
+import {
+  renderWithInertia,
+  createFormErrors,
   fillFormField,
   expectProperLabeling,
-  mockFlashMessage
+  mockFlashMessage,
 } from '../../../test/utils';
 
 // The Inertia components and hooks are mocked globally in setup.ts
@@ -20,13 +20,21 @@ describe('SignIn', () => {
     it('renders the sign in form with all required fields', () => {
       renderWithInertia(<SignIn />);
 
-      expect(screen.getByRole('heading', { name: 'Jacko' })).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
-      expect(screen.getByText('Welcome back! Please sign in to your account.')).toBeInTheDocument();
-      
+      expect(
+        screen.getByRole('heading', { name: 'Jacko' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: 'Sign In' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Welcome back! Please sign in to your account.')
+      ).toBeInTheDocument();
+
       expect(screen.getByLabelText('Email address')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Sign In' })
+      ).toBeInTheDocument();
     });
 
     it('sets the correct page title', () => {
@@ -37,46 +45,41 @@ describe('SignIn', () => {
     it('renders navigation links', () => {
       renderWithInertia(<SignIn />);
 
-      expect(screen.getByRole('link', { name: 'Forgot your password?' })).toHaveAttribute(
-        'href', 
-        '/identity/password_reset/new'
-      );
+      expect(
+        screen.getByRole('link', { name: 'Forgot your password?' })
+      ).toHaveAttribute('href', '/identity/password_reset/new');
       expect(screen.getByRole('link', { name: 'Sign up' })).toHaveAttribute(
-        'href', 
+        'href',
         '/sign_up'
       );
     });
 
     it('displays help text for new users', () => {
       renderWithInertia(<SignIn />);
-      
+
       expect(screen.getByText("Don't have an account?")).toBeInTheDocument();
     });
   });
 
   describe('Email hint functionality', () => {
     it('pre-fills email field when email_hint is provided', () => {
-      renderWithInertia(
-        <SignIn email_hint="user@example.com" />,
-        { 
-          pageProps: { email_hint: 'user@example.com' },
-          formData: { email: 'user@example.com', password: '' }
-        }
-      );
+      renderWithInertia(<SignIn email_hint="user@example.com" />, {
+        pageProps: { email_hint: 'user@example.com' },
+        formData: { email: 'user@example.com', password: '' },
+      });
 
-      const emailField = screen.getByLabelText('Email address') as HTMLInputElement;
+      const emailField = screen.getByLabelText(
+        'Email address'
+      ) as HTMLInputElement;
       expect(emailField.value).toBe('user@example.com');
     });
 
     it('handles focus management for better UX', () => {
       // Test with email hint provided
-      const { rerender } = renderWithInertia(
-        <SignIn email_hint="user@example.com" />,
-        { 
-          pageProps: { email_hint: 'user@example.com' },
-          formData: { email: 'user@example.com', password: '' }
-        }
-      );
+      const {} = renderWithInertia(<SignIn email_hint="user@example.com" />, {
+        pageProps: { email_hint: 'user@example.com' },
+        formData: { email: 'user@example.com', password: '' },
+      });
 
       // Both fields should be rendered and accessible
       expect(screen.getByLabelText('Email address')).toBeInTheDocument();
@@ -84,7 +87,7 @@ describe('SignIn', () => {
 
       // Test without email hint
       renderWithInertia(<SignIn />);
-      
+
       // Both fields should still be rendered and accessible
       expect(screen.getByLabelText('Email address')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
@@ -94,16 +97,13 @@ describe('SignIn', () => {
   describe('Form interactions', () => {
     it('updates form data when user types in fields', async () => {
       const mockSetData = vi.fn();
-      
-      const { user } = renderWithInertia(
-        <SignIn />,
-        {
-          formData: { email: '', password: '' },
-          formOptions: {
-            setData: mockSetData
-          }
-        }
-      );
+
+      const { user } = renderWithInertia(<SignIn />, {
+        formData: { email: '', password: '' },
+        formOptions: {
+          setData: mockSetData,
+        },
+      });
 
       const emailField = screen.getByLabelText('Email address');
       const passwordField = screen.getByLabelText('Password');
@@ -115,31 +115,30 @@ describe('SignIn', () => {
       expect(mockSetData).toHaveBeenCalledWith('email', 't');
       expect(mockSetData).toHaveBeenCalledWith('email', 'e');
       expect(mockSetData).toHaveBeenCalledWith('email', 'm');
-      
+
       // Check that setData was called for password field
       expect(mockSetData).toHaveBeenCalledWith('password', 'p');
       expect(mockSetData).toHaveBeenCalledWith('password', '1');
       expect(mockSetData).toHaveBeenCalledWith('password', '3');
-      
+
       // Verify total number of calls (16 for email + 11 for password)
       expect(mockSetData).toHaveBeenCalledTimes(27);
     });
 
     it('submits the form with correct data and endpoint', async () => {
       const mockPost = vi.fn();
-      
-      const { user } = renderWithInertia(
-        <SignIn />,
-        {
-          formData: { email: 'test@example.com', password: 'password123' },
-          formOptions: {
-            processing: false,
-            post: mockPost
-          }
-        }
-      );
 
-      const submitButton = screen.getAllByRole('button', { name: 'Sign In' })[0];
+      const { user } = renderWithInertia(<SignIn />, {
+        formData: { email: 'test@example.com', password: 'password123' },
+        formOptions: {
+          processing: false,
+          post: mockPost,
+        },
+      });
+
+      const submitButton = screen.getAllByRole('button', {
+        name: 'Sign In',
+      })[0];
       await user.click(submitButton);
 
       expect(mockPost).toHaveBeenCalledWith('/sign_in', {
@@ -149,26 +148,25 @@ describe('SignIn', () => {
 
     it('resets password field on form error', async () => {
       const mockReset = vi.fn();
-      const mockPost = vi.fn().mockImplementation((url, options) => {
+      const mockPost = vi.fn().mockImplementation((_url, options) => {
         // Simulate an error callback
         if (options?.onError) {
           options.onError();
         }
       });
-      
-      const { user } = renderWithInertia(
-        <SignIn />,
-        {
-          formData: { email: 'test@example.com', password: 'password123' },
-          formOptions: {
-            processing: false,
-            post: mockPost,
-            reset: mockReset
-          }
-        }
-      );
 
-      const submitButton = screen.getAllByRole('button', { name: 'Sign In' })[0];
+      const { user } = renderWithInertia(<SignIn />, {
+        formData: { email: 'test@example.com', password: 'password123' },
+        formOptions: {
+          processing: false,
+          post: mockPost,
+          reset: mockReset,
+        },
+      });
+
+      const submitButton = screen.getAllByRole('button', {
+        name: 'Sign In',
+      })[0];
       await user.click(submitButton);
 
       expect(mockReset).toHaveBeenCalledWith('password');
@@ -177,12 +175,9 @@ describe('SignIn', () => {
 
   describe('Loading states', () => {
     it('shows loading state when form is processing', () => {
-      renderWithInertia(
-        <SignIn />,
-        {
-          formOptions: { processing: true }
-        }
-      );
+      renderWithInertia(<SignIn />, {
+        formOptions: { processing: true },
+      });
 
       const submitButton = screen.getByRole('button', { name: 'Sign In' });
       expect(submitButton).toBeDisabled();
@@ -190,12 +185,9 @@ describe('SignIn', () => {
     });
 
     it('disables form fields during processing', () => {
-      renderWithInertia(
-        <SignIn />,
-        {
-          formOptions: { processing: true }
-        }
-      );
+      renderWithInertia(<SignIn />, {
+        formOptions: { processing: true },
+      });
 
       const submitButton = screen.getByRole('button', { name: 'Sign In' });
       expect(submitButton).toBeDisabled();
@@ -205,54 +197,47 @@ describe('SignIn', () => {
   describe('Error handling', () => {
     it('displays email validation errors', () => {
       const errors = createFormErrors({
-        email: 'Please enter a valid email address'
+        email: 'Please enter a valid email address',
       });
 
-      renderWithInertia(
-        <SignIn errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignIn errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
-      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument();
+
       const emailField = screen.getByLabelText('Email address');
       expect(emailField).toHaveClass('border-destructive');
     });
 
     it('displays password validation errors', () => {
       const errors = createFormErrors({
-        password: 'Password is required'
+        password: 'Password is required',
       });
 
-      renderWithInertia(
-        <SignIn errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignIn errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
       expect(screen.getByText('Password is required')).toBeInTheDocument();
-      
+
       const passwordField = screen.getByLabelText('Password');
       expect(passwordField).toHaveClass('border-destructive');
     });
 
     it('displays multiple errors for the same field', () => {
       const errors = createFormErrors({
-        email: ['Email is required', 'Email format is invalid']
+        email: ['Email is required', 'Email format is invalid'],
       });
 
-      renderWithInertia(
-        <SignIn errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignIn errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
       expect(screen.getByText('Email is required')).toBeInTheDocument();
       expect(screen.getByText('Email format is invalid')).toBeInTheDocument();
@@ -261,12 +246,9 @@ describe('SignIn', () => {
     it('displays general form errors from flash messages', () => {
       const flashMessage = mockFlashMessage('alert', 'Invalid credentials');
 
-      renderWithInertia(
-        <SignIn />,
-        {
-          pageProps: { flash: flashMessage }
-        }
-      );
+      renderWithInertia(<SignIn />, {
+        pageProps: { flash: flashMessage },
+      });
 
       expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
     });
@@ -311,7 +293,9 @@ describe('SignIn', () => {
     it('has proper link labeling', () => {
       renderWithInertia(<SignIn />);
 
-      const forgotPasswordLink = screen.getByRole('link', { name: 'Forgot your password?' });
+      const forgotPasswordLink = screen.getByRole('link', {
+        name: 'Forgot your password?',
+      });
       const signUpLink = screen.getByRole('link', { name: 'Sign up' });
 
       expect(forgotPasswordLink).toHaveAccessibleName();
@@ -342,17 +326,14 @@ describe('SignIn', () => {
   describe('Integration with Inertia', () => {
     it('handles form submission with Inertia correctly', async () => {
       const mockPost = vi.fn();
-      
-      const { user } = renderWithInertia(
-        <SignIn />,
-        {
-          formData: { email: 'test@example.com', password: 'password123' },
-          formOptions: {
-            processing: false,
-            post: mockPost
-          }
-        }
-      );
+
+      const { user } = renderWithInertia(<SignIn />, {
+        formData: { email: 'test@example.com', password: 'password123' },
+        formOptions: {
+          processing: false,
+          post: mockPost,
+        },
+      });
 
       const form = document.querySelector('form');
       const submitButton = screen.getByRole('button', { name: 'Sign In' });

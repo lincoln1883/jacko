@@ -13,7 +13,7 @@ interface FlashMessageProps {
 export const FlashMessageComponent: React.FC<FlashMessageProps> = ({
   flash,
   autoHide = true,
-  duration = 5000
+  duration = 5000,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -56,9 +56,7 @@ export const FlashMessageComponent: React.FC<FlashMessageProps> = ({
   return (
     <Alert variant={getVariant()} className="mb-4 relative">
       {getIcon()}
-      <AlertDescription className="pr-8">
-        {flash.message}
-      </AlertDescription>
+      <AlertDescription className="pr-8">{flash.message}</AlertDescription>
       <Button
         variant="ghost"
         size="icon"

@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event';
 import type { PageProps, FlashMessage, User } from '../types/auth';
 
 // Mock Inertia's usePage hook
-export const mockPageProps = (overrides: Partial<PageProps> = {}): PageProps => ({
+export const mockPageProps = (
+  overrides: Partial<PageProps> = {}
+): PageProps => ({
   flash: undefined,
   errors: undefined,
   auth: undefined,
@@ -40,7 +42,7 @@ const MockHead = vi.mocked(Head);
 const MockLink = vi.mocked(Link);
 
 // Mock Inertia hooks and components factory
-export const mockInertiaHooks = () => {
+export const mockInertiaHooks = (): any => {
   const mockPost = vi.fn();
   const mockGet = vi.fn();
   const mockPut = vi.fn();
@@ -100,7 +102,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   formData?: Record<string, any>;
   formOptions?: {
     processing?: boolean;
-    errors?: Record<string, string[]>;
+    errors?: Record<string, string> | Record<string, string[]>;
     wasSuccessful?: boolean;
     setData?: any;
     post?: any;
@@ -109,6 +111,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
     patch?: any;
     delete?: any;
     reset?: any;
+    data?: any;
   };
 }
 
@@ -128,10 +131,10 @@ export const renderWithInertia = (
   // Configure the page mock
   mockUsePage.mockReturnValue({
     component: 'TestComponent',
-    props: mockPageProps(pageProps),
+    props: mockPageProps(pageProps) as any,
     url: '/test',
     version: '1',
-  });
+  } as any);
 
   // Create mock functions for form actions, using provided ones if available
   const mockPost = formOptions.post || vi.fn();
@@ -140,19 +143,21 @@ export const renderWithInertia = (
   const mockPatch = formOptions.patch || vi.fn();
   const mockDelete = formOptions.delete || vi.fn();
   const mockReset = formOptions.reset || vi.fn();
-  const mockSetData = formOptions.setData || vi.fn((key, value) => {
-    if (typeof key === 'string') {
-      formData[key] = value;
-    } else if (typeof key === 'function') {
-      Object.assign(formData, key(formData));
-    } else {
-      Object.assign(formData, key);
-    }
-  });
+  const mockSetData =
+    formOptions.setData ||
+    vi.fn((key, value) => {
+      if (typeof key === 'string') {
+        formData[key] = value;
+      } else if (typeof key === 'function') {
+        Object.assign(formData, key(formData));
+      } else {
+        Object.assign(formData, key);
+      }
+    });
 
   // Configure the form mock
   mockUseForm.mockReturnValue({
-    data: formData,
+    data: formOptions.data || formData,
     setData: mockSetData,
     post: mockPost,
     get: mockGet,
@@ -170,7 +175,7 @@ export const renderWithInertia = (
     setError: vi.fn(),
     transform: vi.fn(),
     isDirty: Object.keys(formData).length > 0,
-  });
+  } as any);
 
   const user = userEvent.setup();
 
@@ -191,10 +196,13 @@ export const renderWithInertia = (
 
 // Helper to create form errors
 export const createFormErrors = (fields: Record<string, string | string[]>) => {
-  return Object.entries(fields).reduce((acc, [field, errors]) => {
-    acc[field] = Array.isArray(errors) ? errors : [errors];
-    return acc;
-  }, {} as Record<string, string[]>);
+  return Object.entries(fields).reduce(
+    (acc, [field, errors]) => {
+      acc[field] = Array.isArray(errors) ? errors : [errors];
+      return acc;
+    },
+    {} as Record<string, string[]>
+  );
 };
 
 // Helper to wait for form submission
@@ -204,7 +212,7 @@ export const waitForFormSubmission = async (
 ) => {
   await user.click(submitButton);
   // Wait for any async operations
-  await new Promise(resolve => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
 // Helper to fill form fields
@@ -237,32 +245,34 @@ export const expectProperErrorAnnouncement = (input: HTMLElement) => {
 export const customMatchers = {
   toHaveFormError: (input: HTMLElement, expectedError: string) => {
     const hasError = input.getAttribute('aria-invalid') === 'true';
-    const errorElement = input.closest('.space-y-2')?.querySelector('.text-destructive');
+    const errorElement = input
+      .closest('.space-y-2')
+      ?.querySelector('.text-destructive');
     const hasExpectedError = errorElement?.textContent?.includes(expectedError);
-    
+
     return {
       pass: hasError && !!hasExpectedError,
-      message: () => 
-        hasError 
+      message: () =>
+        hasError
           ? `Expected input to have error "${expectedError}" but found "${errorElement?.textContent}"`
-          : `Expected input to have error "${expectedError}" but input has no errors`
+          : `Expected input to have error "${expectedError}" but input has no errors`,
     };
   },
-  
+
   toBeProcessing: (button: HTMLElement) => {
     const isDisabled = button.hasAttribute('disabled');
     const hasSpinner = button.querySelector('.animate-spin');
-    
+
     return {
       pass: isDisabled && !!hasSpinner,
-      message: () => 
-        isDisabled 
-          ? hasSpinner 
+      message: () =>
+        isDisabled
+          ? hasSpinner
             ? 'Button is processing (disabled with spinner)'
             : 'Button is disabled but missing loading spinner'
-          : 'Button is not in processing state'
+          : 'Button is not in processing state',
     };
-  }
+  },
 };
 
 // Type-safe event helpers

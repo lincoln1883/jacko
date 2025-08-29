@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module AuthenticationHelpers
   def sign_in(user)
     session = user.sessions.create!(
-      user_agent: 'Test Browser',
-      ip_address: '127.0.0.1'
+      user_agent: "Test Browser",
+      ip_address: "127.0.0.1"
     )
     cookies.signed[:session_token] = session.id
     Current.session = session

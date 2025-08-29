@@ -20,8 +20,8 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
   };
 
   return (
-    <AuthLayout 
-      title="Reset Password" 
+    <AuthLayout
+      title="Reset Password"
       description="Enter your email address and we'll send you a link to reset your password."
     >
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -38,11 +38,7 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
           hint="Enter the email address associated with your account."
         />
 
-        <Button
-          type="submit"
-          className="w-full"
-          loading={processing}
-        >
+        <Button type="submit" className="w-full" loading={processing}>
           Send Reset Instructions
         </Button>
 
@@ -60,8 +56,16 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
         <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md border border-blue-200 dark:border-blue-800">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -70,8 +74,9 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
               </h3>
               <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
                 <p>
-                  If your email address is registered and verified, you'll receive an email 
-                  with instructions to reset your password. The link will be valid for 24 hours.
+                  If your email address is registered and verified, you'll
+                  receive an email with instructions to reset your password. The
+                  link will be valid for 24 hours.
                 </p>
               </div>
             </div>

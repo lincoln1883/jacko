@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
@@ -47,16 +49,16 @@ group :development, :test do
 
   # RSpec testing framework [https://github.com/rspec/rspec-rails]
   gem "rspec-rails"
-  
+
   # Factory Bot for test data [https://github.com/thoughtbot/factory_bot_rails]
   gem "factory_bot_rails"
-  
+
   # Faker for generating fake data [https://github.com/faker-ruby/faker]
   gem "faker"
-  
+
   # Shoulda matchers for cleaner tests [https://github.com/thoughtbot/shoulda-matchers]
   gem "shoulda-matchers"
-  
+
   # Rails controller testing utilities [https://github.com/rails/rails-controller-testing]
   gem "rails-controller-testing"
 end

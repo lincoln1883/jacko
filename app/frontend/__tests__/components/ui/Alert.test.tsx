@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { Alert, AlertTitle, AlertDescription } from '../../../components/ui/alert';
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from '../../../components/ui/alert';
 
 describe('Alert Component', () => {
   describe('Basic rendering', () => {
@@ -47,7 +51,15 @@ describe('Alert Component', () => {
     it('has base layout classes', () => {
       render(<Alert>Layout</Alert>);
       const alert = screen.getByRole('alert');
-      expect(alert).toHaveClass('relative', 'w-full', 'rounded-lg', 'border', 'px-4', 'py-3', 'text-sm');
+      expect(alert).toHaveClass(
+        'relative',
+        'w-full',
+        'rounded-lg',
+        'border',
+        'px-4',
+        'py-3',
+        'text-sm'
+      );
     });
 
     it('supports custom className', () => {
@@ -57,4 +69,3 @@ describe('Alert Component', () => {
     });
   });
 });
-

@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import SignUp from '../../../pages/Auth/SignUp';
-import { 
-  renderWithInertia, 
-  createFormErrors, 
+import {
+  renderWithInertia,
+  createFormErrors,
   fillFormField,
   expectProperLabeling,
-  mockFlashMessage
+  mockFlashMessage,
 } from '../../../test/utils';
 
 // The Inertia components and hooks are mocked globally in setup.ts
@@ -20,14 +20,22 @@ describe('SignUp', () => {
     it('renders the sign up form with all required fields', () => {
       renderWithInertia(<SignUp />);
 
-      expect(screen.getByRole('heading', { name: 'Jacko' })).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Sign Up' })).toBeInTheDocument();
-      expect(screen.getByText('Create your account to get started.')).toBeInTheDocument();
-      
+      expect(
+        screen.getByRole('heading', { name: 'Jacko' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: 'Sign Up' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Create your account to get started.')
+      ).toBeInTheDocument();
+
       expect(screen.getByLabelText('Email address')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
       expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Create Account' })
+      ).toBeInTheDocument();
     });
 
     it('sets the correct page title', () => {
@@ -39,21 +47,25 @@ describe('SignUp', () => {
       renderWithInertia(<SignUp />);
 
       expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
-        'href', 
+        'href',
         '/sign_in'
       );
     });
 
     it('displays help text for existing users', () => {
       renderWithInertia(<SignUp />);
-      
+
       expect(screen.getByText('Already have an account?')).toBeInTheDocument();
     });
 
     it('displays terms and privacy policy notice', () => {
       renderWithInertia(<SignUp />);
-      
-      expect(screen.getByText(/By creating an account, you agree to our Terms of Service and Privacy Policy/)).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          /By creating an account, you agree to our Terms of Service and Privacy Policy/
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -61,25 +73,34 @@ describe('SignUp', () => {
     it('displays helpful hints for each field', () => {
       renderWithInertia(<SignUp />);
 
-      expect(screen.getByText("We'll send you a verification email after you sign up.")).toBeInTheDocument();
-      expect(screen.getByText('Choose a strong password with at least 8 characters.')).toBeInTheDocument();
-      expect(screen.getByText('Enter the same password again to confirm.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "We'll send you a verification email after you sign up."
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Choose a strong password with at least 8 characters.')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Enter the same password again to confirm.')
+      ).toBeInTheDocument();
     });
 
     it('hides hints when fields have errors', () => {
       const errors = createFormErrors({
-        email: 'Email is required'
+        email: 'Email is required',
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
-      expect(screen.queryByText("We'll send you a verification email after you sign up.")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "We'll send you a verification email after you sign up."
+        )
+      ).not.toBeInTheDocument();
       expect(screen.getByText('Email is required')).toBeInTheDocument();
     });
   });
@@ -87,16 +108,15 @@ describe('SignUp', () => {
   describe('Form interactions', () => {
     it('updates form data when user types in fields', async () => {
       const mockSetData = vi.fn();
-      
+
       const { user } = renderWithInertia(<SignUp />, {
         formOptions: {
-          data: { email: '', password: '', password_confirmation: '' },
           setData: mockSetData,
           post: vi.fn(),
           processing: false,
           errors: {},
           reset: vi.fn(),
-        }
+        },
       });
 
       const emailField = screen.getByLabelText('Email address');
@@ -110,29 +130,34 @@ describe('SignUp', () => {
       // Verify that setData was called for each character typed
       expect(mockSetData).toHaveBeenCalledWith('email', expect.any(String));
       expect(mockSetData).toHaveBeenCalledWith('password', expect.any(String));
-      expect(mockSetData).toHaveBeenCalledWith('password_confirmation', expect.any(String));
+      expect(mockSetData).toHaveBeenCalledWith(
+        'password_confirmation',
+        expect.any(String)
+      );
     });
 
     it.skip('submits the form with correct data and endpoint', async () => {
       // Skipped: Form submission mocking needs refinement
       const mockPost = vi.fn();
-      
+
       const { user } = renderWithInertia(<SignUp />, {
+        formData: {
+          email: 'test@example.com',
+          password: 'password123',
+          password_confirmation: 'password123',
+        },
         formOptions: {
-          data: { 
-            email: 'test@example.com', 
-            password: 'password123',
-            password_confirmation: 'password123' 
-          },
           setData: vi.fn(),
           post: mockPost,
           processing: false,
           errors: {},
           reset: vi.fn(),
-        }
+        },
       });
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       await user.click(submitButton);
 
       expect(mockPost).toHaveBeenCalledWith('/sign_up', {
@@ -143,16 +168,15 @@ describe('SignUp', () => {
     it.skip('resets password fields on form error', async () => {
       // Skipped: Form error handling mocking needs refinement
       const mockReset = vi.fn();
-      
+
       const { user } = renderWithInertia(<SignUp />, {
+        formData: {
+          email: 'test@example.com',
+          password: 'password123',
+          password_confirmation: 'password123',
+        },
         formOptions: {
-          data: { 
-            email: 'test@example.com', 
-            password: 'password123',
-            password_confirmation: 'password123' 
-          },
-          setData: vi.fn(),
-          post: vi.fn((url, options) => {
+          post: vi.fn((_url, options) => {
             // Simulate an error callback
             if (options?.onError) {
               options.onError();
@@ -161,39 +185,42 @@ describe('SignUp', () => {
           processing: false,
           errors: {},
           reset: mockReset,
-        }
+        },
       });
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       await user.click(submitButton);
 
-      expect(mockReset).toHaveBeenCalledWith('password', 'password_confirmation');
+      expect(mockReset).toHaveBeenCalledWith(
+        'password',
+        'password_confirmation'
+      );
     });
   });
 
   describe('Loading states', () => {
     it('shows loading state when form is processing', () => {
-      renderWithInertia(
-        <SignUp />,
-        {
-          formOptions: { processing: true }
-        }
-      );
+      renderWithInertia(<SignUp />, {
+        formOptions: { processing: true },
+      });
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       expect(submitButton).toBeDisabled();
       expect(submitButton.querySelector('.animate-spin')).toBeInTheDocument();
     });
 
     it('disables form fields during processing', () => {
-      renderWithInertia(
-        <SignUp />,
-        {
-          formOptions: { processing: true }
-        }
-      );
+      renderWithInertia(<SignUp />, {
+        formOptions: { processing: true },
+      });
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       expect(submitButton).toBeDisabled();
     });
   });
@@ -201,57 +228,52 @@ describe('SignUp', () => {
   describe('Error handling', () => {
     it('displays email validation errors', () => {
       const errors = createFormErrors({
-        email: 'Please enter a valid email address'
+        email: 'Please enter a valid email address',
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
-      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument();
+
       const emailField = screen.getByLabelText('Email address');
       expect(emailField).toHaveClass('border-destructive');
     });
 
     it('displays password validation errors', () => {
       const errors = createFormErrors({
-        password: 'Password is too short (minimum is 12 characters)'
+        password: 'Password is too short (minimum is 12 characters)',
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
-      expect(screen.getByText('Password is too short (minimum is 12 characters)')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Password is too short (minimum is 12 characters)')
+      ).toBeInTheDocument();
+
       const passwordField = screen.getByLabelText('Password');
       expect(passwordField).toHaveClass('border-destructive');
     });
 
     it('displays password confirmation validation errors', () => {
       const errors = createFormErrors({
-        password_confirmation: "Passwords don't match"
+        password_confirmation: "Passwords don't match",
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
       expect(screen.getByText("Passwords don't match")).toBeInTheDocument();
-      
+
       const confirmPasswordField = screen.getByLabelText('Confirm Password');
       expect(confirmPasswordField).toHaveClass('border-destructive');
     });
@@ -260,33 +282,36 @@ describe('SignUp', () => {
       const errors = createFormErrors({
         email: 'Email has already been taken',
         password: 'Password is too short (minimum is 12 characters)',
-        password_confirmation: "Passwords don't match"
+        password_confirmation: "Passwords don't match",
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
-      expect(screen.getByText('Email has already been taken')).toBeInTheDocument();
-      expect(screen.getByText('Password is too short (minimum is 12 characters)')).toBeInTheDocument();
+      expect(
+        screen.getByText('Email has already been taken')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Password is too short (minimum is 12 characters)')
+      ).toBeInTheDocument();
       expect(screen.getByText("Passwords don't match")).toBeInTheDocument();
     });
 
     it('displays general form errors from flash messages', () => {
-      const flashMessage = mockFlashMessage('alert', 'Registration failed. Please try again.');
-
-      renderWithInertia(
-        <SignUp />,
-        {
-          pageProps: { flash: flashMessage }
-        }
+      const flashMessage = mockFlashMessage(
+        'alert',
+        'Registration failed. Please try again.'
       );
 
-      expect(screen.getByText('Registration failed. Please try again.')).toBeInTheDocument();
+      renderWithInertia(<SignUp />, {
+        pageProps: { flash: flashMessage },
+      });
+
+      expect(
+        screen.getByText('Registration failed. Please try again.')
+      ).toBeInTheDocument();
     });
   });
 
@@ -323,7 +348,9 @@ describe('SignUp', () => {
     it('has proper button labeling', () => {
       renderWithInertia(<SignUp />);
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       expect(submitButton).toHaveAttribute('type', 'submit');
     });
 
@@ -343,7 +370,10 @@ describe('SignUp', () => {
 
       expect(emailField).toHaveAttribute('autoComplete', 'email');
       expect(passwordField).toHaveAttribute('autoComplete', 'new-password');
-      expect(confirmPasswordField).toHaveAttribute('autoComplete', 'new-password');
+      expect(confirmPasswordField).toHaveAttribute(
+        'autoComplete',
+        'new-password'
+      );
     });
 
     it('marks required fields properly', () => {
@@ -372,19 +402,29 @@ describe('SignUp', () => {
       renderWithInertia(<SignUp />);
 
       // Password strength hint
-      expect(screen.getByText('Choose a strong password with at least 8 characters.')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Choose a strong password with at least 8 characters.')
+      ).toBeInTheDocument();
+
       // Email verification notice
-      expect(screen.getByText("We'll send you a verification email after you sign up.")).toBeInTheDocument();
-      
+      expect(
+        screen.getByText(
+          "We'll send you a verification email after you sign up."
+        )
+      ).toBeInTheDocument();
+
       // Password confirmation hint
-      expect(screen.getByText('Enter the same password again to confirm.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Enter the same password again to confirm.')
+      ).toBeInTheDocument();
     });
 
     it('displays clear call-to-action button', () => {
       renderWithInertia(<SignUp />);
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       expect(submitButton).toHaveClass('w-full'); // Full-width button for better UX
     });
 
@@ -400,49 +440,47 @@ describe('SignUp', () => {
   describe('Form validation flow', () => {
     it('handles email format validation', () => {
       const errors = createFormErrors({
-        email: 'is invalid'
+        email: 'is invalid',
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
       expect(screen.getByText('is invalid')).toBeInTheDocument();
     });
 
     it('handles password strength requirements', () => {
       const errors = createFormErrors({
-        password: ['is too short (minimum is 12 characters)', 'must include at least one special character']
+        password: [
+          'is too short (minimum is 12 characters)',
+          'must include at least one special character',
+        ],
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
-      expect(screen.getByText('is too short (minimum is 12 characters)')).toBeInTheDocument();
-      expect(screen.getByText('must include at least one special character')).toBeInTheDocument();
+      expect(
+        screen.getByText('is too short (minimum is 12 characters)')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('must include at least one special character')
+      ).toBeInTheDocument();
     });
 
     it('handles password confirmation mismatch', () => {
       const errors = createFormErrors({
-        password_confirmation: "doesn't match Password"
+        password_confirmation: "doesn't match Password",
       });
 
-      renderWithInertia(
-        <SignUp errors={errors} />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp errors={errors} />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
       expect(screen.getByText("doesn't match Password")).toBeInTheDocument();
     });
@@ -452,23 +490,25 @@ describe('SignUp', () => {
     it.skip('handles form submission with Inertia correctly', async () => {
       // Skipped: Inertia form submission mocking needs refinement
       const mockPost = vi.fn();
-      
+
       const { user } = renderWithInertia(<SignUp />, {
         formOptions: {
-          data: { 
-            email: 'test@example.com', 
+          data: {
+            email: 'test@example.com',
             password: 'securepassword123',
-            password_confirmation: 'securepassword123' 
+            password_confirmation: 'securepassword123',
           },
           setData: vi.fn(),
           post: mockPost,
           processing: false,
           errors: {},
           reset: vi.fn(),
-        }
+        },
       });
 
-      const submitButton = screen.getByRole('button', { name: 'Create Account' });
+      const submitButton = screen.getByRole('button', {
+        name: 'Create Account',
+      });
       await user.click(submitButton);
 
       expect(mockPost).toHaveBeenCalledWith('/sign_up', {
@@ -479,16 +519,13 @@ describe('SignUp', () => {
     it.skip('integrates with Inertia form validation', () => {
       // Skipped: Error text rendering inconsistent in test environment
       const errors = createFormErrors({
-        email: 'has already been taken'
+        email: 'has already been taken',
       });
 
-      renderWithInertia(
-        <SignUp />,
-        {
-          pageProps: { errors },
-          formOptions: { errors }
-        }
-      );
+      renderWithInertia(<SignUp />, {
+        pageProps: { errors },
+        formOptions: { errors },
+      });
 
       // Should display server-side validation errors from Inertia
       expect(screen.getByText('has already been taken')).toBeInTheDocument();

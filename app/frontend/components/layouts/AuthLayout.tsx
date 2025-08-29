@@ -9,10 +9,10 @@ interface AuthLayoutProps {
   description?: string;
 }
 
-export const AuthLayout: React.FC<AuthLayoutProps> = ({ 
-  children, 
-  title, 
-  description 
+export const AuthLayout: React.FC<AuthLayoutProps> = ({
+  children,
+  title,
+  description,
 }) => {
   const { flash } = usePage<PageProps>().props;
   return (
@@ -21,16 +21,12 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
       <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Jacko
-            </h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Jacko</h1>
             <h2 className="text-2xl font-semibold text-muted-foreground mb-2">
               {title}
             </h2>
             {description && (
-              <p className="text-muted-foreground">
-                {description}
-              </p>
+              <p className="text-muted-foreground">{description}</p>
             )}
           </div>
         </div>

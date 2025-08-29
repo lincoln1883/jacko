@@ -48,6 +48,8 @@ export interface PageProps {
     };
   };
   app_name?: string;
+  email_hint?: string;
+  [key: string]: any; // Index signature to satisfy Inertia's PageProps constraint
 }
 
 export interface IdentityFormData {

@@ -22,8 +22,8 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
   };
 
   return (
-    <AuthLayout 
-      title="Sign Up" 
+    <AuthLayout
+      title="Sign Up"
       description="Create your account to get started."
     >
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -64,11 +64,7 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
           hint="Enter the same password again to confirm."
         />
 
-        <Button
-          type="submit"
-          className="w-full"
-          loading={processing}
-        >
+        <Button type="submit" className="w-full" loading={processing}>
           Create Account
         </Button>
 
@@ -85,7 +81,8 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
         </div>
 
         <div className="text-xs text-muted-foreground text-center">
-          By creating an account, you agree to our Terms of Service and Privacy Policy.
+          By creating an account, you agree to our Terms of Service and Privacy
+          Policy.
         </div>
       </form>
     </AuthLayout>

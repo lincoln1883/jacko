@@ -6,12 +6,10 @@ import type { PageProps } from '../../types/auth';
 interface AppLayoutProps {
   children: React.ReactNode;
   title: string;
+  user?: { id: number; email: string }; // Optional user prop for explicit passing
 }
 
-export const AppLayout: React.FC<AppLayoutProps> = ({ 
-  children, 
-  title
-}) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
   const { flash, auth } = usePage<PageProps>().props;
   const user = auth?.user;
 
@@ -30,7 +28,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   Jacko
                 </Link>
               </div>
-              
+
               {user && (
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-muted-foreground">

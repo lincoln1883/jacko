@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Identity::EmailVerificationsControllerTest < ActionDispatch::IntegrationTest
@@ -7,7 +9,7 @@ class Identity::EmailVerificationsControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should send a verification email" do
-    assert_enqueued_email_with UserMailer, :email_verification, params: { user: @user } do
+    assert_enqueued_email_with UserMailer, :email_verification, params: {user: @user} do
       post identity_email_verification_url
     end
 
