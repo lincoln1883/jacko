@@ -68,7 +68,7 @@ const EmailVerificationShow: React.FC<PageProps> = () => {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-green-800">
-                  What's next?
+                  What&apos;s next?
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
                   <ul className="list-disc list-inside space-y-1">

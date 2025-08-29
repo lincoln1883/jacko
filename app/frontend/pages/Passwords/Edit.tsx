@@ -53,7 +53,6 @@ const PasswordEdit: React.FC<PageProps> = ({ errors }) => {
                 errors={errors?.password_challenge}
                 required
                 autoComplete="current-password"
-                autoFocus
                 hint="Enter your current password to confirm this change."
               />
 
@@ -129,7 +128,8 @@ const PasswordEdit: React.FC<PageProps> = ({ errors }) => {
                     <div className="mt-2 text-sm text-blue-700">
                       <ul className="list-disc list-inside space-y-1">
                         <li>
-                          Use a unique password that you don't use elsewhere
+                          Use a unique password that you don&apos;t use
+                          elsewhere
                         </li>
                         <li>
                           Include uppercase letters, lowercase letters, numbers,

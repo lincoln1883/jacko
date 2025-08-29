@@ -36,7 +36,6 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
           errors={errors?.email}
           required
           autoComplete="email"
-          autoFocus
           hint="We'll send you a verification email after you sign up."
         />
 

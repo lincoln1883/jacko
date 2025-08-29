@@ -49,6 +49,7 @@ export interface PageProps {
   };
   app_name?: string;
   email_hint?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Index signature to satisfy Inertia's PageProps constraint
 }
 

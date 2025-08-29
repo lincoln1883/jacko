@@ -19,11 +19,11 @@ export const FlashMessageComponent: React.FC<FlashMessageProps> = ({
 
   useEffect(() => {
     if (autoHide) {
-      const timer = setTimeout(() => {
+      const timer = window.setTimeout(() => {
         setIsVisible(false);
       }, duration);
 
-      return () => clearTimeout(timer);
+      return () => window.clearTimeout(timer);
     }
   }, [autoHide, duration]);
 
