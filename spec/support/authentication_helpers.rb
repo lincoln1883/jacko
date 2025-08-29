@@ -36,9 +36,9 @@ module AuthenticationHelpers
       # Request spec context - manually verify the cookie
       cookie_value = cookies[name]
       return nil unless cookie_value
-      
+
       # Handle both our test format and real Rails signed cookies
-      if cookie_value.start_with?('signed:')
+      if cookie_value.start_with?("signed:")
         # Our simple test format
         unsign_cookie_value(cookie_value)
       else
@@ -57,30 +57,30 @@ module AuthenticationHelpers
   end
 
   def unsign_cookie_value(signed_value)
-    return nil unless signed_value&.start_with?('signed:')
-    signed_value.gsub(/^signed:/, '')
+    return nil unless signed_value&.start_with?("signed:")
+    signed_value.gsub(/^signed:/, "")
   end
 
   def decode_rails_signed_cookie(cookie_value)
     return nil unless cookie_value
-    
+
     # Rails signed cookie format: base64_payload--signature
     # We'll extract the payload and decode it (ignoring signature verification for tests)
-    payload_part = cookie_value.split('--').first
+    payload_part = cookie_value.split("--").first
     return nil unless payload_part
-    
+
     begin
       # Decode base64
       decoded = Base64.decode64(payload_part)
       # Parse JSON
       parsed = JSON.parse(decoded)
       # Extract the actual value
-      rails_data = parsed['_rails']
+      rails_data = parsed["_rails"]
       return nil unless rails_data
-      
+
       # The message contains the actual value, which might be base64 encoded
-      message = rails_data['message']
-      
+      message = rails_data["message"]
+
       # Try to decode the message as base64 (Rails often base64 encodes values)
       begin
         Base64.decode64(message)

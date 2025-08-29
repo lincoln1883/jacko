@@ -190,11 +190,11 @@ RSpec.describe "Authentication Flow", type: :request do
 
       # Try to delete user2's session as user1 - should get 404 or redirect
       delete "/sessions/#{user2_session.id}"
-      
+
       # Should not be successful (either 404 or redirect to sign in)
       expect(response).not_to have_http_status(:success)
       expect(response).not_to have_http_status(:found) # not a success redirect
-      
+
       # User2's session should still exist (wasn't deleted)
       expect { user2_session.reload }.not_to raise_error
     end
