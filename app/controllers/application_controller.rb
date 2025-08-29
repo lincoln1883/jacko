@@ -5,6 +5,38 @@ class ApplicationController < ActionController::Base
   before_action :set_current_request_details
   before_action :authenticate
 
+  # Share flash messages with all Inertia responses
+  inertia_share do
+    flash_message = nil
+    if flash[:notice]
+      flash_message = { type: 'notice', message: flash[:notice] }
+    elsif flash[:alert]
+      flash_message = { type: 'alert', message: flash[:alert] }
+    elsif flash[:error]
+      flash_message = { type: 'error', message: flash[:error] }
+    end
+
+    {
+      flash: flash_message
+    }.compact
+  end
+
+  # Share current user data when authenticated
+  inertia_share if: :user_signed_in? do
+    {
+      auth: {
+        user: {
+          id: Current.user.id,
+          email: Current.user.email,
+          created_at: Current.user.created_at.strftime('%B %d, %Y')
+        }
+      }
+    }
+  end
+
+  # Share app configuration
+  inertia_share app_name: -> { Rails.application.class.module_parent_name }
+
   private
     def authenticate
       if session_record = Session.find_by_id(cookies.signed[:session_token])
@@ -12,6 +44,10 @@ class ApplicationController < ActionController::Base
       else
         redirect_to sign_in_path
       end
+    end
+
+    def user_signed_in?
+      Current.user.present?
     end
 
     def set_current_request_details

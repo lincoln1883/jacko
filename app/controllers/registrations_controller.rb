@@ -2,7 +2,7 @@ class RegistrationsController < ApplicationController
   skip_before_action :authenticate
 
   def new
-    @user = User.new
+    render inertia: 'Auth/SignUp'
   end
 
   def create
@@ -15,7 +15,9 @@ class RegistrationsController < ApplicationController
       send_email_verification
       redirect_to root_path, notice: "Welcome! You have signed up successfully"
     else
-      render :new, status: :unprocessable_entity
+      render inertia: 'Auth/SignUp', props: {
+        errors: @user.errors.messages
+      }, status: :unprocessable_content
     end
   end
 

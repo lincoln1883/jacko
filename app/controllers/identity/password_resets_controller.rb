@@ -4,9 +4,11 @@ class Identity::PasswordResetsController < ApplicationController
   before_action :set_user, only: %i[ edit update ]
 
   def new
+    render inertia: 'Identity/PasswordResets/New'
   end
 
   def edit
+    render inertia: 'Identity/PasswordResets/Edit'
   end
 
   def create
@@ -22,7 +24,9 @@ class Identity::PasswordResetsController < ApplicationController
     if @user.update(user_params)
       redirect_to sign_in_path, notice: "Your password was reset successfully. Please sign in"
     else
-      render :edit, status: :unprocessable_entity
+      render inertia: 'Identity/PasswordResets/Edit', props: {
+        errors: @user.errors.messages
+      }, status: :unprocessable_entity
     end
   end
 

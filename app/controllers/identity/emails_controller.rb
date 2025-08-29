@@ -2,13 +2,23 @@ class Identity::EmailsController < ApplicationController
   before_action :set_user
 
   def edit
+    render inertia: 'Identity/Emails/Edit', props: {
+      user: {
+        email: @user.email
+      }
+    }
   end
 
   def update
     if @user.update(user_params)
       redirect_to_root
     else
-      render :edit, status: :unprocessable_entity
+      render inertia: 'Identity/Emails/Edit', props: {
+        user: {
+          email: @user.email
+        },
+        errors: @user.errors.messages
+      }, status: :unprocessable_entity
     end
   end
 

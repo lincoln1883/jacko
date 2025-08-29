@@ -2,13 +2,16 @@ class PasswordsController < ApplicationController
   before_action :set_user
 
   def edit
+    render inertia: 'Passwords/Edit'
   end
 
   def update
     if @user.update(user_params)
       redirect_to root_path, notice: "Your password has been changed"
     else
-      render :edit, status: :unprocessable_entity
+      render inertia: 'Passwords/Edit', props: {
+        errors: @user.errors.messages
+      }, status: :unprocessable_entity
     end
   end
 
