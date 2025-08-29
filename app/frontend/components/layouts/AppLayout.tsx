@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { FlashMessageComponent } from '../ui/flash-message';
-import type { PageProps } from '../../types/auth';
+import type { PageProps } from '@/types/auth';
 
 interface AppLayoutProps {
   children: React.ReactNode;

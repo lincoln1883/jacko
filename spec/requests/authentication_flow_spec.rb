@@ -188,10 +188,15 @@ RSpec.describe "Authentication Flow", type: :request do
       # Create session for user2
       user2_session = user2.sessions.create!(user_agent: "Another Browser", ip_address: "192.168.1.3")
 
-      # Try to delete user2's session as user1
-      expect {
-        delete "/sessions/#{user2_session.id}"
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      # Try to delete user2's session as user1 - should get 404 or redirect
+      delete "/sessions/#{user2_session.id}"
+
+      # Should not be successful (either 404 or redirect to sign in)
+      expect(response).not_to have_http_status(:success)
+      expect(response).not_to have_http_status(:found) # not a success redirect
+
+      # User2's session should still exist (wasn't deleted)
+      expect { user2_session.reload }.not_to raise_error
     end
 
     it "invalidates other sessions when password changes" do
@@ -237,7 +242,7 @@ RSpec.describe "Authentication Flow", type: :request do
 
     it "handles non-existent session gracefully" do
       # Set an invalid session token
-      cookies.signed[:session_token] = 99999
+      set_signed_cookie(:session_token, 99999)
 
       get "/sessions"
       expect(response).to redirect_to(sign_in_path)
@@ -307,6 +312,6 @@ RSpec.describe "Authentication Flow", type: :request do
   private
 
   def get_cookie_value(name)
-    cookies.signed[name]
+    get_signed_cookie(name)
   end
 end

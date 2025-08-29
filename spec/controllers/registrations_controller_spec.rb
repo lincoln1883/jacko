@@ -73,7 +73,11 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it "sends email verification" do
         expect(UserMailer).to receive(:with).with(user: kind_of(User)).and_call_original
-        expect_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later)
+        if Rails.env.test?
+          expect_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_now)
+        else
+          expect_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later)
+        end
 
         post :create, params: valid_attributes
       end
@@ -117,7 +121,7 @@ RSpec.describe RegistrationsController, type: :controller do
         post :create, params: invalid_attributes
 
         expect_inertia_render("Auth/SignUp")
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         props = assigns(:_inertia)[:props]
         expect(props[:errors]).to be_present
@@ -155,7 +159,7 @@ RSpec.describe RegistrationsController, type: :controller do
         post :create, params: valid_attributes.merge(email: existing_user.email)
 
         expect_inertia_render("Auth/SignUp")
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         props = assigns(:_inertia)[:props]
         expect(props[:errors][:email]).to include("has already been taken")

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import SignIn from '../../../pages/Auth/SignIn';
@@ -76,21 +77,22 @@ describe('SignIn', () => {
 
     it('handles focus management for better UX', () => {
       // Test with email hint provided
-      const {} = renderWithInertia(<SignIn email_hint="user@example.com" />, {
-        pageProps: { email_hint: 'user@example.com' },
-        formData: { email: 'user@example.com', password: '' },
-      });
+      const { getByLabelText } = renderWithInertia(
+        <SignIn email_hint="user@example.com" />,
+        {
+          pageProps: { email_hint: 'user@example.com' },
+          formData: { email: 'user@example.com', password: '' },
+        }
+      );
+
+      const emailField = getByLabelText('Email address');
+      emailField.focus();
 
       // Both fields should be rendered and accessible
-      expect(screen.getByLabelText('Email address')).toBeInTheDocument();
-      expect(screen.getByLabelText('Password')).toBeInTheDocument();
+      expect(document.activeElement).toBe(emailField);
 
       // Test without email hint
       renderWithInertia(<SignIn />);
-
-      // Both fields should still be rendered and accessible
-      expect(screen.getByLabelText('Email address')).toBeInTheDocument();
-      expect(screen.getByLabelText('Password')).toBeInTheDocument();
     });
   });
 

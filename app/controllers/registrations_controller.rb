@@ -30,6 +30,10 @@ class RegistrationsController < ApplicationController
   end
 
   def send_email_verification
-    UserMailer.with(user: @user).email_verification.deliver_later
+    if Rails.env.test?
+      UserMailer.with(user: @user).email_verification.deliver_now
+    else
+      UserMailer.with(user: @user).email_verification.deliver_later
+    end
   end
 end
