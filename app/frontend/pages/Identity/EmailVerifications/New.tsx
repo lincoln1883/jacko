@@ -81,14 +81,17 @@ const EmailVerificationNew: React.FC<PageProps> = () => {
                   </div>
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-blue-800">
-                      Didn't receive the email?
+                      Didn&apos;t receive the email?
                     </h3>
                     <div className="mt-2 text-sm text-blue-700">
                       <ul className="list-disc list-inside space-y-1">
                         <li>Check your spam or junk folder</li>
                         <li>Make sure the email address is correct</li>
                         <li>Wait a few minutes for delivery</li>
-                        <li>Click "Resend" to get a new verification email</li>
+                        <li>
+                          Click &quot;Resend&quot; to get a new verification
+                          email
+                        </li>
                       </ul>
                     </div>
                   </div>

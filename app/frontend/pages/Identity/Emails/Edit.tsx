@@ -36,8 +36,8 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                 Change Email Address
               </h1>
               <p className="mt-1 text-sm text-gray-600">
-                Update your email address. You'll need to verify your new email
-                address before the change takes effect.
+                Update your email address. You&apos;ll need to verify your new
+                email address before the change takes effect.
               </p>
             </div>
 
@@ -51,7 +51,6 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                 errors={errors?.email}
                 required
                 autoComplete="email"
-                autoFocus
               />
 
               <Input
@@ -111,9 +110,9 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
                     </h3>
                     <div className="mt-2 text-sm text-yellow-700">
                       <p>
-                        After changing your email, you'll receive a verification
-                        email at your new address. You'll need to click the
-                        verification link to complete the change.
+                        After changing your email, you&apos;ll receive a
+                        verification email at your new address. You&apos;ll need
+                        to click the verification link to complete the change.
                       </p>
                     </div>
                   </div>

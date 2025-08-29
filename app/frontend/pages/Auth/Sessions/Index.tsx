@@ -7,7 +7,7 @@ const SessionsIndex: React.FC<SessionsIndexProps> = ({ sessions }) => {
   const { delete: destroy, processing } = useForm();
 
   const handleLogout = (sessionId: string) => {
-    if (confirm('Are you sure you want to log out this session?')) {
+    if (window.confirm('Are you sure you want to log out this session?')) {
       destroy(`/sessions/${sessionId}`);
     }
   };
@@ -118,7 +118,7 @@ const SessionsIndex: React.FC<SessionsIndexProps> = ({ sessions }) => {
               <div className="mt-6 pt-6 border-t border-border">
                 <p className="text-sm text-muted-foreground">
                   <strong>Security tip:</strong> If you see any sessions you
-                  don't recognize, log them out immediately and consider
+                  don&apos;t recognize, log them out immediately and consider
                   changing your password.
                 </p>
               </div>

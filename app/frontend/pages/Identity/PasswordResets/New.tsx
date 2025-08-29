@@ -34,7 +34,6 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
           errors={errors?.email}
           required
           autoComplete="email"
-          autoFocus
           hint="Enter the email address associated with your account."
         />
 
@@ -74,7 +73,7 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
               </h3>
               <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
                 <p>
-                  If your email address is registered and verified, you'll
+                  If your email address is registered and verified, you&apos;ll
                   receive an email with instructions to reset your password. The
                   link will be valid for 24 hours.
                 </p>

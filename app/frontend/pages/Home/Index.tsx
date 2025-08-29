@@ -25,7 +25,7 @@ const Home: React.FC = () => {
                   Welcome!
                 </h3>
                 <p className="text-muted-foreground">
-                  You're successfully signed in to your Jacko account.
+                  You&apos;re successfully signed in to your Jacko account.
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
                   Member since: {user.created_at}

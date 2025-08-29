@@ -33,7 +33,6 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
           errors={errors?.email}
           required
           autoComplete="email"
-          autoFocus={!email_hint}
         />
 
         <Input
@@ -45,7 +44,6 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
           errors={errors?.password}
           required
           autoComplete="current-password"
-          autoFocus={!!email_hint}
         />
 
         <div className="flex items-center justify-between">
@@ -65,7 +63,7 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
 
         <div className="text-center">
           <span className="text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link
               href="/sign_up"
               className="font-medium text-primary hover:text-primary/80"

@@ -196,7 +196,13 @@ describe('Utils', () => {
     });
 
     it('handles boolean values', () => {
-      const result = cn('base', true && 'conditional', false && 'hidden');
+      const isConditional = true; // Example boolean variable
+      const isHidden = false; // Example boolean variable
+      const result = cn(
+        'base',
+        isConditional && 'conditional',
+        isHidden && 'hidden'
+      );
       expect(result).toBe('base conditional');
     });
   });

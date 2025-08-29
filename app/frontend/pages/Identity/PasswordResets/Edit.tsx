@@ -17,7 +17,7 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
     e.preventDefault();
 
     // Get the current URL to extract the token (sid)
-    const url = new URL(window.location.href);
+    const url = new window.URL(window.location.href);
     const sid = url.searchParams.get('sid');
 
     patch(`/identity/password_reset/edit?sid=${sid}`, {
@@ -42,7 +42,6 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
           errors={errors?.password}
           required
           autoComplete="new-password"
-          autoFocus
           hint="Choose a strong password with at least 8 characters."
         />
 
@@ -94,8 +93,8 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
               </h3>
               <div className="mt-2 text-sm text-green-700">
                 <p>
-                  After you set your new password, you'll be redirected to the
-                  sign in page where you can log in with your updated
+                  After you set your new password, you&apos;ll be redirected to
+                  the sign in page where you can log in with your updated
                   credentials.
                 </p>
               </div>
@@ -126,7 +125,9 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
               </h3>
               <div className="mt-2 text-sm text-blue-700">
                 <ul className="list-disc list-inside space-y-1">
-                  <li>Use a unique password that you don't use elsewhere</li>
+                  <li>
+                    Use a unique password that you don&apos;t use elsewhere
+                  </li>
                   <li>
                     Include uppercase letters, lowercase letters, numbers, and
                     symbols
