@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# SQLite restore script for Jacko Rails application
+# Usage: ./bin/sqlite_restore <backup_file> [production|development]
+
+set -e
+
+# Configuration
+BACKUP_DIR="./backups/sqlite"
+TEMP_DIR="/tmp/jacko_restore_$(date +%s)"
+
+# Check if backup file is provided
+if [ -z "$1" ]; then
+    echo "❌ Error: Please provide a backup file"
+    echo "Usage: $0 <backup_file> [production|development]"
+    echo ""
+    echo "Available backups:"
+    if [ -d "$BACKUP_DIR" ]; then
+        ls -lt "$BACKUP_DIR"/*.tar.gz 2>/dev/null | head -10 || echo "No backups found"
+    else
+        echo "No backup directory found"
+    fi
+    exit 1
+fi
+
+BACKUP_FILE="$1"
+
+# Determine environment
+if [ -z "$2" ]; then
+    ENV="development"
+else
+    ENV="$2"
+fi
+
+# Check if backup file exists (try both absolute and relative to backup dir)
+if [ -f "$BACKUP_FILE" ]; then
+    BACKUP_PATH="$BACKUP_FILE"
+elif [ -f "$BACKUP_DIR/$BACKUP_FILE" ]; then
+    BACKUP_PATH="$BACKUP_DIR/$BACKUP_FILE"
+else
+    echo "❌ Error: Backup file not found: $BACKUP_FILE"
+    echo ""
+    echo "Available backups:"
+    if [ -d "$BACKUP_DIR" ]; then
+        ls -lt "$BACKUP_DIR"/*.tar.gz 2>/dev/null | head -10 || echo "No backups found"
+    fi
+    exit 1
+fi
+
+echo "🔄 Restoring SQLite databases for $ENV environment..."
+echo "Backup file: $BACKUP_PATH"
+
+# Extract backup to temporary directory
+mkdir -p "$TEMP_DIR"
+echo "📦 Extracting backup..."
+if ! tar -xzf "$BACKUP_PATH" -C "$TEMP_DIR"; then
+    echo "❌ Error: Failed to extract backup file"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+# List extracted files
+echo "📋 Extracted databases:"
+ls -la "$TEMP_DIR"/*.sqlite3 2>/dev/null || {
+    echo "❌ Error: No SQLite databases found in backup"
+    rm -rf "$TEMP_DIR"
+    exit 1
+}
+
+if [ "$ENV" = "production" ]; then
+    # Production restore via Kamal
+    echo "⚠️  WARNING: This will replace all production databases!"
+    read -p "Are you sure you want to continue? (y/N): " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Restore cancelled"
+        rm -rf "$TEMP_DIR"
+        exit 1
+    fi
+    
+    # Check if Kamal is available
+    if ! command -v kamal &> /dev/null; then
+        echo "❌ Error: Kamal not found. Please install Kamal or run restore manually."
+        rm -rf "$TEMP_DIR"
+        exit 1
+    fi
+    
+    echo "📤 Uploading databases to production server..."
+    
+    # Create backup of current production databases first
+    echo "📦 Creating backup of current production databases..."
+    ./bin/sqlite_backup production "pre_restore" || echo "⚠️  Failed to backup current databases"
+    
+    # Upload and restore databases
+    REMOTE_RESTORE_DIR="/tmp/jacko_restore_$(date +%s)"
+    
+    # Copy files to server and restore
+    for db_file in "$TEMP_DIR"/*.sqlite3; do
+        if [ -f "$db_file" ]; then
+            DB_NAME=$(basename "$db_file")
+            echo "Restoring $DB_NAME..."
+            
+            # Upload database file and restore it
+            cat "$db_file" | bin/kamal shell --quiet "
+                mkdir -p $REMOTE_RESTORE_DIR
+                cat > $REMOTE_RESTORE_DIR/$DB_NAME
+                
+                # Stop application temporarily for safe restore
+                # (In a real scenario, you might want to use maintenance mode)
+                
+                # Backup current database if it exists
+                if [ -f /rails/storage/$DB_NAME ]; then
+                    cp /rails/storage/$DB_NAME /rails/storage/${DB_NAME}.backup
+                fi
+                
+                # Restore database
+                cp $REMOTE_RESTORE_DIR/$DB_NAME /rails/storage/$DB_NAME
+                
+                # Cleanup
+                rm -rf $REMOTE_RESTORE_DIR
+                
+                echo \"✅ Restored $DB_NAME\"
+            "
+        fi
+    done
+    
+    echo "✅ Production restore completed"
+    
+elif [ "$ENV" = "development" ]; then
+    # Development restore (local SQLite files)
+    echo "⚠️  WARNING: This will replace all development databases!"
+    read -p "Are you sure you want to continue? (y/N): " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Restore cancelled"
+        rm -rf "$TEMP_DIR"
+        exit 1
+    fi
+    
+    if [ ! -d "storage" ]; then
+        echo "❌ Error: No storage directory found. Run this from Rails root."
+        rm -rf "$TEMP_DIR"
+        exit 1
+    fi
+    
+    # Create backup of current databases
+    echo "📦 Creating backup of current databases..."
+    ./bin/sqlite_backup development "pre_restore" 2>/dev/null || echo "⚠️  No current databases to backup"
+    
+    # Restore databases
+    for db_file in "$TEMP_DIR"/*.sqlite3; do
+        if [ -f "$db_file" ]; then
+            DB_NAME=$(basename "$db_file")
+            echo "Restoring storage/$DB_NAME..."
+            
+            # Backup current database if it exists
+            if [ -f "storage/$DB_NAME" ]; then
+                cp "storage/$DB_NAME" "storage/${DB_NAME}.backup"
+            fi
+            
+            # Restore database
+            cp "$db_file" "storage/$DB_NAME"
+            echo "✅ Restored storage/$DB_NAME"
+        fi
+    done
+    
+    echo "✅ Development restore completed"
+    
+else
+    echo "❌ Error: Invalid environment '$ENV'. Use 'production' or 'development'"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+# Cleanup
+rm -rf "$TEMP_DIR"
+
+echo "📊 Restored databases:"
+if [ "$ENV" = "development" ]; then
+    ls -la storage/*.sqlite3 2>/dev/null || echo "No databases found"
+else
+    echo "Check production server storage directory"
+fi

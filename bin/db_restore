@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# Database restore script for Jacko Rails application
+# Usage: ./bin/db_restore <backup_file>
+
+set -e
+
+# Configuration
+CONTAINER_NAME="jacko-db-1"
+DB_NAME="jacko_development"
+DB_USER="postgres"
+BACKUP_DIR="./backups/db"
+
+# Check if backup file is provided
+if [ -z "$1" ]; then
+    echo "❌ Error: Please provide a backup file"
+    echo "Usage: $0 <backup_file>"
+    echo ""
+    echo "Available backups:"
+    if [ -d "$BACKUP_DIR" ]; then
+        ls -lt "$BACKUP_DIR"/*.sql 2>/dev/null | head -10 || echo "No backups found"
+    else
+        echo "No backup directory found"
+    fi
+    exit 1
+fi
+
+BACKUP_FILE="$1"
+
+# Check if backup file exists (try both absolute and relative to backup dir)
+if [ -f "$BACKUP_FILE" ]; then
+    BACKUP_PATH="$BACKUP_FILE"
+elif [ -f "$BACKUP_DIR/$BACKUP_FILE" ]; then
+    BACKUP_PATH="$BACKUP_DIR/$BACKUP_FILE"
+else
+    echo "❌ Error: Backup file not found: $BACKUP_FILE"
+    echo ""
+    echo "Available backups:"
+    if [ -d "$BACKUP_DIR" ]; then
+        ls -lt "$BACKUP_DIR"/*.sql 2>/dev/null | head -10 || echo "No backups found"
+    fi
+    exit 1
+fi
+
+echo "🔄 Restoring database from backup..."
+echo "Database: $DB_NAME"
+echo "Backup file: $BACKUP_PATH"
+
+# Check if container is running
+if ! docker ps | grep -q "$CONTAINER_NAME"; then
+    echo "❌ Error: Database container '$CONTAINER_NAME' is not running"
+    echo "Please start your development environment with: docker-compose up -d db"
+    exit 1
+fi
+
+# Confirmation prompt
+echo "⚠️  WARNING: This will replace all data in the '$DB_NAME' database!"
+read -p "Are you sure you want to continue? (y/N): " -r
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ Restore cancelled"
+    exit 1
+fi
+
+# Create backup of current database before restore
+CURRENT_BACKUP="$BACKUP_DIR/pre_restore_$(date +%Y%m%d_%H%M%S).sql"
+echo "📦 Creating backup of current database..."
+if docker exec -t "$CONTAINER_NAME" pg_dump -U "$DB_USER" -d "$DB_NAME" --clean --no-owner --no-privileges > "$CURRENT_BACKUP"; then
+    echo "✅ Current database backed up to: $CURRENT_BACKUP"
+else
+    echo "⚠️  Failed to backup current database, but continuing with restore..."
+fi
+
+# Restore database
+echo "🔄 Restoring database..."
+if cat "$BACKUP_PATH" | docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME"; then
+    echo "✅ Database restored successfully from: $BACKUP_PATH"
+    
+    # Show restore information
+    echo "📊 Database info after restore:"
+    docker exec -t "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "\\dt" 2>/dev/null || true
+else
+    echo "❌ Restore failed!"
+    echo "💡 You can try restoring the pre-restore backup: $CURRENT_BACKUP"
+    exit 1
+fi

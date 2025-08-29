@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# SQLite backup script for Jacko Rails application
+# Usage: ./bin/sqlite_backup [production|development] [backup_name]
+
+set -e
+
+# Configuration
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="./backups/sqlite"
+
+# Create backup directory if it doesn't exist
+mkdir -p "$BACKUP_DIR"
+
+# Determine environment
+if [ -z "$1" ]; then
+    ENV="production"
+else
+    ENV="$1"
+fi
+
+# Set backup filename
+if [ -z "$2" ]; then
+    BACKUP_NAME="jacko_${ENV}_${TIMESTAMP}"
+else
+    BACKUP_NAME="${2}_${ENV}_${TIMESTAMP}"
+fi
+
+echo "🗄️  Creating SQLite backup for $ENV environment..."
+
+if [ "$ENV" = "production" ]; then
+    # Production backup via Kamal (from persistent volume)
+    echo "📦 Backing up production SQLite databases via Kamal..."
+    
+    # Check if Kamal is available
+    if ! command -v kamal &> /dev/null; then
+        echo "❌ Error: Kamal not found. Please install Kamal or run backup manually."
+        exit 1
+    fi
+    
+    # Create backup directory on server and copy databases
+    REMOTE_BACKUP_DIR="/tmp/jacko_backup_$TIMESTAMP"
+    
+    # Execute backup on production server
+    if bin/kamal shell --quiet <<EOF
+set -e
+mkdir -p $REMOTE_BACKUP_DIR
+cd /rails/storage
+
+# Backup all SQLite databases
+for db in *.sqlite3; do
+    if [ -f "\$db" ]; then
+        echo "Backing up \$db..."
+        sqlite3 "\$db" ".backup '$REMOTE_BACKUP_DIR/\$db'"
+    fi
+done
+
+# Create tarball
+cd $REMOTE_BACKUP_DIR
+tar -czf ${BACKUP_NAME}.tar.gz *.sqlite3
+echo "✅ Backup created: ${BACKUP_NAME}.tar.gz"
+ls -lh ${BACKUP_NAME}.tar.gz
+EOF
+    then
+        echo "✅ Production backup completed"
+        
+        # Download backup file (optional - uncomment if you want local copy)
+        # echo "📥 Downloading backup..."
+        # bin/kamal shell "cat $REMOTE_BACKUP_DIR/${BACKUP_NAME}.tar.gz" > "$BACKUP_DIR/${BACKUP_NAME}.tar.gz"
+        # echo "✅ Backup downloaded to: $BACKUP_DIR/${BACKUP_NAME}.tar.gz"
+    else
+        echo "❌ Production backup failed!"
+        exit 1
+    fi
+    
+elif [ "$ENV" = "development" ]; then
+    # Development backup (local SQLite files)
+    echo "📦 Backing up development SQLite databases..."
+    
+    if [ ! -d "storage" ]; then
+        echo "❌ Error: No storage directory found. Run this from Rails root."
+        exit 1
+    fi
+    
+    BACKUP_PATH="$BACKUP_DIR/${BACKUP_NAME}"
+    mkdir -p "$BACKUP_PATH"
+    
+    # Find and backup SQLite files
+    FOUND_DB=false
+    for db in storage/*.sqlite3; do
+        if [ -f "$db" ]; then
+            FOUND_DB=true
+            DB_NAME=$(basename "$db")
+            echo "Backing up $db..."
+            sqlite3 "$db" ".backup '$BACKUP_PATH/$DB_NAME'"
+        fi
+    done
+    
+    if [ "$FOUND_DB" = false ]; then
+        echo "⚠️  No SQLite databases found in storage/"
+        rmdir "$BACKUP_PATH" 2>/dev/null || true
+        exit 1
+    fi
+    
+    # Create tarball
+    cd "$BACKUP_DIR"
+    tar -czf "${BACKUP_NAME}.tar.gz" -C "$(basename "$BACKUP_PATH")" .
+    rm -rf "$BACKUP_PATH"
+    
+    BACKUP_SIZE=$(ls -lh "${BACKUP_NAME}.tar.gz" | awk '{print $5}')
+    echo "✅ Development backup created: $BACKUP_DIR/${BACKUP_NAME}.tar.gz"
+    echo "📊 Backup size: $BACKUP_SIZE"
+    
+else
+    echo "❌ Error: Invalid environment '$ENV'. Use 'production' or 'development'"
+    exit 1
+fi
+
+# List recent backups
+echo "📝 Recent backups:"
+ls -lt "$BACKUP_DIR"/*.tar.gz 2>/dev/null | head -5 || echo "No previous backups found"
