@@ -53,6 +53,12 @@ group :development, :test do
   
   # Faker for generating fake data [https://github.com/faker-ruby/faker]
   gem "faker"
+  
+  # Shoulda matchers for cleaner tests [https://github.com/thoughtbot/shoulda-matchers]
+  gem "shoulda-matchers"
+  
+  # Rails controller testing utilities [https://github.com/rails/rails-controller-testing]
+  gem "rails-controller-testing"
 end
 
 group :development do
