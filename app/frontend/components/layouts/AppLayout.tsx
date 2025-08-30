@@ -30,15 +30,47 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
               </div>
 
               {user && (
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-muted-foreground">
-                    {user.email}
-                  </span>
+                <div className="flex items-center space-x-6">
+                  {/* Profile Link */}
+                  {user.role === 'tradesperson' && (
+                    <Link
+                      href="/profile/tradesperson"
+                      className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      My Profile
+                    </Link>
+                  )}
+                  {user.role === 'client' && (
+                    <Link
+                      href="/profile/client"
+                      className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      My Profile
+                    </Link>
+                  )}
+
+                  {/* User Info */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-muted-foreground">
+                      {user.email}
+                    </span>
+                    <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                      {user.role === 'tradesperson'
+                        ? 'Tradesperson'
+                        : user.role === 'client'
+                          ? 'Client'
+                          : 'Admin'}
+                    </span>
+                  </div>
+
+                  {/* Account Menu - for future expansion */}
                   <div className="relative">
-                    <button className="text-sm font-medium text-foreground hover:text-muted-foreground">
-                      Account
-                    </button>
-                    {/* You could add a dropdown menu here */}
+                    <Link
+                      href="/sessions"
+                      className="text-sm font-medium text-foreground hover:text-muted-foreground"
+                    >
+                      Sessions
+                    </Link>
                   </div>
                 </div>
               )}

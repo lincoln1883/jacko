@@ -1,0 +1,201 @@
+import React from 'react';
+import { Link } from '@inertiajs/react';
+import { AppLayout } from '../../components/layouts/AppLayout';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import type { TradesPersonProfilePageProps } from '../../types/profile';
+
+const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
+  profile,
+  user,
+  can_edit,
+}) => {
+  const completionColor =
+    profile.completion_percentage >= 80
+      ? 'green'
+      : profile.completion_percentage >= 50
+        ? 'yellow'
+        : 'red';
+
+  return (
+    <AppLayout title="Tradesperson Profile">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Profile Header */}
+        <div className="bg-card rounded-lg shadow-sm border p-6 mb-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">
+                {profile.company_name || `${user.email}'s Profile`}
+              </h1>
+              <p className="text-lg text-muted-foreground mt-1">
+                {user.role_display}
+              </p>
+            </div>
+
+            {can_edit && (
+              <Link href="/profile/tradesperson/edit">
+                <Button variant="outline">Edit Profile</Button>
+              </Link>
+            )}
+          </div>
+
+          {/* Profile Completion */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Profile Completion
+              </span>
+              <span className="text-sm font-medium text-muted-foreground">
+                {profile.completion_percentage}%
+              </span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  completionColor === 'green'
+                    ? 'bg-green-600'
+                    : completionColor === 'yellow'
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
+                }`}
+                style={{ width: `${profile.completion_percentage}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Availability Status */}
+          <div className="mb-6">
+            <Badge
+              className={`${
+                profile.availability_color === 'green'
+                  ? 'bg-green-100 text-green-800'
+                  : profile.availability_color === 'yellow'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : profile.availability_color === 'red'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-gray-100 text-gray-800'
+              }`}
+            >
+              {profile.display_availability}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Basic Information */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Basic Information
+            </h2>
+
+            <div className="space-y-4">
+              {profile.bio && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Bio
+                  </h3>
+                  <p className="text-foreground">{profile.bio}</p>
+                </div>
+              )}
+
+              {profile.years_experience !== null && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Experience
+                  </h3>
+                  <p className="text-foreground">
+                    {profile.display_experience}
+                  </p>
+                </div>
+              )}
+
+              {profile.hourly_rate && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Hourly Rate
+                  </h3>
+                  <p className="text-foreground font-semibold text-lg">
+                    {profile.display_hourly_rate}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Contact Information
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                  Email
+                </h3>
+                <p className="text-foreground">{user.email}</p>
+              </div>
+
+              {profile.phone && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Phone
+                  </h3>
+                  <p className="text-foreground">{profile.phone}</p>
+                </div>
+              )}
+
+              {profile.website && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Website
+                  </h3>
+                  <a
+                    href={profile.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary/80 underline"
+                  >
+                    {profile.website}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        {profile.description && (
+          <div className="bg-card rounded-lg shadow-sm border p-6 mt-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              About My Services
+            </h2>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-foreground whitespace-pre-wrap">
+                {profile.description}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Call-to-Action for incomplete profiles */}
+        {!profile.completed && can_edit && (
+          <div className="bg-muted/50 rounded-lg border-2 border-dashed border-muted p-6 mt-6 text-center">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Complete Your Profile
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Complete your profile to attract more clients and showcase your
+              skills.
+            </p>
+            <Link href="/profile/tradesperson/edit">
+              <Button>Complete Profile</Button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </AppLayout>
+  );
+};
+
+export default TradesPersonShow;

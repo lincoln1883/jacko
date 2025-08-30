@@ -74,6 +74,14 @@ class ApplicationController < ActionController::Base
     Current.user.present?
   end
 
+  def current_user
+    Current.user
+  end
+
+  def authenticate_user!
+    redirect_to sign_in_path unless user_signed_in?
+  end
+
   def set_current_request_details
     Current.user_agent = request.user_agent
     Current.ip_address = request.ip

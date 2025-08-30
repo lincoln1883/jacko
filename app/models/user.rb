@@ -20,6 +20,8 @@ class User < ApplicationRecord
 
 
   has_many :sessions, dependent: :destroy
+  has_one :trades_person_profile, dependent: :destroy
+  has_one :client_profile, dependent: :destroy
 
   validates :email, presence: true, uniqueness: true, format: {with: URI::MailTo::EMAIL_REGEXP}
   validates :password, allow_nil: true, length: {minimum: 12}
@@ -88,6 +90,57 @@ class User < ApplicationRecord
       "red"
     else
       "gray"
+    end
+  end
+
+  # Profile helper methods
+  def profile
+    case role
+    when "tradesperson"
+      trades_person_profile
+    when "client"
+      client_profile
+    else
+      nil
+    end
+  end
+
+  def has_profile?
+    profile.present?
+  end
+
+  def profile_completed?
+    return false unless has_profile?
+    profile.completed?
+  end
+
+  def profile_completion_percentage
+    return 0 unless has_profile?
+    profile.completion_percentage
+  end
+
+  def create_appropriate_profile!
+    case role
+    when "tradesperson"
+      create_trades_person_profile! unless trades_person_profile.present?
+    when "client"
+      create_client_profile! unless client_profile.present?
+    end
+  end
+
+  def ensure_profile_exists
+    return if has_profile?
+    create_appropriate_profile!
+  end
+
+  def profile_path
+    case role
+    when "tradesperson"
+      "/profile/tradesperson"
+    when "client"
+      "/profile/client"
+    else
+      "/dashboard"
     end
   end
 end
