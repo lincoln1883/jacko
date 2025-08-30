@@ -6,6 +6,7 @@ FactoryBot.define do
     password { "secure_password_123" }
     password_confirmation { "secure_password_123" }
     verified { false }
+    role { :client }
 
     trait :verified do
       verified { true }
@@ -13,6 +14,18 @@ FactoryBot.define do
 
     trait :unverified do
       verified { false }
+    end
+
+    trait :client do
+      role { :client }
+    end
+
+    trait :tradesperson do
+      role { :tradesperson }
+    end
+
+    trait :admin do
+      role { :admin }
     end
   end
 end
