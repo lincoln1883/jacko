@@ -34,6 +34,20 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install Node.js dependencies
+        run: npm ci --prefer-offline
+
+      - name: Build Vite assets for tests
+        env:
+          RAILS_ENV: test
+        run: bin/vite build --clear --mode=test
+
       - name: Setup test database
         env:
           RAILS_ENV: test
@@ -87,11 +101,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: Clean npm cache
+        run: npm cache clean --force
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
+
+      - name: Verify Vite dependencies
+        run: |
+          npm ls @vitejs/plugin-react
+          npm ls vite
 
       - name: Check TypeScript compilation
         run: npm run check
@@ -111,11 +133,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: Clean npm cache
+        run: npm cache clean --force
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
+
+      - name: Verify Vite dependencies
+        run: |
+          npm ls @vitejs/plugin-react
+          npm ls vite
 
       - name: Run frontend tests
         run: npm run test:coverage

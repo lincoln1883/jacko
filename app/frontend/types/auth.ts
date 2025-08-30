@@ -21,6 +21,7 @@ export interface SignUpFormData {
   email: string;
   password: string;
   password_confirmation: string;
+  role: 'client' | 'tradesperson';
 }
 
 export interface AuthPageProps {
@@ -44,6 +45,7 @@ export interface PageProps {
     user: {
       id: number;
       email: string;
+      role: 'client' | 'tradesperson' | 'admin';
       created_at: string;
     };
   };

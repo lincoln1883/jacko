@@ -64,11 +64,18 @@ RSpec.describe RegistrationsController, type: :controller do
         expect(session.user).to eq(User.last)
       end
 
-      it "redirects to root path with success notice" do
+      it "redirects to profile completion with success notice" do
         post :create, params: valid_attributes
 
-        expect(response).to redirect_to(root_path)
-        expect(flash[:notice]).to eq("Welcome! You have signed up successfully")
+        expect(response).to redirect_to(edit_profile_client_path)
+        expect(flash[:notice]).to eq("Welcome! Please complete your client profile to get started.")
+      end
+
+      it "redirects tradesperson to tradesperson profile with success notice" do
+        post :create, params: valid_attributes.merge(role: "tradesperson")
+
+        expect(response).to redirect_to(edit_profile_tradesperson_path)
+        expect(flash[:notice]).to eq("Welcome! Please complete your tradesperson profile to get started.")
       end
 
       it "sends email verification" do
@@ -232,18 +239,18 @@ RSpec.describe RegistrationsController, type: :controller do
         email: "user@example.com",
         password: "secure_password_123",
         password_confirmation: "secure_password_123",
-        verified: true,  # This should not be permitted
-        admin: true,     # This should not be permitted
-        role: "admin"    # This should not be permitted
+        role: "tradesperson",  # This should be permitted
+        verified: true,        # This should not be permitted
+        admin: true           # This should not be permitted
       }
 
       post :create, params: extra_params
 
       user = User.last
       expect(user).to be_present
-      expect(user.verified).to be false  # Should use default, not params value
+      expect(user.verified).to be false        # Should use default, not params value
+      expect(user.role).to eq("tradesperson")  # Should accept role parameter
       expect(user).not_to respond_to(:admin)
-      expect(user).not_to respond_to(:role)
     end
   end
 

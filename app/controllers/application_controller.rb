@@ -1,11 +1,24 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  include CanCan::ControllerAdditions
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   before_action :set_current_request_details
   before_action :authenticate
+
+  # Handle CanCan authorization errors
+  rescue_from CanCan::AccessDenied do |exception|
+    respond_to do |format|
+      format.json { head :forbidden }
+      format.html {
+        flash[:alert] = "Access denied: #{exception.message}"
+        redirect_back(fallback_location: root_path)
+      }
+    end
+  end
 
   # Share flash messages with all Inertia responses
   inertia_share do
@@ -30,6 +43,7 @@ class ApplicationController < ActionController::Base
         user: {
           id: Current.user.id,
           email: Current.user.email,
+          role: Current.user.role,
           created_at: Current.user.created_at.strftime("%B %d, %Y")
         }
       }
@@ -58,6 +72,14 @@ class ApplicationController < ActionController::Base
 
   def user_signed_in?
     Current.user.present?
+  end
+
+  def current_user
+    Current.user
+  end
+
+  def authenticate_user!
+    redirect_to sign_in_path unless user_signed_in?
   end
 
   def set_current_request_details

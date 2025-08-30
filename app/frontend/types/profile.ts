@@ -1,0 +1,112 @@
+// Profile types for the Jamaica Skills & Trades Platform
+
+export interface TradesPersonProfile {
+  id: number;
+  bio: string | null;
+  company_name: string | null;
+  years_experience: number | null;
+  hourly_rate: number | null;
+  phone: string | null;
+  website: string | null;
+  availability_status: 'available' | 'busy' | 'unavailable' | 'booked';
+  description: string | null;
+  active: boolean;
+  completion_percentage: number;
+  completed: boolean;
+  display_hourly_rate: string;
+  display_experience: string;
+  display_availability: string;
+  availability_color: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClientProfile {
+  id: number;
+  company_name: string | null;
+  preferred_contact_method:
+    | 'email'
+    | 'phone'
+    | 'whatsapp'
+    | 'platform_messaging';
+  project_budget_range: string | null;
+  description: string | null;
+  active: boolean;
+  completion_percentage: number;
+  completed: boolean;
+  display_budget_range: string;
+  display_contact_method: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  role: 'client' | 'tradesperson' | 'admin';
+  role_display: string;
+  verified: boolean;
+}
+
+// Form data types
+export interface TradesPersonProfileFormData {
+  bio: string;
+  company_name: string;
+  years_experience: number | string;
+  hourly_rate: number | string;
+  phone: string;
+  website: string;
+  availability_status: 'available' | 'busy' | 'unavailable' | 'booked';
+  description: string;
+}
+
+export interface ClientProfileFormData {
+  company_name: string;
+  preferred_contact_method:
+    | 'email'
+    | 'phone'
+    | 'whatsapp'
+    | 'platform_messaging';
+  project_budget_range: string;
+  description: string;
+}
+
+// Page props
+export interface TradesPersonProfilePageProps {
+  profile: TradesPersonProfile;
+  user: User;
+  can_edit: boolean;
+  flash?: {
+    success?: string;
+    error?: string;
+    notice?: string;
+  };
+  errors?: Record<string, string[]>;
+}
+
+export interface ClientProfilePageProps {
+  profile: ClientProfile;
+  user: User;
+  can_edit: boolean;
+  contact_method_options?: [string, string][];
+  budget_range_options?: [string, string][];
+  flash?: {
+    success?: string;
+    error?: string;
+    notice?: string;
+  };
+  errors?: Record<string, string[]>;
+}
+
+// Option types for selects
+export interface SelectOption {
+  label: string;
+  value: string;
+}
+
+export const AVAILABILITY_STATUS_OPTIONS: SelectOption[] = [
+  { label: 'Available for new projects', value: 'available' },
+  { label: 'Busy but accepting inquiries', value: 'busy' },
+  { label: 'Currently unavailable', value: 'unavailable' },
+  { label: 'Fully booked', value: 'booked' },
+];

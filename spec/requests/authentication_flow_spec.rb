@@ -20,8 +20,8 @@ RSpec.describe "Authentication Flow", type: :request do
       # Submit registration form
       post "/sign_up", params: user_attributes
 
-      # Should create user and redirect
-      expect(response).to redirect_to(root_path)
+      # Should create user and redirect to profile completion
+      expect(response).to redirect_to(edit_profile_client_path)
       follow_redirect!
       expect(response).to have_http_status(:ok)
 
@@ -56,7 +56,7 @@ RSpec.describe "Authentication Flow", type: :request do
   end
 
   describe "Full Sign In Flow" do
-    let!(:user) { create(:user, :verified, password: "test_password_123", password_confirmation: "test_password_123") }
+    let!(:user) { create(:user, :admin, :verified, password: "test_password_123", password_confirmation: "test_password_123") }
 
     it "allows a user to sign in with valid credentials" do
       # Visit sign in page
@@ -155,7 +155,7 @@ RSpec.describe "Authentication Flow", type: :request do
     end
 
     it "maintains authentication across requests" do
-      user = create(:user, :verified, password: "test_password_123", password_confirmation: "test_password_123")
+      user = create(:user, :admin, :verified, password: "test_password_123", password_confirmation: "test_password_123")
 
       # Sign in
       post "/sign_in", params: {
@@ -285,12 +285,12 @@ RSpec.describe "Authentication Flow", type: :request do
     end
 
     it "shows appropriate flash messages" do
-      # Registration success
+      # Registration success - new users are redirected to profile completion
       post "/sign_up", params: user_attributes
       follow_redirect!
-      expect(flash[:notice]).to eq("Welcome! You have signed up successfully")
+      expect(flash[:notice]).to eq("Welcome! Please complete your client profile to get started.")
 
-      # Sign in success
+      # Sign in success - user without complete profile gets redirected to profile completion
       user = User.find_by(email: "user@example.com")
       user.update!(password: "test_password_123", password_confirmation: "test_password_123")
 
@@ -299,7 +299,7 @@ RSpec.describe "Authentication Flow", type: :request do
         password: "test_password_123"
       }
       follow_redirect!
-      expect(flash[:notice]).to eq("Signed in successfully")
+      expect(flash[:notice]).to eq("Please complete your profile to access all features.")
 
       # Session deletion
       session_to_delete = user.sessions.first
