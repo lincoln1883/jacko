@@ -41,11 +41,11 @@ jobs:
         run: |
           bin/rails db:create db:schema:load
 
-      - name: Run tests
+      - name: Run RSpec tests
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/jacko_test
-        run: bin/rails test
+        run: bundle exec rspec --format progress
 
   scan_ruby:
     runs-on: ubuntu-latest

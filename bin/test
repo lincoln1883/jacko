@@ -1,0 +1,222 @@
+#!/bin/bash
+
+# Enhanced Test Runner for Jacko
+# Runs tests with coverage reporting and various options
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+
+print_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+# Default options
+COVERAGE=false
+PARALLEL=false
+FORMAT="progress"
+TAGS=""
+SPEC_PATH=""
+BAIL=false
+SEED=""
+
+# Help message
+show_help() {
+    echo "🧪 Jacko Test Runner"
+    echo ""
+    echo "Usage: bin/test [OPTIONS] [SPEC_PATH]"
+    echo ""
+    echo "Options:"
+    echo "  -c, --coverage        Run with coverage reporting"
+    echo "  -p, --parallel        Run tests in parallel"
+    echo "  -f, --format FORMAT   Set output format (progress, documentation, html)"
+    echo "  -t, --tag TAGS        Run only tests with specific tags"
+    echo "  -b, --bail            Stop on first failure"
+    echo "  -s, --seed SEED       Set random seed for reproducible runs"
+    echo "  --slow                Include slow tests"
+    echo "  --focus               Run only focused tests"
+    echo "  --failed              Run only previously failed tests"
+    echo "  -h, --help            Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  bin/test                              # Run all tests"
+    echo "  bin/test --coverage                   # Run with coverage"
+    echo "  bin/test --format documentation       # Detailed output"
+    echo "  bin/test --tag focus                  # Run focused tests"
+    echo "  bin/test spec/models/user_spec.rb     # Run specific file"
+    echo "  bin/test --failed                     # Run only failed tests"
+    echo "  bin/test --parallel --coverage        # Fast parallel run with coverage"
+    echo ""
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -c|--coverage)
+            COVERAGE=true
+            shift
+            ;;
+        -p|--parallel)
+            PARALLEL=true
+            shift
+            ;;
+        -f|--format)
+            FORMAT="$2"
+            shift 2
+            ;;
+        -t|--tag)
+            TAGS="--tag $2"
+            shift 2
+            ;;
+        -b|--bail)
+            BAIL=true
+            shift
+            ;;
+        -s|--seed)
+            SEED="--seed $2"
+            shift 2
+            ;;
+        --slow)
+            TAGS="$TAGS --tag slow"
+            shift
+            ;;
+        --focus)
+            TAGS="$TAGS --tag focus"
+            shift
+            ;;
+        --failed)
+            TAGS="$TAGS --only-failures"
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+            print_error "Unknown option: $1"
+            show_help
+            exit 1
+            ;;
+        *)
+            SPEC_PATH="$1"
+            shift
+            ;;
+    esac
+done
+
+# Setup environment
+export RAILS_ENV=test
+
+print_info "Setting up test environment..."
+
+# Ensure test database is ready
+if ! bin/rails db:test:prepare >/dev/null 2>&1; then
+    print_warning "Preparing test database..."
+    bin/rails db:create db:schema:load RAILS_ENV=test
+fi
+
+# Build command
+RSPEC_CMD="bundle exec rspec"
+
+# Add format
+RSPEC_CMD="$RSPEC_CMD --format $FORMAT"
+
+# Add coverage if requested
+if [ "$COVERAGE" = true ]; then
+    print_info "Running with coverage reporting..."
+    export COVERAGE=true
+    RSPEC_CMD="$RSPEC_CMD --format RspecJunitFormatter --out tmp/rspec.xml"
+fi
+
+# Add parallel if requested
+if [ "$PARALLEL" = true ]; then
+    print_info "Running tests in parallel..."
+    RSPEC_CMD="bundle exec parallel_rspec"
+fi
+
+# Add tags
+if [ -n "$TAGS" ]; then
+    RSPEC_CMD="$RSPEC_CMD $TAGS"
+fi
+
+# Add bail option
+if [ "$BAIL" = true ]; then
+    RSPEC_CMD="$RSPEC_CMD --fail-fast"
+fi
+
+# Add seed
+if [ -n "$SEED" ]; then
+    RSPEC_CMD="$RSPEC_CMD $SEED"
+fi
+
+# Add spec path if provided
+if [ -n "$SPEC_PATH" ]; then
+    RSPEC_CMD="$RSPEC_CMD $SPEC_PATH"
+fi
+
+# Show what we're running
+print_info "Running: $RSPEC_CMD"
+
+# Create tmp directory for reports
+mkdir -p tmp
+
+# Run the tests
+START_TIME=$(date +%s)
+
+if eval $RSPEC_CMD; then
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))
+    
+    print_success "All tests passed! ✨ (${DURATION}s)"
+    
+    # Show coverage report if available
+    if [ "$COVERAGE" = true ] && [ -f "coverage/index.html" ]; then
+        print_info "Coverage report generated: coverage/index.html"
+        
+        # Try to extract coverage percentage
+        if command -v grep >/dev/null 2>&1; then
+            COVERAGE_PERCENT=$(grep -o '[0-9]\+\.[0-9]\+%' coverage/index.html | head -1 || echo "N/A")
+            print_info "Coverage: $COVERAGE_PERCENT"
+        fi
+    fi
+    
+    # Show test results summary
+    if [ -f "tmp/rspec.xml" ]; then
+        print_info "Test results: tmp/rspec.xml"
+    fi
+    
+    exit 0
+else
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))
+    
+    print_error "Tests failed! 💥 (${DURATION}s)"
+    
+    # Show helpful commands
+    echo ""
+    print_info "Helpful debugging commands:"
+    echo "  bin/test --failed                     # Run only failed tests"
+    echo "  bin/test --format documentation       # Detailed output"
+    echo "  bin/test $SPEC_PATH --format doc      # Debug specific file"
+    echo ""
+    
+    exit 1
+fi
