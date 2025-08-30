@@ -6,7 +6,7 @@ class User < ApplicationRecord
   # Role-based functionality
   enum :role, {
     client: 0,
-    tradesperson: 1, 
+    tradesperson: 1,
     admin: 2
   }, default: 0, validate: true
 
@@ -23,7 +23,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true, format: {with: URI::MailTo::EMAIL_REGEXP}
   validates :password, allow_nil: true, length: {minimum: 12}
-  validates :role, presence: true, inclusion: { in: roles.keys }
+  validates :role, presence: true, inclusion: {in: roles.keys}
 
   normalizes :email, with: -> { _1.strip.downcase }
 
@@ -63,12 +63,12 @@ class User < ApplicationRecord
 
   def role_display
     case role
-    when 'client'
-      'Client'
-    when 'tradesperson'
-      'Tradesperson'
-    when 'admin'
-      'Administrator'
+    when "client"
+      "Client"
+    when "tradesperson"
+      "Tradesperson"
+    when "admin"
+      "Administrator"
     else
       role.humanize
     end
@@ -80,14 +80,14 @@ class User < ApplicationRecord
 
   def role_color
     case role
-    when 'tradesperson'
-      'blue'
-    when 'client'
-      'green'
-    when 'admin'
-      'red'
+    when "tradesperson"
+      "blue"
+    when "client"
+      "green"
+    when "admin"
+      "red"
     else
-      'gray'
+      "gray"
     end
   end
 end

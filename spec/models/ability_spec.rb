@@ -158,7 +158,7 @@ RSpec.describe Ability, type: :model do
         expect(ability).to be_able_to(:read, user)
         expect(ability).to be_able_to(:update, user)
         expect(ability).to be_able_to(:read, :public_profiles)
-        
+
         # Role-specific permissions should not be granted
         expect(ability).not_to be_able_to(:create, :project_inquiries)
         expect(ability).not_to be_able_to(:manage, :own_profile)

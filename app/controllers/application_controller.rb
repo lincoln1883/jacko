@@ -2,18 +2,18 @@
 
 class ApplicationController < ActionController::Base
   include CanCan::ControllerAdditions
-  
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   before_action :set_current_request_details
   before_action :authenticate
-  
+
   # Handle CanCan authorization errors
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|
       format.json { head :forbidden }
-      format.html { 
+      format.html {
         flash[:alert] = "Access denied: #{exception.message}"
         redirect_back(fallback_location: root_path)
       }

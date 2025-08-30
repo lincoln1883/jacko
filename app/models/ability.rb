@@ -10,14 +10,14 @@ class Ability
       # Permissions for all authenticated users
       can [:read, :update], User, id: user.id
       can :read, :public_profiles
-      
+
       # Role-specific permissions
       case user.role
-      when 'client'
+      when "client"
         client_permissions(user)
-      when 'tradesperson'
+      when "tradesperson"
         tradesperson_permissions(user)
-      when 'admin'
+      when "admin"
         admin_permissions(user)
       end
     else
@@ -36,7 +36,7 @@ class Ability
     # can [:create, :read], Message, sender: user
     # can :create, Review # can leave reviews
     # can [:read, :update], Review, client: user
-    
+
     # For now, basic permissions until we have these models
     can :read, :tradesperson_profiles
     can :create, :project_inquiries
@@ -50,7 +50,7 @@ class Ability
     # can [:create, :read], Message, sender: user
     # can :read, Review, tradesperson: user
     # can :create, VerificationRequest, user: user
-    
+
     # For now, basic permissions until we have these models
     can :manage, :own_profile
     can :read, :client_inquiries
@@ -61,7 +61,7 @@ class Ability
     # Admins have broad permissions for platform management
     can :manage, User
     can :manage, :all # This gives admin full access
-    
+
     # Specific admin tasks
     can :manage, :verification_requests
     can :manage, :platform_settings
