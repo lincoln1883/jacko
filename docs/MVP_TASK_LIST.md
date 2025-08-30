@@ -37,12 +37,13 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
   - **Status**: ✅ **COMPLETED** - Password reset with secure tokens and email flow
   - **Branch**: `main/development` (already merged)
 
-- [ ] **Task 1.4**: Add user roles (Tradesperson, Client, Admin)
-  - Acceptance Criteria: Different user types have appropriate permissions
+- [x] **Task 1.4**: Add user roles (Tradesperson, Client, Admin)
+  - Acceptance Criteria: Different user types have appropriate permissions ✅
   - Estimated effort: 2 days
   - Dependencies: Task 1.1
-  - **Status**: 🚧 **NEXT PRIORITY** - Need to add role system to existing User model
-  - **Branch**: `feature/user-roles`
+  - **Status**: ✅ **COMPLETED** - Full role system with CanCanCan authorization
+  - **Branch**: `feature/user-roles` (ready for merge)
+  - **Details**: User enum roles (client=0, tradesperson=1, admin=2), role-based permissions, scopes, helper methods
 
 ### 👤 User Profiles System
 
