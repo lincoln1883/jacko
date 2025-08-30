@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class RegistrationsController < ApplicationController
-  skip_before_action :authenticate
+  skip_before_action :authenticate, only: %i[ new create ]
 
   def new
     render inertia: "Auth/SignUp"

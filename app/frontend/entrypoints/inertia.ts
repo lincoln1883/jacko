@@ -1,12 +1,16 @@
 import { createInertiaApp } from '@inertiajs/react';
-import { createElement, ReactNode } from 'react';
+import { createElement, ReactElement, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { PersistentLayout } from '../components/layouts/PersistentLayout';
 
 // Temporary type definition, until @inertiajs/react provides one
 type ResolvedComponent = {
   default: ReactNode;
   layout?: (page: ReactNode) => ReactNode;
 };
+interface PageWithLayout {
+  layout?: (page: ReactElement) => ReactElement;
+}
 
 createInertiaApp({
   // Set default page title
@@ -28,11 +32,10 @@ createInertiaApp({
       console.error(`Missing Inertia page component: '${name}.tsx'`);
     }
 
-    // To use a default layout, import the Layout component
-    // and use the following line.
-    // see https://inertia-rails.dev/guide/pages#default-layouts
-    //
-    // page.default.layout ||= (page) => createElement(Layout, null, page)
+    // Use PersistentLayout as default layout for all pages
+    // Pages can override this by setting their own layout property
+    (page.default as PageWithLayout).layout ||= (page: ReactElement) =>
+      createElement(PersistentLayout, null, page);
 
     return page;
   },

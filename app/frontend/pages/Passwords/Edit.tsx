@@ -29,7 +29,7 @@ const PasswordEdit: React.FC<PageProps> = ({ errors }) => {
   return (
     <AppLayout
       title="Change Password"
-      user={{ id: 1, email: 'user@example.com' }}
+      //user={{ id: 1, email: 'user@example.com' }}
     >
       <div className="max-w-2xl mx-auto py-12 sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow sm:rounded-lg">
