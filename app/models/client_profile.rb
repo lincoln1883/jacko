@@ -44,7 +44,10 @@ class ClientProfile < ApplicationRecord
   end
 
   def mark_as_completed!
-    update!(profile_completed_at: Time.current) if completed? && profile_completed_at.nil?
+    # Check if profile has required fields (excluding profile_completed_at)
+    if description.present? && profile_completed_at.nil?
+      update!(profile_completed_at: Time.current)
+    end
   end
 
   # Display helpers

@@ -27,7 +27,7 @@ const EmailEdit: React.FC<EmailEditProps> = ({ user, errors }) => {
   };
 
   return (
-    <AppLayout title="Change Email" user={{ id: 1, email: user.email }}>
+    <AppLayout title="Change Email">
       <div className="max-w-2xl mx-auto py-12 sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">

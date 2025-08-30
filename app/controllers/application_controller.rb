@@ -45,7 +45,13 @@ class ApplicationController < ActionController::Base
           email: Current.user.email,
           role: Current.user.role,
           created_at: Current.user.created_at.strftime("%B %d, %Y")
-        }
+        },
+        session: Current.session ? {
+          id: Current.session.id,
+          user_agent: Current.session.user_agent,
+          ip_address: Current.session.ip_address,
+          created_at: Current.session.created_at.strftime("%B %d, %Y at %l:%M %p")
+        } : nil
       }
     }
   end

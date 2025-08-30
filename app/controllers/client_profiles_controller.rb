@@ -2,7 +2,8 @@
 
 class ClientProfilesController < ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_client!
+  before_action :ensure_client_or_allow_switch!, only: [:edit]
+  before_action :ensure_client!, except: [:edit]
   before_action :set_profile, only: [:show, :edit, :update]
   before_action :authorize_profile_access!, only: [:edit, :update]
 
@@ -15,6 +16,12 @@ class ClientProfilesController < ApplicationController
   end
 
   def edit
+    # Handle role switch if requested
+    if params[:switch_role] == "true" && current_user.tradesperson?
+      handle_role_switch_to_client
+      return
+    end
+
     render inertia: "Profile/ClientEdit", props: {
       profile: serialize_profile(@profile),
       user: serialize_user(current_user),
@@ -58,6 +65,25 @@ class ClientProfilesController < ApplicationController
     unless current_user.client?
       redirect_to root_path, alert: "Access denied. Only clients can access this page."
     end
+  end
+
+  def ensure_client_or_allow_switch!
+    # Allow tradesperson to access edit page if they want to switch roles
+    return if current_user.client?
+    return if current_user.tradesperson? && params[:switch_role] == "true"
+
+    redirect_to root_path, alert: "Access denied. Only clients can access this page."
+  end
+
+  def handle_role_switch_to_client
+    # Switch user role from tradesperson to client
+    current_user.update!(role: "client")
+
+    # Clean up tradesperson profile if it exists
+    current_user.trades_person_profile&.destroy
+
+    # Redirect to the client profile edit page without the switch parameter
+    redirect_to edit_profile_client_path, notice: "Your account has been switched to Client. Please complete your client profile."
   end
 
   def authorize_profile_access!

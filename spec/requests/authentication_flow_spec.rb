@@ -301,9 +301,9 @@ RSpec.describe "Authentication Flow", type: :request do
       follow_redirect!
       expect(flash[:notice]).to eq("Please complete your profile to access all features.")
 
-      # Session deletion
-      session_to_delete = user.sessions.first
-      delete "/sessions/#{session_to_delete.id}"
+      # Session deletion - create a separate session to delete (not the current one)
+      other_session = user.sessions.create!(user_agent: "Other Browser", ip_address: "192.168.1.5")
+      delete "/sessions/#{other_session.id}"
       follow_redirect!
       expect(flash[:notice]).to eq("That session has been logged out")
     end

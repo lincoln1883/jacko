@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class RegistrationsController < ApplicationController
-  skip_before_action :authenticate
+  skip_before_action :authenticate, only: %i[ new create ]
 
   def new
     render inertia: "Auth/SignUp"
@@ -34,7 +34,7 @@ class RegistrationsController < ApplicationController
   private
 
   def user_params
-    params.permit(:email, :password, :password_confirmation)
+    params.permit(:email, :password, :password_confirmation, :role)
   end
 
   def send_email_verification

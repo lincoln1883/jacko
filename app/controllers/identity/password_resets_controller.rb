@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Identity::PasswordResetsController < ApplicationController
-  skip_before_action :authenticate
+  skip_before_action :authenticate, only: %i[ new create edit update ]
 
   before_action :set_user, only: %i[ edit update ]
 

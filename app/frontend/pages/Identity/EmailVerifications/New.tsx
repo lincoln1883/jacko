@@ -12,10 +12,7 @@ const EmailVerificationNew: React.FC<PageProps> = () => {
   };
 
   return (
-    <AppLayout
-      title="Email Verification"
-      user={{ id: 1, email: 'user@example.com' }}
-    >
+    <AppLayout title="Email Verification">
       <div className="max-w-2xl mx-auto py-12 sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">

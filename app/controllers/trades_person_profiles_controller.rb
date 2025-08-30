@@ -2,7 +2,8 @@
 
 class TradesPersonProfilesController < ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_tradesperson!
+  before_action :ensure_tradesperson_or_allow_switch!, only: [:edit]
+  before_action :ensure_tradesperson!, except: [:edit]
   before_action :set_profile, only: [:show, :edit, :update]
   before_action :authorize_profile_access!, only: [:edit, :update]
 
@@ -15,6 +16,12 @@ class TradesPersonProfilesController < ApplicationController
   end
 
   def edit
+    # Handle role switch if requested
+    if params[:switch_role] == "true" && current_user.client?
+      handle_role_switch_to_tradesperson
+      return
+    end
+
     render inertia: "Profile/TradesPersonEdit", props: {
       profile: serialize_profile(@profile),
       user: serialize_user(current_user),
@@ -54,6 +61,25 @@ class TradesPersonProfilesController < ApplicationController
     unless current_user.tradesperson?
       redirect_to root_path, alert: "Access denied. Only tradespeople can access this page."
     end
+  end
+
+  def ensure_tradesperson_or_allow_switch!
+    # Allow client to access edit page if they want to switch roles
+    return if current_user.tradesperson?
+    return if current_user.client? && params[:switch_role] == "true"
+
+    redirect_to root_path, alert: "Access denied. Only tradespeople can access this page."
+  end
+
+  def handle_role_switch_to_tradesperson
+    # Switch user role from client to tradesperson
+    current_user.update!(role: "tradesperson")
+
+    # Clean up client profile if it exists
+    current_user.client_profile&.destroy
+
+    # Redirect to the tradesperson profile edit page without the switch parameter
+    redirect_to edit_profile_tradesperson_path, notice: "Your account has been switched to Tradesperson. Please complete your tradesperson profile."
   end
 
   def authorize_profile_access!

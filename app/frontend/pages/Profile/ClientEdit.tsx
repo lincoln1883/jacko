@@ -79,6 +79,57 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Account Type Selection */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">
+              Account Type
+            </h2>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                You&apos;re currently set up as a{' '}
+                <span className="font-semibold text-foreground">Client</span>.
+                Would you like to change your account type?
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 p-4 border-2 border-primary bg-primary/5 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-foreground">
+                      Client Account
+                    </h3>
+                    <div className="w-3 h-3 bg-primary rounded-full"></div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    I want to hire tradespeople for projects
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ✓ Currently selected
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="flex-1 p-4 border-2 border-border hover:border-primary/50 rounded-lg transition-colors cursor-pointer w-full text-left"
+                  onClick={() =>
+                    (window.location.href =
+                      '/profile/tradesperson/edit?switch_role=true')
+                  }
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-foreground">
+                      Tradesperson Account
+                    </h3>
+                    <div className="w-3 h-3 bg-muted rounded-full"></div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    I am a tradesperson looking for work
+                  </p>
+                  <p className="text-xs text-primary hover:underline">
+                    → Switch to tradesperson
+                  </p>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Basic Information */}
           <div className="bg-card rounded-lg shadow-sm border p-6">
             <h2 className="text-xl font-semibold text-foreground mb-6">
