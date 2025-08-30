@@ -242,8 +242,8 @@ RSpec.describe RegistrationsController, type: :controller do
       user = User.last
       expect(user).to be_present
       expect(user.verified).to be false  # Should use default, not params value
+      expect(user.role).to eq("client")   # Should use default role, not params value
       expect(user).not_to respond_to(:admin)
-      expect(user).not_to respond_to(:role)
     end
   end
 

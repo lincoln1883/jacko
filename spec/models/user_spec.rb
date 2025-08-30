@@ -10,6 +10,8 @@ RSpec.describe User, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_uniqueness_of(:email).ignoring_case_sensitivity }
+    it { is_expected.to validate_presence_of(:role) }
+    it { is_expected.to validate_inclusion_of(:role).in_array(%w[client tradesperson admin]) }
 
     it "validates email format" do
       user.email = "invalid_email"
@@ -185,6 +187,108 @@ RSpec.describe User, type: :model do
     it "returns nil with incorrect email" do
       authenticated_user = User.authenticate_by(email: "wrong@example.com", password: "test_password_123")
       expect(authenticated_user).to be_nil
+    end
+  end
+
+  describe "roles" do
+    describe "enum" do
+      it { is_expected.to define_enum_for(:role).with_values(client: 0, tradesperson: 1, admin: 2) }
+    end
+
+    describe "default role" do
+      it "defaults to client role" do
+        user = create(:user)
+        expect(user.role).to eq("client")
+        expect(user).to be_client
+      end
+    end
+
+    describe "role predicates" do
+      it "correctly identifies client role" do
+        user = create(:user, role: :client)
+        expect(user).to be_client
+        expect(user).not_to be_tradesperson
+        expect(user).not_to be_admin
+      end
+
+      it "correctly identifies tradesperson role" do
+        user = create(:user, role: :tradesperson)
+        expect(user).to be_tradesperson
+        expect(user).not_to be_client
+        expect(user).not_to be_admin
+      end
+
+      it "correctly identifies admin role" do
+        user = create(:user, role: :admin)
+        expect(user).to be_admin
+        expect(user).not_to be_client
+        expect(user).not_to be_tradesperson
+      end
+    end
+
+    describe "scopes" do
+      let!(:client) { create(:user, role: :client) }
+      let!(:tradesperson) { create(:user, role: :tradesperson) }
+      let!(:admin) { create(:user, role: :admin) }
+
+      it "filters clients" do
+        expect(User.clients).to contain_exactly(client)
+      end
+
+      it "filters tradespeople" do
+        expect(User.tradespeople).to contain_exactly(tradesperson)
+      end
+
+      it "filters admins" do
+        expect(User.admins).to contain_exactly(admin)
+      end
+    end
+
+    describe "role helper methods" do
+      let(:client) { create(:user, role: :client) }
+      let(:tradesperson) { create(:user, role: :tradesperson) }
+      let(:admin) { create(:user, role: :admin) }
+
+      describe "#role_display" do
+        it "returns formatted role names" do
+          expect(client.role_display).to eq("Client")
+          expect(tradesperson.role_display).to eq("Tradesperson")
+          expect(admin.role_display).to eq("Administrator")
+        end
+      end
+
+      describe "#can_create_profile?" do
+        it "returns true for tradespeople" do
+          expect(tradesperson.can_create_profile?).to be true
+        end
+
+        it "returns false for clients and admins" do
+          expect(client.can_create_profile?).to be false
+          expect(admin.can_create_profile?).to be false
+        end
+      end
+
+      describe "#can_hire?" do
+        it "returns true for clients" do
+          expect(client.can_hire?).to be true
+        end
+
+        it "returns false for tradespeople and admins" do
+          expect(tradesperson.can_hire?).to be false
+          expect(admin.can_hire?).to be false
+        end
+      end
+
+      describe "#has_admin_access?" do
+        it "returns true for admins" do
+          expect(admin.has_admin_access?).to be true
+        end
+
+        it "returns false for clients and tradespeople" do
+          expect(client.has_admin_access?).to be false
+          expect(tradesperson.has_admin_access?).to be false
+        end
+      end
     end
   end
 

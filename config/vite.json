@@ -15,7 +15,11 @@
   "test": {
     "autoBuild": true,
     "publicOutputDir": "vite-test",
-    "port": 3037
+    "port": 3037,
+    "entrypoints": [
+      "entrypoints/application.js",
+      "entrypoints/application.css"
+    ]
   },
   "production": {
     "autoBuild": false,
