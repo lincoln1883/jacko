@@ -160,15 +160,32 @@ jobs:
 
   build_and_push:
     needs: [test, scan_ruby, lint_ruby, lint_frontend, test_frontend]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development'
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better caching
+        
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/jacko
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
         
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:master
+            network=host
         
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -180,10 +197,16 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64  # Specify platform for consistency
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/jacko:latest,${{ secrets.DOCKER_USERNAME }}/jacko:${{ github.sha }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/jacko:buildcache
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=registry,ref=${{ secrets.DOCKER_USERNAME }}/jacko:buildcache
+            type=registry,ref=${{ secrets.DOCKER_USERNAME }}/jacko:latest
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/jacko:buildcache,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
           
   deploy:
     needs: build_and_push
