@@ -25,6 +25,8 @@ class TradesPersonProfilesController < ApplicationController
     render inertia: "Profile/TradesPersonEdit", props: {
       profile: serialize_profile(@profile),
       user: serialize_user(current_user),
+      skills: serialize_skills,
+      skills_by_category: skills_by_category_hash,
       errors: {}
     }
   end
@@ -42,6 +44,8 @@ class TradesPersonProfilesController < ApplicationController
       render inertia: "Profile/TradesPersonEdit", props: {
         profile: serialize_profile(@profile),
         user: serialize_user(current_user),
+        skills: serialize_skills,
+        skills_by_category: skills_by_category_hash,
         errors: @profile.errors.as_json
       }, status: :unprocessable_entity
     end
@@ -103,7 +107,8 @@ class TradesPersonProfilesController < ApplicationController
       :phone,
       :website,
       :availability_status,
-      :description
+      :description,
+      skill_ids: []
     )
   end
 
@@ -127,6 +132,9 @@ class TradesPersonProfilesController < ApplicationController
       display_experience: profile.display_experience,
       display_availability: profile.display_availability,
       availability_color: profile.availability_color,
+      skills: serialize_profile_skills(profile),
+      skill_ids: profile.skill_ids,
+      skills_by_category: profile.skills_by_category.transform_values { |skills| skills.map { |s| serialize_skill(s) } },
       created_at: profile.created_at,
       updated_at: profile.updated_at
     }
@@ -140,5 +148,29 @@ class TradesPersonProfilesController < ApplicationController
       role_display: user.role_display,
       verified: user.verified
     }
+  end
+
+  def serialize_skills
+    Skill.active.order(:category, :name).map { |skill| serialize_skill(skill) }
+  end
+
+  def serialize_skill(skill)
+    {
+      id: skill.id,
+      name: skill.name,
+      category: skill.category,
+      description: skill.description,
+      category_color: skill.category_color
+    }
+  end
+
+  def serialize_profile_skills(profile)
+    profile.skills.map { |skill| serialize_skill(skill) }
+  end
+
+  def skills_by_category_hash
+    Skill.active.group_by(&:category).transform_values do |skills|
+      skills.map { |skill| serialize_skill(skill) }
+    end
   end
 end

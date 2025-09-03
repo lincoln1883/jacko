@@ -78,6 +78,8 @@ RSpec.describe TradesPersonProfilesController, type: :controller do
   end
 
   describe "PATCH #update" do
+    let!(:skills) { create_list(:skill, 3) }
+
     let(:valid_params) do
       {
         trades_person_profile: {
@@ -88,7 +90,8 @@ RSpec.describe TradesPersonProfilesController, type: :controller do
           phone: "+1-876-555-0123",
           website: "https://updated-website.com",
           availability_status: "busy",
-          description: "Updated services description"
+          description: "Updated services description",
+          skill_ids: skills.map(&:id)
         }
       }
     end
@@ -118,12 +121,36 @@ RSpec.describe TradesPersonProfilesController, type: :controller do
         expect(existing_profile.bio).to eq("Updated bio")
         expect(existing_profile.company_name).to eq("Updated Company")
         expect(existing_profile.years_experience).to eq(5)
+        expect(existing_profile.skills.count).to eq(3)
       end
 
       it "marks profile as completed when requirements are met" do
         patch :update, params: valid_params
 
-        expect(user.trades_person_profile.reload.profile_completed_at).to be_present
+        profile = user.trades_person_profile.reload
+        expect(profile.profile_completed_at).to be_present
+        expect(profile.skills.count).to be > 0
+      end
+
+      it "assigns skills to the profile" do
+        patch :update, params: valid_params
+
+        existing_profile.reload
+        expect(existing_profile.skills.pluck(:id)).to match_array(skills.map(&:id))
+      end
+
+      it "updates skills when changing skill selection" do
+        # First add some skills
+        existing_profile.skills = [skills.first]
+
+        # Update with different skills
+        new_params = valid_params.dup
+        new_params[:trades_person_profile][:skill_ids] = [skills.second.id, skills.third.id]
+
+        patch :update, params: new_params
+
+        existing_profile.reload
+        expect(existing_profile.skills.pluck(:id)).to match_array([skills.second.id, skills.third.id])
       end
     end
 
@@ -142,6 +169,32 @@ RSpec.describe TradesPersonProfilesController, type: :controller do
         patch :update, params: invalid_params
 
         expect(existing_profile.reload.bio).to eq(original_bio)
+      end
+    end
+
+    context "without skills" do
+      let!(:existing_profile) { create(:trades_person_profile, user: user) }
+      let(:params_without_skills) do
+        {
+          trades_person_profile: {
+            bio: "Complete bio",
+            company_name: "Complete Company",
+            years_experience: 5,
+            hourly_rate: 75.00,
+            phone: "+1-876-555-0123",
+            website: "https://complete-website.com",
+            availability_status: "available",
+            description: "Complete services description"
+          }
+          # No skill_ids provided
+        }
+      end
+
+      it "does not mark profile as completed without skills" do
+        patch :update, params: params_without_skills
+
+        profile = user.trades_person_profile.reload
+        expect(profile.profile_completed_at).to be_nil
       end
     end
 

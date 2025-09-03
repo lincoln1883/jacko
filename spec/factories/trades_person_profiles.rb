@@ -15,6 +15,11 @@ FactoryBot.define do
 
     trait :completed do
       profile_completed_at { 1.day.ago }
+
+      after(:create) do |profile|
+        # Add at least one skill to make the profile complete
+        profile.skills << create(:skill) if profile.skills.empty?
+      end
     end
 
     trait :incomplete do

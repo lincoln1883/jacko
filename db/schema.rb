@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_30_110906) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_03_120311) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -38,6 +38,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_110906) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "skills", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "category", null: false
+    t.text "description"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_skills_on_active"
+    t.index ["category"], name: "index_skills_on_category"
+    t.index ["name"], name: "index_skills_on_name", unique: true
+  end
+
   create_table "trades_person_profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.text "bio"
@@ -58,6 +70,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_110906) do
     t.index ["years_experience"], name: "index_trades_person_profiles_on_years_experience"
   end
 
+  create_table "trades_person_skills", force: :cascade do |t|
+    t.bigint "trades_person_profile_id", null: false
+    t.bigint "skill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["skill_id"], name: "index_trades_person_skills_on_skill_id"
+    t.index ["trades_person_profile_id", "skill_id"], name: "index_profile_skills_unique", unique: true
+    t.index ["trades_person_profile_id"], name: "index_trades_person_skills_on_trades_person_profile_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -72,4 +94,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_110906) do
   add_foreign_key "client_profiles", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "trades_person_profiles", "users"
+  add_foreign_key "trades_person_skills", "skills"
+  add_foreign_key "trades_person_skills", "trades_person_profiles"
 end

@@ -1,5 +1,18 @@
 // Profile types for the Jamaica Skills & Trades Platform
 
+// Skills types
+export interface Skill {
+  id: number;
+  name: string;
+  category: string;
+  description: string;
+  category_color: string;
+}
+
+export interface SkillsCategory {
+  [category: string]: Skill[];
+}
+
 export interface TradesPersonProfile {
   id: number;
   bio: string | null;
@@ -17,6 +30,9 @@ export interface TradesPersonProfile {
   display_experience: string;
   display_availability: string;
   availability_color: string;
+  skills: Skill[];
+  skill_ids: number[];
+  skills_by_category: SkillsCategory;
   created_at: string;
   updated_at: string;
 }
@@ -58,6 +74,7 @@ export interface TradesPersonProfileFormData {
   website: string;
   availability_status: 'available' | 'busy' | 'unavailable' | 'booked';
   description: string;
+  skill_ids: number[];
 }
 
 export interface ClientProfileFormData {
@@ -76,6 +93,8 @@ export interface TradesPersonProfilePageProps {
   profile: TradesPersonProfile;
   user: User;
   can_edit: boolean;
+  skills?: Skill[];
+  skills_by_category?: SkillsCategory;
   flash?: {
     success?: string;
     error?: string;

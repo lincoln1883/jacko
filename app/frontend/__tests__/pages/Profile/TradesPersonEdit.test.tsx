@@ -110,6 +110,19 @@ vi.mock('../../../components/ui/button', () => ({
   ),
 }));
 
+vi.mock('../../../components/ui/skills-multi-select', () => ({
+  SkillsMultiSelect: ({ label, selectedSkills }: any) => (
+    <div data-testid="skills-multi-select">
+      <label>{label}</label>
+      <div
+        data-selected-skills={selectedSkills?.map((s: any) => s.id).join(',')}
+      >
+        Skills Multi Select Component
+      </div>
+    </div>
+  ),
+}));
+
 // Mock window.location
 Object.defineProperty(window, 'location', {
   value: {
@@ -136,6 +149,9 @@ describe('TradesPersonEdit', () => {
     display_experience: '5 years experience',
     display_availability: 'Available for new projects',
     availability_color: 'green',
+    skills: [],
+    skill_ids: [],
+    skills_by_category: {},
     created_at: '2023-01-01T00:00:00.000Z',
     updated_at: '2023-01-01T00:00:00.000Z',
   };
@@ -152,6 +168,8 @@ describe('TradesPersonEdit', () => {
     profile: mockProfile,
     user: mockUser,
     can_edit: true,
+    skills: [],
+    skills_by_category: {},
     errors: {},
   };
 
