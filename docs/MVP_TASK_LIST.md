@@ -48,12 +48,13 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
 ### 👤 User Profiles System
 
 #### Epic: Tradesperson Profiles
-- [ ] **Task 2.1**: Create tradesperson profile model and basic form
-  - Acceptance Criteria: Tradespeople can create profiles with basic info
+- [x] **Task 2.1**: Create tradesperson profile model and basic form
+  - Acceptance Criteria: Tradespeople can create profiles with basic info ✅
   - Estimated effort: 3 days
   - Dependencies: Task 1.4
-  - **Status**: 🚧 **IN PROGRESS** - Ready to start after user roles
+  - **Status**: ✅ **COMPLETED** - Model, controller, validations, Inertia pages (edit/show), navigation integration
   - **Branch**: `feature/tradesperson-profiles`
+  - **Details**: TradesPersonProfile model with validations, controller (show/edit/update), Inertia React pages, navigation links, RSpec coverage
 
 - [ ] **Task 2.2**: Add skills taxonomy and selection system
   - Acceptance Criteria: 40+ trade categories available for selection
