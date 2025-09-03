@@ -102,7 +102,7 @@ if Rails.env.development?
     client.create_client_profile!(
       company_name: "Test Client Co",
       preferred_contact_method: :email,
-      project_budget_range: "$5,000 - $10,000",
+      project_budget_range: "5000_10000",
       description: "Looking for reliable tradespeople for various home improvement projects.",
       active: true
     )
