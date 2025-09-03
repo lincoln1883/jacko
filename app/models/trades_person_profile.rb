@@ -3,6 +3,10 @@
 class TradesPersonProfile < ApplicationRecord
   belongs_to :user
 
+  # Skills associations
+  has_many :trades_person_skills, dependent: :destroy
+  has_many :skills, through: :trades_person_skills
+
   # Availability status enum
   enum :availability_status, {
     available: 0,
@@ -44,6 +48,8 @@ class TradesPersonProfile < ApplicationRecord
   scope :with_experience, ->(years) { where("years_experience >= ?", years) }
   scope :with_rate_range, ->(min, max) { where(hourly_rate: min..max) }
   scope :completed, -> { where.not(profile_completed_at: nil) }
+  scope :with_skills, ->(skill_ids) { joins(:skills).where(skills: {id: skill_ids}) }
+  scope :with_skill_categories, ->(categories) { joins(:skills).where(skills: {category: categories}) }
 
   # Profile completion tracking
   def completed?
@@ -54,7 +60,7 @@ class TradesPersonProfile < ApplicationRecord
   end
 
   def completion_percentage
-    total_fields = 6
+    total_fields = 7
     completed_fields = 0
 
     completed_fields += 1 if bio.present?
@@ -63,13 +69,14 @@ class TradesPersonProfile < ApplicationRecord
     completed_fields += 1 if hourly_rate.present?
     completed_fields += 1 if phone.present?
     completed_fields += 1 if company_name.present?
+    completed_fields += 1 if skills.any?
 
     (completed_fields.to_f / total_fields * 100).round
   end
 
   def mark_as_completed!
     # Check if profile has required fields (excluding profile_completed_at)
-    if bio.present? && description.present? && years_experience.present? && profile_completed_at.nil?
+    if bio.present? && description.present? && years_experience.present? && skills.any? && profile_completed_at.nil?
       update!(profile_completed_at: Time.current)
     end
   end
@@ -118,5 +125,30 @@ class TradesPersonProfile < ApplicationRecord
     else
       "gray"
     end
+  end
+
+  # Skills helper methods
+  def skill_names
+    skills.pluck(:name)
+  end
+
+  def skills_by_category
+    skills.group_by(&:category)
+  end
+
+  def primary_skills(limit = 3)
+    skills.limit(limit)
+  end
+
+  def has_skill?(skill_name)
+    skill_names.include?(skill_name)
+  end
+
+  def add_skill(skill)
+    skills << skill unless skills.include?(skill)
+  end
+
+  def remove_skill(skill)
+    skills.delete(skill)
   end
 end

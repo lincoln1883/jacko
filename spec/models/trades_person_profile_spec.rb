@@ -178,6 +178,7 @@ RSpec.describe TradesPersonProfile, type: :model do
 
   describe "#completion_percentage" do
     it "calculates completion percentage correctly" do
+      skill = create(:skill)
       profile = create(:trades_person_profile,
         bio: "Test bio",
         description: "Test description",
@@ -186,15 +187,18 @@ RSpec.describe TradesPersonProfile, type: :model do
         phone: "876-123-4567",
         company_name: nil
       )
+      profile.skills << skill
 
-      # 5 out of 6 fields completed = 83%
-      expect(profile.completion_percentage).to eq(83)
+      # 6 out of 7 fields completed = 86%
+      expect(profile.completion_percentage).to eq(86)
     end
   end
 
   describe "#mark_as_completed!" do
     it "sets profile_completed_at when profile is complete" do
+      skill = create(:skill)
       profile = create(:trades_person_profile, :completed)
+      profile.skills << skill
       profile.update!(profile_completed_at: nil)
 
       expect { profile.mark_as_completed! }.to change { profile.profile_completed_at }.from(nil)

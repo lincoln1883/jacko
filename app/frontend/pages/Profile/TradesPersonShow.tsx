@@ -81,6 +81,103 @@ const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
           </div>
         </div>
 
+        {/* Skills & Services */}
+        {profile.skills && profile.skills.length > 0 && (
+          <div className="bg-card rounded-lg shadow-sm border p-6 mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Skills & Services
+            </h2>
+
+            {Object.keys(profile.skills_by_category).length > 0 ? (
+              <div className="space-y-4">
+                {Object.entries(profile.skills_by_category).map(
+                  ([category, categorySkills]) => (
+                    <div key={category}>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                        {category}
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {categorySkills.map((skill) => {
+                          const getCategoryColorClasses = (color: string) => {
+                            const colorMap: { [key: string]: string } = {
+                              orange:
+                                'bg-orange-100 text-orange-800 border-orange-200',
+                              yellow:
+                                'bg-yellow-100 text-yellow-800 border-yellow-200',
+                              blue: 'bg-blue-100 text-blue-800 border-blue-200',
+                              red: 'bg-red-100 text-red-800 border-red-200',
+                              purple:
+                                'bg-purple-100 text-purple-800 border-purple-200',
+                              pink: 'bg-pink-100 text-pink-800 border-pink-200',
+                              green:
+                                'bg-green-100 text-green-800 border-green-200',
+                              emerald:
+                                'bg-emerald-100 text-emerald-800 border-emerald-200',
+                              gray: 'bg-gray-100 text-gray-800 border-gray-200',
+                              amber:
+                                'bg-amber-100 text-amber-800 border-amber-200',
+                              cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+                              indigo:
+                                'bg-indigo-100 text-indigo-800 border-indigo-200',
+                              slate:
+                                'bg-slate-100 text-slate-800 border-slate-200',
+                            };
+                            return colorMap[color] || colorMap.slate;
+                          };
+
+                          return (
+                            <span
+                              key={skill.id}
+                              className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-medium border ${getCategoryColorClasses(skill.category_color)}`}
+                              title={skill.description}
+                            >
+                              {skill.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {profile.skills.map((skill) => {
+                  const getCategoryColorClasses = (color: string) => {
+                    const colorMap: { [key: string]: string } = {
+                      orange: 'bg-orange-100 text-orange-800 border-orange-200',
+                      yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                      blue: 'bg-blue-100 text-blue-800 border-blue-200',
+                      red: 'bg-red-100 text-red-800 border-red-200',
+                      purple: 'bg-purple-100 text-purple-800 border-purple-200',
+                      pink: 'bg-pink-100 text-pink-800 border-pink-200',
+                      green: 'bg-green-100 text-green-800 border-green-200',
+                      emerald:
+                        'bg-emerald-100 text-emerald-800 border-emerald-200',
+                      gray: 'bg-gray-100 text-gray-800 border-gray-200',
+                      amber: 'bg-amber-100 text-amber-800 border-amber-200',
+                      cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+                      indigo: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                      slate: 'bg-slate-100 text-slate-800 border-slate-200',
+                    };
+                    return colorMap[color] || colorMap.slate;
+                  };
+
+                  return (
+                    <span
+                      key={skill.id}
+                      className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-medium border ${getCategoryColorClasses(skill.category_color)}`}
+                      title={skill.description}
+                    >
+                      {skill.name}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 gap-6">
           {/* Basic Information */}
           <div className="bg-card rounded-lg shadow-sm border p-6">
@@ -185,8 +282,8 @@ const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
               Complete Your Profile
             </h3>
             <p className="text-muted-foreground mb-4">
-              Complete your profile to attract more clients and showcase your
-              skills.
+              Complete your profile by adding your bio, services description,
+              experience, and selecting your skills to attract more clients.
             </p>
             <Link href="/profile/tradesperson/edit">
               <Button>Complete Profile</Button>

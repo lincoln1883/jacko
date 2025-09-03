@@ -5,6 +5,7 @@ import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Select } from '../../components/ui/select';
 import { Button } from '../../components/ui/button';
+import { SkillsMultiSelect } from '../../components/ui/skills-multi-select';
 import type {
   TradesPersonProfilePageProps,
   TradesPersonProfileFormData,
@@ -13,6 +14,8 @@ import { AVAILABILITY_STATUS_OPTIONS } from '../../types/profile';
 
 const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
   profile,
+  skills,
+  skills_by_category,
   errors: serverErrors,
 }) => {
   const { data, setData, put, processing } =
@@ -25,6 +28,7 @@ const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
       website: profile.website || '',
       availability_status: profile.availability_status,
       description: profile.description || '',
+      skill_ids: profile.skill_ids || [],
     });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -246,6 +250,24 @@ const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
                 hint="Your business website (optional)"
               />
             </div>
+          </div>
+
+          {/* Skills & Services Selection */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">
+              Skills & Services
+            </h2>
+
+            <SkillsMultiSelect
+              skills={skills}
+              skillsByCategory={skills_by_category}
+              selectedSkillIds={data.skill_ids}
+              onSelectionChange={(skillIds) => setData('skill_ids', skillIds)}
+              label="Your Skills & Services"
+              hint="Select up to 10 skills that best represent your expertise and services (required)"
+              errors={serverErrors?.skill_ids}
+              maxSelections={10}
+            />
           </div>
 
           {/* Services Description */}

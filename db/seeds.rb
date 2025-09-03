@@ -123,4 +123,154 @@ if Rails.env.development?
   puts "Client: client.test@example.com"
   puts "Admin: admin@jacko.com"
   puts "Password for all: secure_password_123 (or secure_admin_password_123 for admin)"
+
+  # Skills and Trade Categories for Jamaica Market
+  puts "\nCreating Jamaica trade skills and categories..."
+
+  jamaica_skills = [
+    # Construction & Building
+    {name: "Masonry & Brickwork", category: "Construction & Building", description: "Building with concrete blocks, bricks, and natural stone"},
+    {name: "Concrete Work & Foundations", category: "Construction & Building", description: "Concrete pouring, finishing, and foundation construction"},
+    {name: "Steel Fixing & Reinforcement", category: "Construction & Building", description: "Rebar placement and steel reinforcement for concrete structures"},
+    {name: "Residential Construction", category: "Construction & Building", description: "Home building, renovations, and residential projects"},
+    {name: "Commercial Construction", category: "Construction & Building", description: "Office buildings, retail spaces, and commercial structures"},
+    {name: "Roofing & Waterproofing", category: "Construction & Building", description: "Roof installation, repair, and waterproofing systems"},
+    {name: "Drywall & Plastering", category: "Construction & Building", description: "Interior wall finishing and plaster work"},
+    {name: "Painting & Decorating", category: "Construction & Building", description: "Interior and exterior painting, decorative finishes"},
+    {name: "Flooring Installation", category: "Construction & Building", description: "Tile, wood, laminate, and specialty flooring"},
+    {name: "Carpentry & Joinery", category: "Construction & Building", description: "Custom woodwork, cabinets, and furniture making"},
+
+    # Electrical & Electronics
+    {name: "Residential Wiring", category: "Electrical & Electronics", description: "Home electrical systems and wiring installation"},
+    {name: "Commercial Electrical", category: "Electrical & Electronics", description: "Commercial building electrical systems and maintenance"},
+    {name: "Solar Panel Installation", category: "Electrical & Electronics", description: "Solar energy system design and installation"},
+    {name: "Electrical Troubleshooting", category: "Electrical & Electronics", description: "Electrical problem diagnosis and repair"},
+    {name: "Generator Installation & Maintenance", category: "Electrical & Electronics", description: "Backup power systems for homes and businesses"},
+    {name: "Security System Installation", category: "Electrical & Electronics", description: "CCTV, alarms, and access control systems"},
+    {name: "LED Lighting Systems", category: "Electrical & Electronics", description: "Energy-efficient lighting design and installation"},
+    {name: "Electronics Repair", category: "Electrical & Electronics", description: "Consumer electronics and appliance repair"},
+
+    # Plumbing & HVAC
+    {name: "Residential Plumbing", category: "Plumbing & HVAC", description: "Home plumbing installation and repair"},
+    {name: "Commercial Plumbing", category: "Plumbing & HVAC", description: "Commercial building plumbing systems"},
+    {name: "Pipe Installation & Repair", category: "Plumbing & HVAC", description: "Water supply and drainage pipe systems"},
+    {name: "Water Heater Services", category: "Plumbing & HVAC", description: "Hot water system installation and maintenance"},
+    {name: "Bathroom Renovation", category: "Plumbing & HVAC", description: "Complete bathroom remodeling and fixture installation"},
+    {name: "Air Conditioning Installation", category: "Plumbing & HVAC", description: "AC unit installation and ductwork"},
+    {name: "AC Repair & Maintenance", category: "Plumbing & HVAC", description: "Air conditioning system servicing and repair"},
+    {name: "Drainage Systems", category: "Plumbing & HVAC", description: "Storm water and sewage drainage solutions"},
+
+    # Automotive & Transportation
+    {name: "Auto Mechanical Repair", category: "Automotive & Transportation", description: "Engine repair and general automotive maintenance"},
+    {name: "Auto Body & Paint", category: "Automotive & Transportation", description: "Vehicle body work and automotive painting"},
+    {name: "Auto Electrical Systems", category: "Automotive & Transportation", description: "Vehicle electrical diagnostics and repair"},
+    {name: "Tire Services", category: "Automotive & Transportation", description: "Tire installation, balancing, and alignment"},
+    {name: "Motorcycle Repair", category: "Automotive & Transportation", description: "Motorcycle and scooter maintenance and repair"},
+    {name: "Marine Engine Repair", category: "Automotive & Transportation", description: "Boat and marine engine servicing"},
+    {name: "Heavy Equipment Operation", category: "Automotive & Transportation", description: "Operating bulldozers, excavators, and construction equipment"},
+
+    # Information Technology
+    {name: "Computer Repair", category: "Information Technology", description: "Desktop and laptop computer troubleshooting and repair"},
+    {name: "Network Installation", category: "Information Technology", description: "Home and business network setup and configuration"},
+    {name: "Web Development", category: "Information Technology", description: "Website design and development services"},
+    {name: "Mobile Device Repair", category: "Information Technology", description: "Smartphone and tablet repair services"},
+    {name: "Data Recovery Services", category: "Information Technology", description: "Recovering lost data from computers and devices"},
+    {name: "POS System Installation", category: "Information Technology", description: "Point of sale system setup for businesses"},
+
+    # Beauty & Personal Care
+    {name: "Hair Styling & Cutting", category: "Beauty & Personal Care", description: "Professional hair care and styling services"},
+    {name: "Barbering Services", category: "Beauty & Personal Care", description: "Traditional and modern barbering techniques"},
+    {name: "Nail Care & Art", category: "Beauty & Personal Care", description: "Manicure, pedicure, and nail art services"},
+    {name: "Makeup Artistry", category: "Beauty & Personal Care", description: "Professional makeup application for events"},
+    {name: "Spa & Massage Therapy", category: "Beauty & Personal Care", description: "Therapeutic massage and spa treatments"},
+    {name: "Skincare Treatments", category: "Beauty & Personal Care", description: "Facial treatments and skincare consultations"},
+
+    # Food Service & Hospitality
+    {name: "Caribbean Cuisine", category: "Food Service & Hospitality", description: "Traditional Jamaican and Caribbean cooking"},
+    {name: "Catering Services", category: "Food Service & Hospitality", description: "Event catering and food service management"},
+    {name: "Baking & Pastry", category: "Food Service & Hospitality", description: "Bread, cakes, and pastry making"},
+    {name: "Event Planning", category: "Food Service & Hospitality", description: "Wedding and event coordination services"},
+    {name: "Bartending & Mixology", category: "Food Service & Hospitality", description: "Professional bar service and cocktail preparation"},
+    {name: "Restaurant Management", category: "Food Service & Hospitality", description: "Food service operations and management"},
+
+    # Agriculture & Landscaping
+    {name: "Landscape Design", category: "Agriculture & Landscaping", description: "Garden and outdoor space design and planning"},
+    {name: "Lawn Care & Maintenance", category: "Agriculture & Landscaping", description: "Grass cutting, trimming, and lawn maintenance"},
+    {name: "Tree Cutting & Trimming", category: "Agriculture & Landscaping", description: "Tree removal and pruning services"},
+    {name: "Organic Farming", category: "Agriculture & Landscaping", description: "Sustainable and organic agricultural practices"},
+    {name: "Irrigation Systems", category: "Agriculture & Landscaping", description: "Water management systems for agriculture and landscaping"},
+    {name: "Plant Nursery Management", category: "Agriculture & Landscaping", description: "Plant cultivation and nursery operations"},
+
+    # Home Services & Maintenance
+    {name: "General Handyman", category: "Home Services & Maintenance", description: "Small repairs and maintenance around the home"},
+    {name: "House Cleaning", category: "Home Services & Maintenance", description: "Residential and commercial cleaning services"},
+    {name: "Pest Control", category: "Home Services & Maintenance", description: "Insect and rodent elimination and prevention"},
+    {name: "Security Guard Services", category: "Home Services & Maintenance", description: "Property protection and security services"},
+    {name: "Moving & Delivery", category: "Home Services & Maintenance", description: "Furniture moving and delivery services"},
+    {name: "Pool Maintenance", category: "Home Services & Maintenance", description: "Swimming pool cleaning and chemical balancing"},
+
+    # Manufacturing & Craft
+    {name: "Furniture Making", category: "Manufacturing & Craft", description: "Custom furniture design and construction"},
+    {name: "Metalworking & Welding", category: "Manufacturing & Craft", description: "Metal fabrication and welding services"},
+    {name: "Jewelry Making", category: "Manufacturing & Craft", description: "Custom jewelry design and repair"},
+    {name: "Leather Working", category: "Manufacturing & Craft", description: "Leather goods manufacturing and repair"},
+    {name: "Textile & Sewing", category: "Manufacturing & Craft", description: "Clothing alteration and custom textile work"},
+
+    # Health & Wellness
+    {name: "Personal Training", category: "Health & Wellness", description: "Fitness coaching and exercise instruction"},
+    {name: "Yoga & Meditation", category: "Health & Wellness", description: "Mindfulness and wellness instruction"},
+    {name: "Nutrition Consulting", category: "Health & Wellness", description: "Diet and nutrition guidance"},
+    {name: "Elder Care Services", category: "Health & Wellness", description: "In-home care for elderly individuals"},
+
+    # Creative & Media
+    {name: "Photography Services", category: "Creative & Media", description: "Event, portrait, and commercial photography"},
+    {name: "Videography & Editing", category: "Creative & Media", description: "Video production and post-production services"},
+    {name: "Graphic Design", category: "Creative & Media", description: "Logo design, branding, and print materials"},
+    {name: "Music Production", category: "Creative & Media", description: "Recording, mixing, and music production"},
+    {name: "DJ Services", category: "Creative & Media", description: "Event entertainment and music services"}
+  ]
+
+  jamaica_skills.each do |skill_data|
+    skill = Skill.find_or_create_by(name: skill_data[:name]) do |s|
+      s.category = skill_data[:category]
+      s.description = skill_data[:description]
+      s.active = true
+    end
+    puts "✓ Created skill: #{skill.name} (#{skill.category})"
+  end
+
+  # Add some skills to existing tradesperson profiles
+  puts "\nAssigning skills to existing tradesperson profiles..."
+  TradesPersonProfile.includes(:user, :skills).each do |profile|
+    next if profile.skills.any? # Skip if already has skills
+
+    # Assign relevant skills based on existing profile data
+    relevant_skills = []
+
+    case profile.company_name
+    when /construction|building/i
+      relevant_skills = Skill.where(category: "Construction & Building").limit(3)
+    when /electric/i
+      relevant_skills = Skill.where(category: "Electrical & Electronics").limit(3)
+    when /plumb/i
+      relevant_skills = Skill.where(category: "Plumbing & HVAC").limit(3)
+    when /auto|mechanic/i
+      relevant_skills = Skill.where(category: "Automotive & Transportation").limit(3)
+    when /paint/i
+      relevant_skills = Skill.where(name: ["Painting & Decorating"]).limit(2)
+    else
+      # Assign some general skills
+      relevant_skills = Skill.where(name: ["General Handyman", "Home Services & Maintenance"]).limit(2)
+    end
+
+    relevant_skills.each do |skill|
+      profile.skills << skill unless profile.skills.include?(skill)
+    end
+
+    puts "✓ Assigned #{relevant_skills.count} skills to #{profile.company_name}"
+  end
+
+  puts "\n🎯 Jamaica Skills Taxonomy Complete!"
+  puts "Created #{Skill.count} skills across #{Skill.distinct(:category).count} categories"
+  puts "Categories: #{Skill.distinct(:category).pluck(:category).join(', ')}"
 end
