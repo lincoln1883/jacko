@@ -50,6 +50,7 @@ class TradesPersonProfile < ApplicationRecord
   scope :completed, -> { where.not(profile_completed_at: nil) }
   scope :with_skills, ->(skill_ids) { joins(:skills).where(skills: {id: skill_ids}) }
   scope :with_skill_categories, ->(categories) { joins(:skills).where(skills: {category: categories}) }
+  scope :search_by_text, ->(query) { where("bio ILIKE ? OR description ILIKE ? OR company_name ILIKE ?", "%#{query}%", "%#{query}%", "%#{query}%") }
 
   # Profile completion tracking
   def completed?
@@ -102,13 +103,13 @@ class TradesPersonProfile < ApplicationRecord
   def display_availability
     case availability_status
     when "available"
-      "Available for new projects"
+      "Available"
     when "busy"
-      "Busy but accepting inquiries"
+      "Busy"
     when "unavailable"
-      "Currently unavailable"
+      "Unavailable"
     when "booked"
-      "Fully booked"
+      "Booked"
     else
       availability_status.humanize
     end

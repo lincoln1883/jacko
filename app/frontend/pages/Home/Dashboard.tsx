@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { AppLayout } from '../../components/layouts/AppLayout';
+import { Search, Users } from 'lucide-react';
 import type { PageProps } from '../../types/auth';
 
 const Dashboard: React.FC = () => {
@@ -19,6 +20,39 @@ const Dashboard: React.FC = () => {
             <h2 className="text-2xl font-bold text-foreground mb-4">
               Dashboard
             </h2>
+
+            {/* Quick Search Section */}
+            <div className="bg-blue-50 dark:bg-blue-950 p-6 rounded-lg border border-blue-200 dark:border-blue-800 mb-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-medium text-foreground mb-2 flex items-center">
+                    <Search className="w-5 h-5 mr-2" />
+                    Find Skilled Tradespeople
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    Search and connect with verified professionals for your
+                    projects.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Link
+                  href="/search"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  Start Searching
+                </Link>
+                <Link
+                  href="/search/tradespeople"
+                  className="inline-flex items-center px-4 py-2 border border-blue-300 text-blue-700 font-medium rounded-md hover:bg-blue-50 transition-colors dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Browse All
+                </Link>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="bg-primary/10 p-6 rounded-lg border">
                 <h3 className="text-lg font-medium text-foreground mb-2">

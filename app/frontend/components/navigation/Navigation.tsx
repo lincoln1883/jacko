@@ -9,6 +9,7 @@ import {
   Shield,
   Users,
   Home as HomeIcon,
+  Search,
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -109,6 +110,15 @@ export const Navigation: React.FC<NavigationProps> = ({
       >
         <HomeIcon className="w-4 h-4 mr-1" />
         Dashboard
+      </Link>
+
+      {/* Search Link */}
+      <Link
+        href="/search"
+        className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <Search className="w-4 h-4 mr-1" />
+        Find Tradespeople
       </Link>
 
       {/* Profile Link - Only for clients and tradespeople */}
@@ -263,6 +273,15 @@ export const Navigation: React.FC<NavigationProps> = ({
                   >
                     <HomeIcon className="w-4 h-4 mr-2" />
                     Dashboard
+                  </Link>
+
+                  <Link
+                    href="/search"
+                    className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    Find Tradespeople
                   </Link>
 
                   {canAccessProfile && (

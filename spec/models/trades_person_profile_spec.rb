@@ -249,7 +249,7 @@ RSpec.describe TradesPersonProfile, type: :model do
     describe "#display_availability" do
       it "returns correct availability text" do
         profile.availability_status = :available
-        expect(profile.display_availability).to eq("Available for new projects")
+        expect(profile.display_availability).to eq("Available")
       end
     end
 
@@ -267,6 +267,59 @@ RSpec.describe TradesPersonProfile, type: :model do
       it "returns correct color for unavailable status" do
         profile.availability_status = :unavailable
         expect(profile.availability_color).to eq("red")
+      end
+    end
+  end
+
+  describe "search scopes" do
+    let(:profile1) do
+      create(:trades_person_profile,
+        bio: "Expert plumber with 10 years experience",
+        company_name: "ABC Plumbing",
+        description: "Residential and commercial plumbing services"
+      )
+    end
+
+    let(:profile2) do
+      create(:trades_person_profile,
+        bio: "Professional electrician",
+        company_name: "XYZ Electric",
+        description: "Home wiring and electrical repairs"
+      )
+    end
+
+    describe ".search_by_text" do
+      it "finds profiles by bio content" do
+        results = described_class.search_by_text("plumber")
+        expect(results).to include(profile1)
+        expect(results).not_to include(profile2)
+      end
+
+      it "finds profiles by company name" do
+        results = described_class.search_by_text("ABC")
+        expect(results).to include(profile1)
+        expect(results).not_to include(profile2)
+      end
+
+      it "finds profiles by description" do
+        results = described_class.search_by_text("commercial")
+        expect(results).to include(profile1)
+        expect(results).not_to include(profile2)
+      end
+
+      it "is case insensitive" do
+        results = described_class.search_by_text("PLUMBER")
+        expect(results).to include(profile1)
+      end
+
+      it "handles partial matches" do
+        results = described_class.search_by_text("plumb")
+        expect(results).to include(profile1)
+      end
+
+      it "returns empty when no matches found" do
+        results = described_class.search_by_text("nonexistent")
+        expect(results).to be_empty
       end
     end
   end

@@ -1,47 +1,101 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, X, Search } from 'lucide-react';
+import { ChevronDown, X, Check } from 'lucide-react';
 import { Skill, SkillsCategory } from '../../types/profile';
 
+interface SearchSkill {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+interface SearchSkillsByCategory {
+  [category: string]: SearchSkill[];
+}
+
 interface SkillsMultiSelectProps {
+  // Legacy profile props
   skills?: Skill[];
-  skillsByCategory?: SkillsCategory;
-  selectedSkillIds: number[];
-  onSelectionChange: (skillIds: number[]) => void;
+  skillsByCategory?: SkillsCategory | SearchSkillsByCategory;
+  selectedSkillIds?: number[];
+  onSelectionChange?: (skillIds: number[]) => void;
+  // New search props
+  selectedSkills?: number[];
+  onSkillsChange?: (skillIds: number[]) => void;
   label?: string;
   hint?: string;
   errors?: string[];
   maxSelections?: number;
+  placeholder?: string;
 }
 
 export const SkillsMultiSelect: React.FC<SkillsMultiSelectProps> = ({
   skills = [],
-  // skillsByCategory = {},
-  selectedSkillIds = [],
+  skillsByCategory = {},
+  selectedSkillIds,
+  selectedSkills,
   onSelectionChange,
+  onSkillsChange,
   label = 'Skills & Services',
   hint = 'Select the skills and services you offer',
   errors = [],
   maxSelections = 10,
+  placeholder = 'Select options...',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  // const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  // Handle different prop interfaces (legacy profile vs search)
+  const currentSelectedSkillIds = useMemo(
+    () => selectedSkillIds || selectedSkills || [],
+    [selectedSkillIds, selectedSkills]
+  );
+  const currentOnSelectionChange =
+    onSelectionChange || onSkillsChange || (() => {});
+
+  // Convert skillsByCategory to skills array if needed
+  const allSkills = useMemo(() => {
+    if (skills.length > 0) {
+      return skills;
+    }
+    // Convert skillsByCategory to flat skills array
+    const convertedSkills: Skill[] = [];
+    const categoryColors: { [key: string]: string } = {
+      'Construction & Building': 'orange',
+      'Electrical & Electronics': 'yellow',
+      'Plumbing & HVAC': 'blue',
+      'Automotive & Transportation': 'red',
+      'Information Technology': 'purple',
+      'Beauty & Personal Care': 'pink',
+      'Food Service & Hospitality': 'green',
+      'Agriculture & Landscaping': 'emerald',
+      'Home Services & Maintenance': 'gray',
+      'Manufacturing & Craft': 'amber',
+      'Health & Wellness': 'cyan',
+      'Creative & Media': 'indigo',
+    };
+
+    Object.entries(skillsByCategory).forEach(([category, categorySkills]) => {
+      categorySkills.forEach((skill: SearchSkill) => {
+        convertedSkills.push({
+          id: skill.id,
+          name: skill.name,
+          description: skill.description || '',
+          category: category,
+          category_color: categoryColors[category] || 'blue',
+        });
+      });
+    });
+    return convertedSkills;
+  }, [skills, skillsByCategory]);
 
   // Get selected skills
-  const selectedSkills = useMemo(() => {
-    return skills.filter((skill) => selectedSkillIds.includes(skill.id));
-  }, [skills, selectedSkillIds]);
-
-  // Filter skills by search term
-  const filteredSkills = useMemo(() => {
-    if (!searchTerm) return skills;
-    return skills.filter(
-      (skill) =>
-        skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        skill.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        skill.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const selectedSkillObjects = useMemo(() => {
+    return allSkills.filter((skill) =>
+      currentSelectedSkillIds.includes(skill.id)
     );
-  }, [skills, searchTerm]);
+  }, [allSkills, currentSelectedSkillIds]);
+
+  // Use all skills without filtering
+  const filteredSkills = allSkills;
 
   // Group filtered skills by category
   const filteredByCategory = useMemo(() => {
@@ -55,194 +109,160 @@ export const SkillsMultiSelect: React.FC<SkillsMultiSelectProps> = ({
     return grouped;
   }, [filteredSkills]);
 
-  // Get category color classes
-  const getCategoryColorClasses = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      orange: 'bg-orange-100 text-orange-800 border-orange-200',
-      yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      blue: 'bg-blue-100 text-blue-800 border-blue-200',
-      red: 'bg-red-100 text-red-800 border-red-200',
-      purple: 'bg-purple-100 text-purple-800 border-purple-200',
-      pink: 'bg-pink-100 text-pink-800 border-pink-200',
-      green: 'bg-green-100 text-green-800 border-green-200',
-      emerald: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      gray: 'bg-gray-100 text-gray-800 border-gray-200',
-      amber: 'bg-amber-100 text-amber-800 border-amber-200',
-      cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-      indigo: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-      slate: 'bg-slate-100 text-slate-800 border-slate-200',
-    };
-    return colorMap[color] || colorMap.slate;
-  };
-
   const handleSkillToggle = (skill: Skill) => {
-    const isSelected = selectedSkillIds.includes(skill.id);
+    const isSelected = currentSelectedSkillIds.includes(skill.id);
     let newSelection: number[];
 
     if (isSelected) {
-      newSelection = selectedSkillIds.filter((id) => id !== skill.id);
+      newSelection = currentSelectedSkillIds.filter((id) => id !== skill.id);
     } else {
-      if (selectedSkillIds.length >= maxSelections) {
+      if (currentSelectedSkillIds.length >= maxSelections) {
         return; // Don't add more than max selections
       }
-      newSelection = [...selectedSkillIds, skill.id];
+      newSelection = [...currentSelectedSkillIds, skill.id];
     }
 
-    onSelectionChange(newSelection);
+    currentOnSelectionChange(newSelection);
   };
 
   const handleRemoveSkill = (skillId: number) => {
-    const newSelection = selectedSkillIds.filter((id) => id !== skillId);
-    onSelectionChange(newSelection);
+    const newSelection = currentSelectedSkillIds.filter((id) => id !== skillId);
+    currentOnSelectionChange(newSelection);
   };
 
   // const categories = Object.keys(skillsByCategory).sort();
 
   return (
-    <div className="space-y-2">
+    <div className="w-full space-y-2">
       {/* Label */}
       {label && (
-        <label className="block text-sm font-medium text-foreground">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           {label}
         </label>
       )}
 
-      {/* Selected Skills Display */}
-      {selectedSkills.length > 0 && (
-        <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-md border">
-          {selectedSkills.map((skill) => (
-            <div
-              key={skill.id}
-              className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs border ${getCategoryColorClasses(skill.category_color)}`}
-            >
-              <span>{skill.name}</span>
-              <button
-                type="button"
-                onClick={() => handleRemoveSkill(skill.id)}
-                className="hover:bg-black/10 rounded-full p-0.5"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Dropdown Trigger */}
+      {/* Main Container */}
       <div className="relative">
+        {/* Trigger Button */}
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between px-3 py-2 border border-border rounded-md bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+          className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
         >
-          <span className="text-sm text-muted-foreground">
-            {selectedSkills.length > 0
-              ? `${selectedSkills.length} skill${selectedSkills.length !== 1 ? 's' : ''} selected`
-              : 'Select your skills and services'}
-          </span>
+          <div className="flex flex-wrap gap-1">
+            {selectedSkillObjects.length > 0 ? (
+              selectedSkillObjects.map((skill) => (
+                <span
+                  key={skill.id}
+                  className="inline-flex items-center gap-1 rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-900"
+                >
+                  {skill.name}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveSkill(skill.id);
+                    }}
+                    className="ml-1 h-3 w-3 rounded-full hover:bg-blue-200 flex items-center justify-center"
+                  >
+                    <X className="h-2 w-2" />
+                  </button>
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500">{placeholder}</span>
+            )}
+          </div>
           <ChevronDown
-            className={`w-4 h-4 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`h-4 w-4 opacity-50 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           />
         </button>
 
-        {/* Dropdown Panel */}
+        {/* Dropdown */}
         {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-96 overflow-hidden">
-            {/* Search Input */}
-            <div className="p-3 border-b border-border">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search skills..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-            </div>
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setIsOpen(false)}
+              role="presentation"
+            />
 
-            {/* Skills List */}
-            <div className="max-h-80 overflow-y-auto">
-              {Object.keys(filteredByCategory).length === 0 ? (
-                <div className="p-4 text-center text-muted-foreground text-sm">
-                  No skills found matching &quot;{searchTerm}&quot;
-                </div>
-              ) : (
-                Object.entries(filteredByCategory).map(
+            {/* Dropdown Content */}
+            <div className="absolute top-full z-50 mt-1 max-h-60 w-full overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg">
+              <div className="max-h-60 overflow-auto p-1">
+                {Object.entries(filteredByCategory).map(
                   ([category, categorySkills]) => (
                     <div key={category}>
                       {/* Category Header */}
-                      <div className="sticky top-0 bg-muted/50 px-3 py-2 border-b border-border">
-                        <h4 className="font-medium text-sm text-foreground">
-                          {category}
-                        </h4>
+                      <div className="px-2 py-1.5 text-sm font-semibold text-gray-900">
+                        {category}
                       </div>
 
-                      {/* Category Skills */}
-                      <div className="divide-y divide-border">
-                        {categorySkills.map((skill) => {
-                          const isSelected = selectedSkillIds.includes(
-                            skill.id
-                          );
-                          const isMaxReached =
-                            selectedSkillIds.length >= maxSelections &&
-                            !isSelected;
+                      {/* Skills in Category */}
+                      {categorySkills.map((skill) => {
+                        const isSelected = currentSelectedSkillIds.includes(
+                          skill.id
+                        );
+                        const isDisabled =
+                          !isSelected &&
+                          currentSelectedSkillIds.length >= maxSelections;
 
-                          return (
-                            <button
-                              key={skill.id}
-                              type="button"
-                              onClick={() => handleSkillToggle(skill)}
-                              disabled={isMaxReached}
-                              className={`w-full text-left px-3 py-3 hover:bg-muted/50 focus:bg-muted/50 focus:outline-none transition-colors ${
-                                isSelected
-                                  ? 'bg-primary/10 border-l-2 border-primary'
-                                  : ''
-                              } ${isMaxReached ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="font-medium text-sm text-foreground">
-                                    {skill.name}
-                                  </div>
-                                  {skill.description && (
-                                    <div className="text-xs text-muted-foreground mt-1">
-                                      {skill.description}
-                                    </div>
-                                  )}
-                                </div>
+                        return (
+                          <div
+                            key={skill.id}
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isDisabled) {
+                                handleSkillToggle(skill);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                if (!isDisabled) {
+                                  handleSkillToggle(skill);
+                                }
+                              }
+                            }}
+                            className={`relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none ${
+                              isDisabled
+                                ? 'cursor-not-allowed opacity-50'
+                                : 'cursor-pointer hover:bg-gray-100 focus:bg-gray-100'
+                            } ${isSelected ? 'bg-blue-100 text-blue-900' : ''}`}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <div
+                                className={`flex h-4 w-4 items-center justify-center rounded border ${
+                                  isSelected
+                                    ? 'border-blue-600 bg-blue-600'
+                                    : 'border-gray-300'
+                                }`}
+                              >
                                 {isSelected && (
-                                  <div className="ml-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                                    <div className="w-2 h-2 bg-white rounded-full" />
-                                  </div>
+                                  <Check className="h-3 w-3 text-white" />
                                 )}
                               </div>
-                            </button>
-                          );
-                        })}
-                      </div>
+                              <span className="flex-1">{skill.name}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )
-                )
-              )}
-            </div>
-
-            {/* Footer with selection count */}
-            <div className="p-3 border-t border-border bg-muted/50">
-              <div className="text-xs text-muted-foreground text-center">
-                {selectedSkillIds.length} of {maxSelections} skills selected
-                {selectedSkillIds.length >= maxSelections && (
-                  <span className="text-amber-600 ml-1">(Maximum reached)</span>
                 )}
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 
       {/* Hint */}
-      {hint && <p className="text-sm text-muted-foreground">{hint}</p>}
+      {hint && <p className="text-sm text-gray-500">{hint}</p>}
 
       {/* Errors */}
       {errors.length > 0 && (
@@ -253,12 +273,6 @@ export const SkillsMultiSelect: React.FC<SkillsMultiSelectProps> = ({
             </p>
           ))}
         </div>
-      )}
-
-      {/* Click outside handler */}
-      {isOpen && (
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-        <div className="fixed inset-0 z-0" onClick={() => setIsOpen(false)} />
       )}
     </div>
   );

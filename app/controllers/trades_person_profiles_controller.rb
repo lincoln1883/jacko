@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class TradesPersonProfilesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:public_show]
   before_action :ensure_tradesperson_or_allow_switch!, only: [:edit]
-  before_action :ensure_tradesperson!, except: [:edit]
+  before_action :ensure_tradesperson!, except: [:edit, :public_show]
   before_action :set_profile, only: [:show, :edit, :update]
+  before_action :set_public_profile, only: [:public_show]
   before_action :authorize_profile_access!, only: [:edit, :update]
 
   def show
@@ -51,6 +52,16 @@ class TradesPersonProfilesController < ApplicationController
     end
   end
 
+  def public_show
+    # Public view of any tradesperson's profile
+    render inertia: "Profile/TradesPersonPublic", props: {
+      profile: serialize_public_profile(@public_profile),
+      profile_owner: serialize_profile_owner(@public_profile.user),
+      can_edit: false,
+      current_user: current_user ? serialize_user(current_user) : nil
+    }
+  end
+
   private
 
   def set_profile
@@ -59,6 +70,12 @@ class TradesPersonProfilesController < ApplicationController
     unless @profile
       @profile = current_user.create_trades_person_profile!
     end
+  end
+
+  def set_public_profile
+    @public_profile = TradesPersonProfile.active.completed.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to search_path, alert: "Profile not found or not available for public viewing."
   end
 
   def ensure_tradesperson!
@@ -172,5 +189,38 @@ class TradesPersonProfilesController < ApplicationController
     Skill.active.group_by(&:category).transform_values do |skills|
       skills.map { |skill| serialize_skill(skill) }
     end
+  end
+
+  def serialize_public_profile(profile)
+    {
+      id: profile.id,
+      bio: profile.bio,
+      company_name: profile.company_name,
+      years_experience: profile.years_experience,
+      hourly_rate: profile.hourly_rate,
+      phone: profile.phone,
+      website: profile.website,
+      availability_status: profile.availability_status,
+      description: profile.description,
+      display_hourly_rate: profile.display_hourly_rate,
+      display_experience: profile.display_experience,
+      display_availability: profile.display_availability,
+      availability_color: profile.availability_color,
+      skills: serialize_profile_skills(profile),
+      skills_by_category: profile.skills_by_category.transform_values { |skills| skills.map { |s| serialize_skill(s) } },
+      completion_percentage: profile.completion_percentage,
+      created_at: profile.created_at,
+      updated_at: profile.updated_at
+    }
+  end
+
+  def serialize_profile_owner(user)
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      role_display: user.role_display,
+      verified: user.verified
+    }
   end
 end
