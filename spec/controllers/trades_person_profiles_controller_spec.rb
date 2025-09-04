@@ -44,38 +44,105 @@ RSpec.describe TradesPersonProfilesController, type: :controller do
   end
 
   describe "GET #edit" do
-    context "when user is a tradesperson" do
-      it "renders the edit template" do
-        get :edit
+  context "when user is a tradesperson" do
+    it "renders the edit template" do
+      get :edit
+
+      expect(response).to have_http_status(:success)
+      expect_inertia_render("Profile/TradesPersonEdit")
+    end
+  end
+
+  context "when client wants to switch roles" do
+    before { sign_in(client_user) }
+
+    it "handles role switch to tradesperson" do
+      get :edit, params: {switch_role: "true"}
+
+      expect(response).to redirect_to(edit_profile_tradesperson_path)
+      expect(flash[:notice]).to include("switched to Tradesperson")
+      expect(client_user.reload.role).to eq("tradesperson")
+    end
+  end
+
+  context "when user is not authorized" do
+  before { sign_in(client_user) }
+
+  it "redirects with access denied" do
+  get :edit
+
+  expect(response).to redirect_to(root_path)
+  expect(flash[:alert]).to eq("Access denied. Only tradespeople can access this page.")
+end
+end
+
+  describe "GET #public_show" do
+    let!(:public_profile) do
+      create(:trades_person_profile,
+        bio: "Expert plumber with 10 years experience",
+        company_name: "ABC Plumbing",
+        years_experience: 10,
+        active: true,
+        profile_completed_at: 1.week.ago
+      )
+    end
+
+    let!(:inactive_profile) do
+      create(:trades_person_profile,
+        bio: "Inactive profile",
+        active: false,
+        profile_completed_at: 1.week.ago
+      )
+    end
+
+    let!(:incomplete_profile) do
+      create(:trades_person_profile,
+        bio: "Incomplete profile",
+        active: true,
+        profile_completed_at: nil
+      )
+    end
+
+    context "when viewing active and completed profile" do
+      it "renders the public profile page" do
+        get :public_show, params: {id: public_profile.id}
 
         expect(response).to have_http_status(:success)
-        expect_inertia_render("Profile/TradesPersonEdit")
+      end
+
+      it "allows unauthenticated users to view public profiles" do
+        allow(Current).to receive(:user).and_return(nil)
+
+        get :public_show, params: {id: public_profile.id}
+
+        expect(response).to have_http_status(:success)
       end
     end
 
-    context "when client wants to switch roles" do
-      before { sign_in(client_user) }
+    context "when profile is not found or not available" do
+      it "redirects when profile is inactive" do
+        get :public_show, params: {id: inactive_profile.id}
 
-      it "handles role switch to tradesperson" do
-        get :edit, params: {switch_role: "true"}
-
-        expect(response).to redirect_to(edit_profile_tradesperson_path)
-        expect(flash[:notice]).to include("switched to Tradesperson")
-        expect(client_user.reload.role).to eq("tradesperson")
+        expect(response).to redirect_to(search_path)
+        expect(flash[:alert]).to include("Profile not found")
       end
-    end
 
-    context "when user is not authorized" do
-      before { sign_in(client_user) }
+      it "redirects when profile is incomplete" do
+        get :public_show, params: {id: incomplete_profile.id}
 
-      it "redirects with access denied" do
-        get :edit
+        expect(response).to redirect_to(search_path)
+        expect(flash[:alert]).to include("Profile not found")
+      end
 
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq("Access denied. Only tradespeople can access this page.")
+      it "redirects when profile does not exist" do
+        get :public_show, params: {id: 99999}
+
+        expect(response).to redirect_to(search_path)
+        expect(flash[:alert]).to include("Profile not found")
       end
     end
   end
+end
 
   describe "PATCH #update" do
     let!(:skills) { create_list(:skill, 3) }

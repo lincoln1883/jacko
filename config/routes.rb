@@ -18,6 +18,13 @@ Rails.application.routes.draw do
     resource :email_verification, only: [:show, :create]
     resource :password_reset,     only: [:new, :edit, :create, :update]
   end
+  # Search routes
+  get "search", to: "search#index"
+  get "search/tradespeople", to: "search#tradespeople"
+
+  # Public profile viewing routes
+  get "tradespeople/:id", to: "trades_person_profiles#public_show", as: :public_tradesperson_profile
+
   root "home#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
