@@ -24,7 +24,6 @@ export interface SignUpFormData {
   email: string;
   password: string;
   password_confirmation: string;
-  role: 'client' | 'tradesperson';
 }
 
 export interface AuthPageProps {
@@ -37,7 +36,7 @@ export interface SessionsIndexProps {
 }
 
 export interface FlashMessage {
-  type: 'notice' | 'alert' | 'error';
+  type: 'notice' | 'alert' | 'error' | 'warning' | 'info';
   message: string;
 }
 

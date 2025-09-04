@@ -27,6 +27,8 @@ export default [
         window: 'readonly',
         document: 'readonly',
         global: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
       },
     },
     plugins: {
@@ -76,6 +78,10 @@ export default [
         console: 'readonly',
         jest: 'readonly',
         TestingLibraryMatchers: 'readonly',
+        HTMLSelectElement: 'readonly',
+        HTMLElement: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
       },
     },
     rules: {

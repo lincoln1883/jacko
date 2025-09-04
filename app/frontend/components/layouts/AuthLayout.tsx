@@ -1,7 +1,8 @@
 import React from 'react';
-import { Head, usePage } from '@inertiajs/react';
-import { FlashMessageComponent } from '../ui/flash-message';
-import type { PageProps } from '../../types/auth';
+import { Head } from '@inertiajs/react';
+import { ToastProvider } from '../../contexts/ToastContext';
+import ToastContainer from '../ui/toast-container';
+import { useFlashToast } from '../../hooks/useFlashToast';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -9,12 +10,18 @@ interface AuthLayoutProps {
   description?: string;
 }
 
-export const AuthLayout: React.FC<AuthLayoutProps> = ({
+/**
+ * Inner component that uses toast hooks
+ * This needs to be inside the ToastProvider
+ */
+const AuthLayoutContent: React.FC<AuthLayoutProps> = ({
   children,
   title,
   description,
 }) => {
-  const { flash } = usePage<PageProps>().props;
+  // Initialize flash message to toast conversion
+  useFlashToast();
+
   return (
     <>
       <Head title={title} />
@@ -33,15 +40,21 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-card py-8 px-4 shadow-lg border sm:rounded-lg sm:px-10">
-            {flash && (
-              <div className="mb-6">
-                <FlashMessageComponent flash={flash} />
-              </div>
-            )}
             {children}
           </div>
         </div>
+
+        {/* Toast notifications */}
+        <ToastContainer position="bottom-right" />
       </div>
     </>
+  );
+};
+
+export const AuthLayout: React.FC<AuthLayoutProps> = (props) => {
+  return (
+    <ToastProvider maxToasts={3} defaultDuration={5000}>
+      <AuthLayoutContent {...props} />
+    </ToastProvider>
   );
 };

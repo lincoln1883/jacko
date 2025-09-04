@@ -1,7 +1,9 @@
 import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Navigation } from '../navigation/Navigation';
-import { FlashMessageComponent } from '../ui/flash-message';
+import { ToastProvider } from '../../contexts/ToastContext';
+import ToastContainer from '../ui/toast-container';
+import { useFlashToast } from '../../hooks/useFlashToast';
 import type { PageProps } from '../../types/auth';
 
 interface GuestLayoutProps {
@@ -12,16 +14,19 @@ interface GuestLayoutProps {
 }
 
 /**
- * GuestLayout is used for unauthenticated user pages (landing page, marketing pages).
- * Shows guest navigation with sign in/sign up buttons.
+ * Inner component that uses toast hooks
+ * This needs to be inside the ToastProvider
  */
-export const GuestLayout: React.FC<GuestLayoutProps> = ({
+const GuestLayoutContent: React.FC<GuestLayoutProps> = ({
   children,
   title,
   showFooter = true,
   className,
 }) => {
-  const { flash, auth } = usePage<PageProps>().props;
+  const { auth } = usePage<PageProps>().props;
+
+  // Initialize flash message to toast conversion
+  useFlashToast();
 
   // Get user and session data from page props - should be null for guest pages
   const pageUser = auth?.user;
@@ -108,15 +113,25 @@ export const GuestLayout: React.FC<GuestLayoutProps> = ({
       <div className="min-h-screen bg-background">
         <Navigation variant="guest" user={pageUser} session={pageSession} />
         <main>
-          {flash && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-              <FlashMessageComponent flash={flash} />
-            </div>
-          )}
           <div className={className}>{children}</div>
           {footerContent}
         </main>
+
+        {/* Toast notifications */}
+        <ToastContainer position="bottom-right" />
       </div>
     </>
+  );
+};
+
+/**
+ * GuestLayout is used for unauthenticated user pages (landing page, marketing pages).
+ * Shows guest navigation with sign in/sign up buttons.
+ */
+export const GuestLayout: React.FC<GuestLayoutProps> = (props) => {
+  return (
+    <ToastProvider maxToasts={5} defaultDuration={5000}>
+      <GuestLayoutContent {...props} />
+    </ToastProvider>
   );
 };

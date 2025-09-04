@@ -21,6 +21,7 @@ class ApplicationController < ActionController::Base
   end
 
   # Share flash messages with all Inertia responses
+  # These will be automatically converted to toast notifications by useFlashToast hook
   inertia_share do
     flash_message = nil
     if flash[:notice]
@@ -29,6 +30,10 @@ class ApplicationController < ActionController::Base
       flash_message = {type: "alert", message: flash[:alert]}
     elsif flash[:error]
       flash_message = {type: "error", message: flash[:error]}
+    elsif flash[:warning]
+      flash_message = {type: "warning", message: flash[:warning]}
+    elsif flash[:info]
+      flash_message = {type: "info", message: flash[:info]}
     end
 
     {
