@@ -1,7 +1,9 @@
 import React from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { Navigation } from '../navigation/Navigation';
-import { FlashMessageComponent } from '../ui/flash-message';
+import { ToastProvider } from '../../contexts/ToastContext';
+import ToastContainer from '../ui/toast-container';
+import { useFlashToast } from '../../hooks/useFlashToast';
 import type { PageProps } from '../../types/auth';
 
 interface AppLayoutProps {
@@ -11,15 +13,18 @@ interface AppLayoutProps {
 }
 
 /**
- * AppLayout is used for authenticated user pages.
- * Shows full navigation based on user role and profile status.
+ * Inner component that uses toast hooks
+ * This needs to be inside the ToastProvider
  */
-export const AppLayout: React.FC<AppLayoutProps> = ({
+const AppLayoutContent: React.FC<AppLayoutProps> = ({
   children,
   title,
   className,
 }) => {
-  const { flash, auth } = usePage<PageProps>().props;
+  const { auth } = usePage<PageProps>().props;
+
+  // Initialize flash message to toast conversion
+  useFlashToast();
 
   // Get user and session data from page props
   const pageUser = auth?.user;
@@ -42,12 +47,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         <Navigation variant="app" user={pageUser} session={pageSession} />
 
         <main>
-          {flash && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-              <FlashMessageComponent flash={flash} />
-            </div>
-          )}
-
           {/* Role-based content wrapper */}
           <div className={`${className || ''}`}>
             {/* Admin users see everything */}
@@ -60,7 +59,22 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             {isClient && !isAdmin && children}
           </div>
         </main>
+
+        {/* Toast notifications */}
+        <ToastContainer position="bottom-right" />
       </div>
     </>
+  );
+};
+
+/**
+ * AppLayout is used for authenticated user pages.
+ * Shows full navigation based on user role and profile status.
+ */
+export const AppLayout: React.FC<AppLayoutProps> = (props) => {
+  return (
+    <ToastProvider maxToasts={5} defaultDuration={5000}>
+      <AppLayoutContent {...props} />
+    </ToastProvider>
   );
 };

@@ -2,7 +2,6 @@ import React from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { AuthLayout } from '../../components/layouts/AuthLayout';
 import { Input } from '../../components/ui/input';
-import { Select } from '../../components/ui/select';
 import { Button } from '../../components/ui/button';
 import type { SignUpFormData, AuthPageProps } from '../../types/auth';
 
@@ -11,7 +10,6 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'client' as 'client' | 'tradesperson',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,24 +39,6 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
           hint="We'll send you a verification email after you sign up."
         />
 
-        <Select
-          id="role"
-          label="Account Type"
-          value={data.role}
-          onChange={(e) =>
-            setData('role', e.target.value as 'client' | 'tradesperson')
-          }
-          options={[
-            { label: 'I want to hire tradespeople (Client)', value: 'client' },
-            {
-              label: 'I am a tradesperson looking for work',
-              value: 'tradesperson',
-            },
-          ]}
-          errors={errors?.role}
-          hint="Choose your account type - this can be changed later"
-        />
-
         <Input
           id="password"
           label="Password"
@@ -68,7 +48,7 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
           errors={errors?.password}
           required
           autoComplete="new-password"
-          hint="Choose a strong password with at least 8 characters."
+          hint="Choose a strong password with at least 12 characters."
         />
 
         <Input

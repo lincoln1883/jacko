@@ -79,7 +79,9 @@ describe('SignUp', () => {
         )
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Choose a strong password with at least 8 characters.')
+        screen.getByText(
+          'Choose a strong password with at least 12 characters.'
+        )
       ).toBeInTheDocument();
       expect(
         screen.getByText('Enter the same password again to confirm.')
@@ -403,7 +405,9 @@ describe('SignUp', () => {
 
       // Password strength hint
       expect(
-        screen.getByText('Choose a strong password with at least 8 characters.')
+        screen.getByText(
+          'Choose a strong password with at least 12 characters.'
+        )
       ).toBeInTheDocument();
 
       // Email verification notice

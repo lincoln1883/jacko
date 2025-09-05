@@ -164,7 +164,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         </button>
 
         {/* Dropdown Menu */}
-        <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
           <div className="py-1">
             <div className="px-3 py-2 text-sm text-muted-foreground border-b border-border">
               <div className="font-medium text-foreground">{user?.email}</div>

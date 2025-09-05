@@ -34,6 +34,9 @@ class RegistrationsController < ApplicationController
   private
 
   def user_params
+    params.require(:registration).permit(:email, :password, :password_confirmation)
+  rescue ActionController::ParameterMissing
+    # Fallback for direct parameter submission
     params.permit(:email, :password, :password_confirmation)
   end
 
