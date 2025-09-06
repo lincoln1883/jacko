@@ -35,22 +35,27 @@ class SearchController < ApplicationController
   end
 
   def search_tradespeople(search_params)
-    profiles = TradesPersonProfile.active.completed.includes(:user, :skills)
-
-    # Text search in bio, description, and company name
-    if search_params[:query].present?
-      query = "%#{search_params[:query]}%"
-      profiles = profiles.where(
-        "trades_person_profiles.bio ILIKE ? OR trades_person_profiles.description ILIKE ? OR trades_person_profiles.company_name ILIKE ?",
-        query, query, query
-      )
-    end
-
-    # Filter by skills
+    base_query = TradesPersonProfile.active.completed
+    
+    # Start with a subquery for skill filtering if needed
     if search_params[:skill_ids].present? && search_params[:skill_ids].any?
       skill_ids = search_params[:skill_ids].reject(&:blank?).map(&:to_i)
-      profiles = profiles.joins(:skills).where(skills: {id: skill_ids}).distinct if skill_ids.any?
+      if skill_ids.any?
+        skill_filtered = base_query
+          .joins(:trades_person_skills)
+          .where(trades_person_skills: { skill_id: skill_ids })
+          .group('trades_person_profiles.id')
+          .having('COUNT(DISTINCT trades_person_skills.skill_id) = ?', skill_ids.size)
+        
+        base_query = base_query.where(id: skill_filtered)
+      end
     end
+
+    # Now build the main query
+    profiles = base_query.includes(:user, :skills)
+
+    # Text search in bio, description, and company name
+    profiles = profiles.search_by_text(search_params[:query]) if search_params[:query].present?
 
     # Filter by availability status
     if search_params[:availability].present? && search_params[:availability].any?
