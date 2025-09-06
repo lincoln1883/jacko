@@ -61,6 +61,17 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/jacko_test
         run: bundle exec rspec --format progress
 
+      - name: Run tests with coverage
+        run: bundle exec rspec
+        env:
+          COVERAGE: true
+          
+      - name: Upload coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
+
   scan_ruby:
     runs-on: ubuntu-latest
 
@@ -235,4 +246,27 @@ jobs:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
         run: |
           bin/kamal deploy
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint Ruby
+        run: bundle exec rubocop
+      
+      - name: Lint JavaScript/TypeScript
+        run: npm run lint
+        
+      - name: Check Types
+        run: npm run check
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Brakeman
+        run: bundle exec brakeman
+        
+      - name: Check Dependencies
+        run: |
+          bundle audit check --update
+          npm audit
 
