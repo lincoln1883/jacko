@@ -67,10 +67,11 @@ jobs:
           COVERAGE: true
           
       - name: Upload coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage
+          retention-days: 14
 
   scan_ruby:
     runs-on: ubuntu-latest
@@ -84,9 +85,16 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+          cache-version: 1
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+        run: bundle exec brakeman --no-pager
 
   lint_ruby:
     runs-on: ubuntu-latest
@@ -99,9 +107,16 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+          cache-version: 1
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
 
       - name: Lint Ruby code for consistent style
-        run: bin/rubocop -f github
+        run: bundle exec rubocop -f github
 
   lint_frontend:
     runs-on: ubuntu-latest
