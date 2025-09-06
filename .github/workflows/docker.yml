@@ -133,3 +133,23 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+      
+      - name: Scan Docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    
+    steps:
+      - name: Deploy with Kamal
+        run: bundle exec kamal deploy
+        env:
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
