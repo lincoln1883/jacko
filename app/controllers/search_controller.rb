@@ -36,17 +36,17 @@ class SearchController < ApplicationController
 
   def search_tradespeople(search_params)
     base_query = TradesPersonProfile.active.completed
-    
+
     # Start with a subquery for skill filtering if needed
     if search_params[:skill_ids].present? && search_params[:skill_ids].any?
       skill_ids = search_params[:skill_ids].reject(&:blank?).map(&:to_i)
       if skill_ids.any?
         skill_filtered = base_query
           .joins(:trades_person_skills)
-          .where(trades_person_skills: { skill_id: skill_ids })
-          .group('trades_person_profiles.id')
-          .having('COUNT(DISTINCT trades_person_skills.skill_id) = ?', skill_ids.size)
-        
+          .where(trades_person_skills: {skill_id: skill_ids})
+          .group("trades_person_profiles.id")
+          .having("COUNT(DISTINCT trades_person_skills.skill_id) = ?", skill_ids.size)
+
         base_query = base_query.where(id: skill_filtered)
       end
     end
