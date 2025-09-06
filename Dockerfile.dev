@@ -53,4 +53,4 @@ EXPOSE 5173
 RUN gem install foreman
 
 # Start both Rails and Vite dev servers
-CMD ["bin/dev"]
+CMD ["sh", "-c", "bundle exec rails db:migrate && bundle exec rails db:seed && bin/dev"]

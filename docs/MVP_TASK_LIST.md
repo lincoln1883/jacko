@@ -110,10 +110,18 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
 ### 🔍 Search & Discovery System
 
 #### Epic: Basic Search Functionality
-- [ ] **Task 3.1**: Implement basic search by trade/skill
-  - Acceptance Criteria: Users can search for tradespeople by skill category
+- [x] **Task 3.1**: Implement basic search by trade/skill
+  - Acceptance Criteria: Users can search for tradespeople by skill category ✅
   - Estimated effort: 3 days
   - Dependencies: Task 2.2
+  - **Status**: ✅ **COMPLETED** - Implemented comprehensive search with:
+    - Text-based search in bio, description, and company name
+    - Skill-based filtering with proper handling of multiple skills
+    - Experience level filtering
+    - Availability status filtering
+    - Pagination with proper count handling
+    - Full test coverage with integration tests
+  - **Branch**: `development` (merged)
 
 - [ ] **Task 3.2**: Add location-based filtering
   - Acceptance Criteria: Search results can be filtered by parish/distance
