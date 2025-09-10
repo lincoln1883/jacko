@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { vi } from 'vitest';
 import TradesPersonEdit from '../../../pages/Profile/TradesPersonEdit';
 
@@ -123,6 +123,22 @@ vi.mock('../../../components/ui/skills-multi-select', () => ({
   ),
 }));
 
+vi.mock('../../../components', () => ({
+  PortfolioUpload: () => (
+    <div data-testid="portfolio-upload">Portfolio Upload Component</div>
+  ),
+  AvatarUpload: () => (
+    <div data-testid="avatar-upload">Avatar Upload Component</div>
+  ),
+}));
+
+vi.mock('../../../contexts/ToastContext', () => ({
+  useToast: () => ({
+    success: vi.fn(),
+    error: vi.fn(),
+  }),
+}));
+
 // Mock window.location
 Object.defineProperty(window, 'location', {
   value: {
@@ -130,6 +146,14 @@ Object.defineProperty(window, 'location', {
   },
   writable: true,
 });
+
+// Mock fetch API to prevent URL parsing errors
+global.fetch = vi.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve([]),
+  })
+) as any;
 
 describe('TradesPersonEdit', () => {
   const mockProfile = {
@@ -152,6 +176,9 @@ describe('TradesPersonEdit', () => {
     skills: [],
     skill_ids: [],
     skills_by_category: {},
+    has_avatar: false,
+    avatar_url: null,
+    avatar_thumbnail_url: null,
     created_at: '2023-01-01T00:00:00.000Z',
     updated_at: '2023-01-01T00:00:00.000Z',
   };
@@ -199,8 +226,10 @@ describe('TradesPersonEdit', () => {
   });
 
   describe('Rendering', () => {
-    it('renders the edit form with all fields', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('renders the edit form with all fields', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       expect(screen.getByText('Edit Your Profile')).toBeInTheDocument();
       expect(
@@ -220,8 +249,10 @@ describe('TradesPersonEdit', () => {
       expect(screen.getByTestId('textarea-description')).toBeInTheDocument();
     });
 
-    it('displays profile completion indicator', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('displays profile completion indicator', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       expect(screen.getByText('Profile Completion')).toBeInTheDocument();
       expect(screen.getByText('85%')).toBeInTheDocument();
@@ -232,8 +263,10 @@ describe('TradesPersonEdit', () => {
       ).toBeInTheDocument();
     });
 
-    it('shows current account type selection', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('shows current account type selection', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       expect(screen.getByText('Account Type')).toBeInTheDocument();
       expect(screen.getByText('Tradesperson Account')).toBeInTheDocument();
@@ -241,8 +274,10 @@ describe('TradesPersonEdit', () => {
       expect(screen.getByText('✓ Currently selected')).toBeInTheDocument();
     });
 
-    it('displays navigation links', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('displays navigation links', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const viewProfileLink = screen.getByRole('link', {
         name: /view profile/i,
@@ -256,7 +291,9 @@ describe('TradesPersonEdit', () => {
 
   describe('Form interactions', () => {
     it('updates form data when user types in fields', async () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const bioInput = screen
         .getByTestId('textarea-bio')
@@ -276,7 +313,9 @@ describe('TradesPersonEdit', () => {
     });
 
     it('submits the form with correct data', async () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const form = document.querySelector('form');
       fireEvent.submit(form!);
@@ -284,8 +323,10 @@ describe('TradesPersonEdit', () => {
       expect(mockPut).toHaveBeenCalledWith('/profile/tradesperson');
     });
 
-    it('handles form submission', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('handles form submission', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const saveButton = screen.getByRole('button', { name: /save changes/i });
       fireEvent.click(saveButton);
@@ -295,7 +336,7 @@ describe('TradesPersonEdit', () => {
   });
 
   describe('Loading states', () => {
-    it('shows loading state when form is processing', () => {
+    it('shows loading state when form is processing', async () => {
       mockUseForm.mockReturnValue({
         data: {},
         setData: mockSetData,
@@ -303,13 +344,15 @@ describe('TradesPersonEdit', () => {
         processing: true,
       });
 
-      render(<TradesPersonEdit {...defaultProps} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const saveButton = screen.getByRole('button', { name: /loading/i });
       expect(saveButton).toBeDisabled();
     });
 
-    it('disables form fields during processing', () => {
+    it('disables form fields during processing', async () => {
       mockUseForm.mockReturnValue({
         data: {},
         setData: mockSetData,
@@ -317,7 +360,9 @@ describe('TradesPersonEdit', () => {
         processing: true,
       });
 
-      render(<TradesPersonEdit {...defaultProps} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const saveButton = screen.getByRole('button', { name: /loading/i });
       expect(saveButton).toBeDisabled();
@@ -325,7 +370,7 @@ describe('TradesPersonEdit', () => {
   });
 
   describe('Error handling', () => {
-    it('displays field validation errors', () => {
+    it('displays field validation errors', async () => {
       const propsWithErrors = {
         ...defaultProps,
         errors: {
@@ -335,14 +380,16 @@ describe('TradesPersonEdit', () => {
         },
       };
 
-      render(<TradesPersonEdit {...propsWithErrors} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...propsWithErrors} />);
+      });
 
       expect(screen.getByText('Bio is too long')).toBeInTheDocument();
       expect(screen.getByText('Must be a valid number')).toBeInTheDocument();
       expect(screen.getByText('Must be greater than 0')).toBeInTheDocument();
     });
 
-    it('displays multiple errors for the same field', () => {
+    it('displays multiple errors for the same field', async () => {
       const propsWithErrors = {
         ...defaultProps,
         errors: {
@@ -350,7 +397,9 @@ describe('TradesPersonEdit', () => {
         },
       };
 
-      render(<TradesPersonEdit {...propsWithErrors} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...propsWithErrors} />);
+      });
 
       expect(
         screen.getByText('Bio is required, Bio is too long')
@@ -359,8 +408,10 @@ describe('TradesPersonEdit', () => {
   });
 
   describe('Accessibility', () => {
-    it('has proper form field labeling', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('has proper form field labeling', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       expect(screen.getByLabelText('Company Name')).toBeInTheDocument();
       expect(screen.getByLabelText('Professional Bio')).toBeInTheDocument();
@@ -374,8 +425,10 @@ describe('TradesPersonEdit', () => {
       ).toBeInTheDocument();
     });
 
-    it('has proper heading hierarchy', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('has proper heading hierarchy', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       expect(
         screen.getByRole('heading', { level: 1, name: /edit your profile/i })
@@ -391,8 +444,10 @@ describe('TradesPersonEdit', () => {
       ).toBeInTheDocument();
     });
 
-    it('provides helpful field hints', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('provides helpful field hints', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       expect(
         screen.getByText(
@@ -411,7 +466,7 @@ describe('TradesPersonEdit', () => {
       ).toBeInTheDocument();
     });
 
-    it('marks error messages with proper ARIA roles', () => {
+    it('marks error messages with proper ARIA roles', async () => {
       const propsWithErrors = {
         ...defaultProps,
         errors: {
@@ -419,7 +474,9 @@ describe('TradesPersonEdit', () => {
         },
       };
 
-      render(<TradesPersonEdit {...propsWithErrors} />);
+      await act(async () => {
+        render(<TradesPersonEdit {...propsWithErrors} />);
+      });
 
       const errorMessage = screen.getByRole('alert');
       expect(errorMessage).toHaveTextContent('Bio is required');
@@ -427,8 +484,10 @@ describe('TradesPersonEdit', () => {
   });
 
   describe('Account type switching', () => {
-    it('provides role switching functionality', () => {
-      render(<TradesPersonEdit {...defaultProps} />);
+    it('provides role switching functionality', async () => {
+      await act(async () => {
+        render(<TradesPersonEdit {...defaultProps} />);
+      });
 
       const switchButton = screen.getByRole('button', {
         name: /switch to client/i,
@@ -445,44 +504,53 @@ describe('TradesPersonEdit', () => {
   });
 
   describe('Profile completion visualization', () => {
-    it('shows appropriate completion color for high completion', () => {
+    it('shows appropriate completion color for high completion', async () => {
       const highCompletionProfile = {
         ...mockProfile,
         completion_percentage: 90,
       };
 
-      render(
-        <TradesPersonEdit {...defaultProps} profile={highCompletionProfile} />
-      );
+      await act(async () => {
+        render(
+          <TradesPersonEdit {...defaultProps} profile={highCompletionProfile} />
+        );
+      });
 
       // The progress bar should have green background for high completion
       const progressBar = document.querySelector('[style*="width: 90%"]');
       expect(progressBar).toBeInTheDocument();
     });
 
-    it('shows appropriate completion color for medium completion', () => {
+    it('shows appropriate completion color for medium completion', async () => {
       const mediumCompletionProfile = {
         ...mockProfile,
         completion_percentage: 60,
       };
 
-      render(
-        <TradesPersonEdit {...defaultProps} profile={mediumCompletionProfile} />
-      );
+      await act(async () => {
+        render(
+          <TradesPersonEdit
+            {...defaultProps}
+            profile={mediumCompletionProfile}
+          />
+        );
+      });
 
       const progressBar = document.querySelector('[style*="width: 60%"]');
       expect(progressBar).toBeInTheDocument();
     });
 
-    it('shows appropriate completion color for low completion', () => {
+    it('shows appropriate completion color for low completion', async () => {
       const lowCompletionProfile = {
         ...mockProfile,
         completion_percentage: 30,
       };
 
-      render(
-        <TradesPersonEdit {...defaultProps} profile={lowCompletionProfile} />
-      );
+      await act(async () => {
+        render(
+          <TradesPersonEdit {...defaultProps} profile={lowCompletionProfile} />
+        );
+      });
 
       const progressBar = document.querySelector('[style*="width: 30%"]');
       expect(progressBar).toBeInTheDocument();

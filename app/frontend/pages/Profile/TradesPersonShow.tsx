@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import { AppLayout } from '../../components/layouts/AppLayout';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
+import { User } from 'lucide-react';
 import type { TradesPersonProfilePageProps } from '../../types/profile';
 
 const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
@@ -23,13 +24,30 @@ const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
         {/* Profile Header */}
         <div className="bg-card rounded-lg shadow-sm border p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                {profile.company_name || `${user.email}'s Profile`}
-              </h1>
-              <p className="text-lg text-muted-foreground mt-1">
-                {user.role_display}
-              </p>
+            <div className="flex items-start space-x-4">
+              {/* Profile Avatar */}
+              <div className="w-16 h-16 bg-blue-100 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-lg">
+                {profile.has_avatar && profile.avatar_thumbnail_url ? (
+                  <img
+                    src={profile.avatar_thumbnail_url}
+                    alt={`${profile.company_name || user.email} avatar`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-blue-100 flex items-center justify-center">
+                    <User className="w-8 h-8 text-blue-600" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">
+                  {profile.company_name || `${user.email}'s Profile`}
+                </h1>
+                <p className="text-lg text-muted-foreground mt-1">
+                  {user.role_display}
+                </p>
+              </div>
             </div>
 
             {can_edit && (

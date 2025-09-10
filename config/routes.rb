@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  # Portfolio images routes
+  resources :portfolio_images, except: [:new, :edit] do
+    collection do
+      post :reorder
+    end
+  end
+
+  # Avatar management routes
+  resource :avatar, only: [:create, :update, :destroy]
   # Profile routes
   resource :profile, only: [] do
     resource :tradesperson, controller: "trades_person_profiles", only: [:show, :edit, :update]

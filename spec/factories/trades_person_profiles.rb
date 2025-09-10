@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :trades_person_profile do
     association :user, factory: [:user, :tradesperson]
+    association :parish
     bio { "Experienced tradesperson with a passion for quality work" }
     company_name { Faker::Company.name }
     years_experience { Faker::Number.between(from: 1, to: 30) }

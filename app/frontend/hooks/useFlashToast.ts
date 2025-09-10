@@ -11,18 +11,21 @@ import type { PageProps } from '../types/auth';
 export const useFlashToast = (): void => {
   const { flash } = usePage<PageProps>().props;
   const toast = useToast();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const displayedFlashMessages = useRef<any>({}); // Use any since flash message types are not defined
+  const lastFlashRef = useRef<{ type: string; message: string } | null>(null);
 
   useEffect(() => {
     if (flash) {
       const { type, message } = flash;
 
-      // Generate a unique key for the flash message
-      const flashKey = `${type}-${message}`;
+      // Check if this is a different flash message than the last one we processed
+      const lastFlash = lastFlashRef.current;
+      const isDifferent =
+        !lastFlash || lastFlash.type !== type || lastFlash.message !== message;
 
-      // Check if the flash message has already been displayed
-      if (!displayedFlashMessages.current[flashKey]) {
+      if (isDifferent) {
+        // Update the last flash reference
+        lastFlashRef.current = { type, message };
+
         switch (type) {
           case 'notice':
             toast.success(message, {
@@ -51,10 +54,10 @@ export const useFlashToast = (): void => {
               duration: 5000,
             });
         }
-
-        // Mark the flash message as displayed
-        displayedFlashMessages.current[flashKey] = true;
       }
+    } else {
+      // Clear the reference when there's no flash message
+      lastFlashRef.current = null;
     }
   }, [flash, toast]);
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { AppLayout } from '../../components/layouts/AppLayout';
 import { Input } from '../../components/ui/input';
@@ -6,13 +6,15 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select } from '../../components/ui/select';
 import { Button } from '../../components/ui/button';
 import { SkillsMultiSelect } from '../../components/ui/skills-multi-select';
+import { PortfolioUpload, AvatarUpload } from '../../components';
+import { useToast } from '../../contexts/ToastContext';
 import type {
   TradesPersonProfilePageProps,
   TradesPersonProfileFormData,
 } from '../../types/profile';
 import { AVAILABILITY_STATUS_OPTIONS } from '../../types/profile';
 
-const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
+const TradesPersonEditContent: React.FC<TradesPersonProfilePageProps> = ({
   profile,
   skills,
   skills_by_category,
@@ -31,13 +33,220 @@ const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
       skill_ids: profile.skill_ids || [],
     });
 
+  // Avatar state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(profile.avatar_url);
+  const [avatarThumbnailUrl, setAvatarThumbnailUrl] = useState<string | null>(
+    profile.avatar_thumbnail_url
+  );
+
+  // Portfolio state
+  const [portfolioImages, setPortfolioImages] = useState([]);
+  const [portfolioMeta, setPortfolioMeta] = useState({
+    can_add_more: true,
+    storage_used_mb: 0,
+    storage_limit_mb: 100,
+  });
+  const [portfolioLoading, setPortfolioLoading] = useState(false);
+  const [portfolioError, setPortfolioError] = useState<string | null>(null);
+  const toast = useToast();
+
+  // Avatar handlers
+  const handleAvatarUploadSuccess = (
+    newAvatarUrl: string,
+    newThumbnailUrl: string
+  ) => {
+    setAvatarUrl(newAvatarUrl);
+    setAvatarThumbnailUrl(newThumbnailUrl);
+  };
+
+  const handleAvatarDeleteSuccess = () => {
+    setAvatarUrl(null);
+    setAvatarThumbnailUrl(null);
+  };
+
+  // Load portfolio images on component mount
+  useEffect(() => {
+    loadPortfolioImages();
+  }, []);
+
+  const loadPortfolioImages = async () => {
+    setPortfolioLoading(true);
+    setPortfolioError(null);
+
+    try {
+      const response = await fetch('/portfolio_images', {
+        headers: {
+          Accept: 'application/json',
+          'X-CSRF-Token':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to load portfolio images');
+      }
+
+      const data = await response.json();
+      setPortfolioImages(data.portfolio_images);
+      setPortfolioMeta(data.meta);
+    } catch (error) {
+      console.error('Error loading portfolio images:', error);
+      setPortfolioError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to load portfolio images'
+      );
+    } finally {
+      setPortfolioLoading(false);
+    }
+  };
+
+  const handlePortfolioUpload = async (files: FileList) => {
+    const formData = new FormData();
+    Array.from(files).forEach((file, index) => {
+      formData.append(
+        index === 0
+          ? 'portfolio_image[image]'
+          : `portfolio_images[${index}][image]`,
+        file
+      );
+    });
+
+    try {
+      const response = await fetch('/portfolio_images', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+      toast.success(result.message || 'Portfolio image uploaded successfully!');
+      await loadPortfolioImages(); // Reload images
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Upload failed';
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const handlePortfolioUpdate = async (
+    id: number,
+    updateData: {
+      title?: string;
+      description?: string;
+      image_alt_text?: string;
+      active?: boolean;
+    }
+  ) => {
+    try {
+      const response = await fetch(`/portfolio_images/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({ portfolio_image: updateData }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Update failed');
+      }
+
+      const result = await response.json();
+      toast.success(result.message || 'Portfolio image updated successfully!');
+      await loadPortfolioImages();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Update failed';
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const handlePortfolioDelete = async (id: number) => {
+    try {
+      const response = await fetch(`/portfolio_images/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Delete failed');
+      }
+
+      const result = await response.json();
+      toast.success(result.message || 'Portfolio image deleted successfully!');
+      await loadPortfolioImages();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Delete failed';
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const handlePortfolioReorder = async (imageIds: number[]) => {
+    try {
+      const response = await fetch('/portfolio_images/reorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({ image_ids: imageIds }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Reorder failed');
+      }
+
+      const result = await response.json();
+      toast.success(
+        result.message || 'Portfolio images reordered successfully!'
+      );
+      await loadPortfolioImages();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Reorder failed';
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     put('/profile/tradesperson');
   };
 
   return (
-    <AppLayout title="Edit Tradesperson Profile">
+    <>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -185,6 +394,24 @@ const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
             </div>
           </div>
 
+          {/* Profile Avatar */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">
+              Profile Avatar
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Upload a professional photo to personalize your profile and build
+              trust with potential clients.
+            </p>
+
+            <AvatarUpload
+              currentAvatarUrl={avatarUrl}
+              currentThumbnailUrl={avatarThumbnailUrl}
+              onUploadSuccess={handleAvatarUploadSuccess}
+              onDeleteSuccess={handleAvatarDeleteSuccess}
+            />
+          </div>
+
           {/* Experience & Pricing */}
           <div className="bg-card rounded-lg shadow-sm border p-6">
             <h2 className="text-xl font-semibold text-foreground mb-6">
@@ -288,6 +515,20 @@ const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
             />
           </div>
 
+          {/* Portfolio Images */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <PortfolioUpload
+              portfolioImages={portfolioImages}
+              meta={portfolioMeta}
+              onUpload={handlePortfolioUpload}
+              onUpdate={handlePortfolioUpdate}
+              onDelete={handlePortfolioDelete}
+              onReorder={handlePortfolioReorder}
+              loading={portfolioLoading}
+              error={portfolioError || undefined}
+            />
+          </div>
+
           {/* Form Actions */}
           <div className="flex justify-end space-x-4">
             <Link href="/profile/tradesperson">
@@ -301,6 +542,14 @@ const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = ({
           </div>
         </form>
       </div>
+    </>
+  );
+};
+
+const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = (props) => {
+  return (
+    <AppLayout title="Edit Tradesperson Profile">
+      <TradesPersonEditContent {...props} />
     </AppLayout>
   );
 };

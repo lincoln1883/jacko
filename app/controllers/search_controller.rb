@@ -51,8 +51,8 @@ class SearchController < ApplicationController
       end
     end
 
-    # Now build the main query
-    profiles = base_query.includes(:user, :skills)
+    # Now build the main query with avatar preloading for performance
+    profiles = base_query.includes(:user, :skills, avatar_attachment: :blob)
 
     # Text search in bio, description, and company name
     profiles = profiles.search_by_text(search_params[:query]) if search_params[:query].present?
@@ -144,7 +144,10 @@ class SearchController < ApplicationController
             category: skill.category,
             category_color: skill.category_color
           }
-        end
+        end,
+        has_avatar: profile.has_avatar?,
+        avatar_url: profile.avatar_url,
+        avatar_thumbnail_url: profile.avatar_thumbnail_url
       }
     end
   end
