@@ -33,6 +33,9 @@ export interface TradesPersonProfile {
   skills: Skill[];
   skill_ids: number[];
   skills_by_category: SkillsCategory;
+  has_avatar: boolean;
+  avatar_url: string | null;
+  avatar_thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
 }

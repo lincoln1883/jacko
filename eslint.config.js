@@ -29,6 +29,18 @@ export default [
         global: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        // Browser APIs
+        fetch: 'readonly',
+        FormData: 'readonly',
+        File: 'readonly',
+        FileList: 'readonly',
+        FileReader: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLMetaElement: 'readonly',
+        navigator: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
       },
     },
     plugins: {

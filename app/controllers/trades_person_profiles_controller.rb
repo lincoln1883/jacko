@@ -68,12 +68,22 @@ class TradesPersonProfilesController < ApplicationController
     @profile = current_user.trades_person_profile
 
     unless @profile
-      @profile = current_user.create_trades_person_profile!
+      # Ensure we have a default parish for profile creation in tests and dev
+      default_parish = Parish.first || Parish.create!(name: "Kingston", code: "KIN", active: true)
+      @profile = current_user.create_trades_person_profile!(parish: default_parish)
     end
+
+    # Preload avatar for better performance
+    @profile = TradesPersonProfile.includes(avatar_attachment: :blob)
+                                  .find(@profile.id) if @profile
   end
 
   def set_public_profile
-    @public_profile = TradesPersonProfile.active.completed.find(params[:id])
+    @public_profile = TradesPersonProfile.active.completed
+                                         .includes(:parish, :skills,
+                                                  portfolio_images: {image_attachment: :blob},
+                                                  avatar_attachment: :blob)
+                                         .find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to search_path, alert: "Profile not found or not available for public viewing."
   end
@@ -152,6 +162,9 @@ class TradesPersonProfilesController < ApplicationController
       skills: serialize_profile_skills(profile),
       skill_ids: profile.skill_ids,
       skills_by_category: profile.skills_by_category.transform_values { |skills| skills.map { |s| serialize_skill(s) } },
+      has_avatar: profile.has_avatar?,
+      avatar_url: profile.avatar_url,
+      avatar_thumbnail_url: profile.avatar_thumbnail_url,
       created_at: profile.created_at,
       updated_at: profile.updated_at
     }
@@ -209,6 +222,13 @@ class TradesPersonProfilesController < ApplicationController
       skills: serialize_profile_skills(profile),
       skills_by_category: profile.skills_by_category.transform_values { |skills| skills.map { |s| serialize_skill(s) } },
       completion_percentage: profile.completion_percentage,
+      portfolio_images: serialize_portfolio_images(profile),
+      parish: serialize_parish(profile.parish),
+      location: serialize_location_info(profile),
+      service_area: serialize_service_area(profile),
+      has_avatar: profile.has_avatar?,
+      avatar_url: profile.avatar_url,
+      avatar_thumbnail_url: profile.avatar_thumbnail_url,
       created_at: profile.created_at,
       updated_at: profile.updated_at
     }
@@ -222,5 +242,78 @@ class TradesPersonProfilesController < ApplicationController
       role_display: user.role_display,
       verified: user.verified
     }
+  end
+
+  def serialize_portfolio_images(profile)
+    profile.active_portfolio_images.map do |image|
+      {
+        id: image.id,
+        title: image.title,
+        description: image.description,
+        alt_text: image.image_alt_text,
+        display_order: image.display_order,
+        image_url: image.image.attached? ? url_for(image.image) : nil,
+        thumbnail_url: image.image.attached? ? url_for(image.image.variant(resize_to_limit: [300, 200])) : nil,
+        created_at: image.created_at
+      }
+    end
+  end
+
+  def serialize_parish(parish)
+    return nil unless parish
+
+    {
+      id: parish.id,
+      name: parish.name,
+      code: parish.code,
+      main_city: parish.main_city,
+      description: parish.description
+    }
+  end
+
+  def serialize_location_info(profile)
+    {
+      street_address: profile.street_address,
+      city_town: profile.city_town,
+      postal_code: profile.postal_code,
+      parish_name: profile.parish&.name,
+      display_address: build_display_address(profile)
+    }
+  end
+
+  def serialize_service_area(profile)
+    {
+      service_radius_km: profile.service_radius_km,
+      service_area_notes: profile.service_area_notes,
+      additional_parishes: profile.additional_parishes || [],
+      coverage_description: build_coverage_description(profile)
+    }
+  end
+
+  def build_display_address(profile)
+    parts = []
+    parts << profile.street_address if profile.street_address.present?
+    parts << profile.city_town if profile.city_town.present?
+    parts << profile.parish&.name if profile.parish
+    parts << profile.postal_code if profile.postal_code.present?
+
+    parts.any? ? parts.join(", ") : nil
+  end
+
+  def build_coverage_description(profile)
+    return nil unless profile.service_radius_km.present? || profile.additional_parishes&.any?
+
+    parts = []
+
+    if profile.service_radius_km.present?
+      parts << "#{profile.service_radius_km}km radius from #{profile.parish&.name || 'base location'}"
+    end
+
+    if profile.additional_parishes&.any?
+      additional_names = Parish.where(code: profile.additional_parishes).pluck(:name)
+      parts << "Also serves: #{additional_names.join(', ')}" if additional_names.any?
+    end
+
+    parts.join(" | ")
   end
 end

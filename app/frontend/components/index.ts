@@ -9,6 +9,10 @@ export { default as ToastComponent } from './ui/toast';
 export { default as ToastContainer } from './ui/toast-container';
 export type { Toast, ToastType } from './ui/toast';
 
+// Portfolio Components
+export { default as PortfolioUpload } from './ui/portfolio-upload';
+export { AvatarUpload } from './AvatarUpload';
+
 // Layout Components
 export { AuthLayout } from './layouts/AuthLayout';
 export { AppLayout } from './layouts/AppLayout';

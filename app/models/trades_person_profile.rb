@@ -2,10 +2,17 @@
 
 class TradesPersonProfile < ApplicationRecord
   belongs_to :user
+  belongs_to :parish
 
   # Skills associations
   has_many :trades_person_skills, dependent: :destroy
   has_many :skills, through: :trades_person_skills
+
+  # Portfolio associations
+  has_many :portfolio_images, dependent: :destroy
+
+  # Avatar attachment
+  has_one_attached :avatar
 
   # Availability status enum
   enum :availability_status, {
@@ -42,6 +49,9 @@ class TradesPersonProfile < ApplicationRecord
   }
   validates :availability_status, presence: true
 
+  # Avatar validations
+  validate :avatar_validation
+
   # Scopes
   scope :active, -> { where(active: true) }
   scope :available, -> { where(availability_status: :available) }
@@ -61,7 +71,7 @@ class TradesPersonProfile < ApplicationRecord
   end
 
   def completion_percentage
-    total_fields = 7
+    total_fields = 9
     completed_fields = 0
 
     completed_fields += 1 if bio.present?
@@ -71,6 +81,8 @@ class TradesPersonProfile < ApplicationRecord
     completed_fields += 1 if phone.present?
     completed_fields += 1 if company_name.present?
     completed_fields += 1 if skills.any?
+    completed_fields += 1 if portfolio_images.active.any?
+    completed_fields += 1 if avatar.attached?
 
     (completed_fields.to_f / total_fields * 100).round
   end
@@ -151,5 +163,86 @@ class TradesPersonProfile < ApplicationRecord
 
   def remove_skill(skill)
     skills.delete(skill)
+  end
+
+  # Portfolio helper methods
+  def active_portfolio_images
+    portfolio_images.active.ordered
+  end
+
+  def portfolio_image_count
+    portfolio_images.active.count
+  end
+
+  def has_portfolio_images?
+    portfolio_images.active.any?
+  end
+
+  def featured_portfolio_image
+    active_portfolio_images.first
+  end
+
+  def portfolio_images_for_gallery
+    active_portfolio_images.limit(12)
+  end
+
+  # Maximum portfolio images allowed
+  def max_portfolio_images
+    20
+  end
+
+  def can_add_portfolio_image?
+    portfolio_image_count < max_portfolio_images
+  end
+
+  def portfolio_storage_used_mb
+    return 0 unless portfolio_images.any?
+
+    portfolio_images.sum { |img| img.file_size_mb }
+  end
+
+  # Maximum storage limit in MB
+  def max_portfolio_storage_mb
+    100 # 100MB limit per profile
+  end
+
+  def portfolio_storage_available?
+    portfolio_storage_used_mb < max_portfolio_storage_mb
+  end
+
+  # Avatar helper methods
+  def has_avatar?
+    avatar.attached?
+  end
+
+  def avatar_url
+    return nil unless avatar.attached?
+    Rails.application.routes.url_helpers.rails_blob_url(avatar, only_path: true)
+  end
+
+  def avatar_thumbnail_url
+    return nil unless avatar.attached?
+    Rails.application.routes.url_helpers.rails_representation_url(
+      avatar.variant(resize_to_limit: [150, 150]).processed,
+      only_path: true
+    )
+  rescue StandardError
+    avatar_url
+  end
+
+  private
+
+  def avatar_validation
+    return unless avatar.attached?
+
+    # Check file size (max 5MB)
+    if avatar.blob.byte_size > 5.megabytes
+      errors.add(:avatar, "must be less than 5MB")
+    end
+
+    # Check file type
+    unless avatar.blob.content_type.in?(["image/jpeg", "image/png", "image/webp"])
+      errors.add(:avatar, "must be a JPEG, PNG, or WebP image")
+    end
   end
 end

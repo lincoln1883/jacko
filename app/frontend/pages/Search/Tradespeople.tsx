@@ -48,6 +48,9 @@ interface TradesPersonProfile {
   completion_percentage: number;
   skill_names: string[];
   primary_skills: Skill[];
+  has_avatar: boolean;
+  avatar_url: string | null;
+  avatar_thumbnail_url: string | null;
 }
 
 interface SkillsByCategory {
@@ -113,7 +116,6 @@ export default function SearchTradespeople({
   const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = (page = 1) => {
-    // eslint-disable-next-line no-undef
     const searchParams = new URLSearchParams();
 
     if (searchQuery.trim()) {
@@ -179,8 +181,16 @@ export default function SearchTradespeople({
       {/* Profile Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <UserIcon className="w-6 h-6 text-blue-600" />
+          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden">
+            {profile.has_avatar && profile.avatar_thumbnail_url ? (
+              <img
+                src={profile.avatar_thumbnail_url}
+                alt={`${profile.company_name || 'Tradesperson'} avatar`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <UserIcon className="w-6 h-6 text-blue-600" />
+            )}
           </div>
           <div>
             <h3 className="font-semibold text-lg text-gray-900">

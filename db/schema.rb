@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_03_120311) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_09_102633) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "client_profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -27,6 +55,39 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_120311) do
     t.index ["active"], name: "index_client_profiles_on_active"
     t.index ["preferred_contact_method"], name: "index_client_profiles_on_preferred_contact_method"
     t.index ["user_id"], name: "index_client_profiles_on_user_id", unique: true
+  end
+
+  create_table "parishes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", limit: 3, null: false
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.text "description"
+    t.boolean "active", default: true, null: false
+    t.integer "population"
+    t.string "main_city"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_parishes_on_active"
+    t.index ["code"], name: "index_parishes_on_code", unique: true
+    t.index ["latitude", "longitude"], name: "index_parishes_on_latitude_and_longitude"
+    t.index ["name"], name: "index_parishes_on_name", unique: true
+  end
+
+  create_table "portfolio_images", force: :cascade do |t|
+    t.bigint "trades_person_profile_id", null: false
+    t.string "title", limit: 255
+    t.text "description"
+    t.integer "display_order", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.string "image_alt_text", limit: 255
+    t.jsonb "metadata", default: "{}", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["metadata"], name: "index_portfolio_images_on_metadata", using: :gin
+    t.index ["trades_person_profile_id", "active"], name: "index_portfolio_images_on_trades_person_profile_id_and_active"
+    t.index ["trades_person_profile_id", "display_order"], name: "idx_on_trades_person_profile_id_display_order_e7c8b6a1c4"
+    t.index ["trades_person_profile_id"], name: "index_portfolio_images_on_trades_person_profile_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -64,8 +125,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_120311) do
     t.datetime "profile_completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "parish_id", null: false
+    t.string "street_address"
+    t.string "city_town"
+    t.string "postal_code"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.integer "service_radius_km"
+    t.text "service_area_notes"
+    t.string "additional_parishes", default: [], array: true
     t.index ["active"], name: "index_trades_person_profiles_on_active"
     t.index ["availability_status"], name: "index_trades_person_profiles_on_availability_status"
+    t.index ["latitude", "longitude"], name: "index_trades_person_profiles_on_latitude_and_longitude"
+    t.index ["parish_id"], name: "index_trades_person_profiles_on_parish_id"
     t.index ["user_id"], name: "index_trades_person_profiles_on_user_id", unique: true
     t.index ["years_experience"], name: "index_trades_person_profiles_on_years_experience"
   end
@@ -91,8 +163,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_120311) do
     t.index ["role"], name: "index_users_on_role"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "client_profiles", "users"
+  add_foreign_key "portfolio_images", "trades_person_profiles"
   add_foreign_key "sessions", "users"
+  add_foreign_key "trades_person_profiles", "parishes"
   add_foreign_key "trades_person_profiles", "users"
   add_foreign_key "trades_person_skills", "skills"
   add_foreign_key "trades_person_skills", "trades_person_profiles"

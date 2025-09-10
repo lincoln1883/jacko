@@ -49,7 +49,6 @@ export default function SearchIndex({
   const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = () => {
-    // eslint-disable-next-line no-undef
     const searchParams = new URLSearchParams();
 
     if (searchQuery.trim()) {

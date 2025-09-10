@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import SignIn from '../../../pages/Auth/SignIn';
