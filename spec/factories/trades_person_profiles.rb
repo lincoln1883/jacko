@@ -14,6 +14,7 @@ FactoryBot.define do
     service_area_notes { Faker::Lorem.sentence }
     additional_parishes { ["St. Catherine", "Kingston"] }
     availability_status { :available }
+    experience_level { :intermediate }
     description { Faker::Lorem.paragraph(sentence_count: 4) }
     active { true }
 

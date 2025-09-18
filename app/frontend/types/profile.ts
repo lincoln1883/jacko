@@ -31,6 +31,7 @@ export interface TradesPersonProfile {
   phone: string | null;
   website: string | null;
   availability_status: 'available' | 'busy' | 'unavailable' | 'booked';
+  experience_level: 'graduate' | 'intermediate' | 'expert' | 'master' | null;
   description: string | null;
   active: boolean;
   completion_percentage: number;
@@ -108,6 +109,7 @@ export interface TradesPersonProfileFormData {
   phone: string;
   website: string;
   availability_status: 'available' | 'busy' | 'unavailable' | 'booked';
+  experience_level: 'graduate' | 'intermediate' | 'expert' | 'master' | null;
   description: string;
   skill_ids: number[];
   parish_id: number | string;
@@ -170,4 +172,11 @@ export const AVAILABILITY_STATUS_OPTIONS: SelectOption[] = [
   { label: 'Busy but accepting inquiries', value: 'busy' },
   { label: 'Currently unavailable', value: 'unavailable' },
   { label: 'Fully booked', value: 'booked' },
+];
+
+export const EXPERIENCE_LEVEL_OPTIONS: SelectOption[] = [
+  { label: 'Graduate (0-2 years experience)', value: 'graduate' },
+  { label: 'Intermediate (3-7 years experience)', value: 'intermediate' },
+  { label: 'Expert (8-15 years experience)', value: 'expert' },
+  { label: 'Master (15+ years experience)', value: 'master' },
 ];

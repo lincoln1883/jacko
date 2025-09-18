@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_142450) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -130,6 +130,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_142450) do
     t.integer "service_radius_km"
     t.text "service_area_notes"
     t.json "additional_parishes"
+    t.integer "experience_level"
     t.index ["active"], name: "index_trades_person_profiles_on_active"
     t.index ["availability_status"], name: "index_trades_person_profiles_on_availability_status"
     t.index ["parish_id"], name: "index_trades_person_profiles_on_parish_id"

@@ -130,6 +130,15 @@ RSpec.describe TradesPersonProfile, type: :model do
         "booked" => 3
       })
     end
+
+    it "defines experience_level enum" do
+      expect(TradesPersonProfile.experience_levels).to eq({
+        "graduate" => 0,
+        "intermediate" => 1,
+        "expert" => 2,
+        "master" => 3
+      })
+    end
   end
 
   describe "scopes" do
@@ -185,12 +194,14 @@ RSpec.describe TradesPersonProfile, type: :model do
         years_experience: 5,
         hourly_rate: 50.00,
         phone: "876-123-4567",
-        company_name: nil
+        company_name: nil,
+        experience_level: :intermediate
       )
       profile.skills << skill
 
-      # 6 out of 9 fields completed = 67%
-      expect(profile.completion_percentage).to eq(75)
+      # 7 out of 10 fields completed = 70% (before location fields)
+      # With location fields: 10 out of 13 fields completed = 76.92 -> 77%
+      expect(profile.completion_percentage).to eq(77)
     end
   end
 
@@ -206,6 +217,7 @@ RSpec.describe TradesPersonProfile, type: :model do
 
     it "does not set profile_completed_at when profile is incomplete" do
       profile = create(:trades_person_profile, :incomplete)
+      profile.update!(experience_level: :intermediate) # Ensure experience_level is set for incomplete profile
 
       expect { profile.mark_as_completed! }.not_to change { profile.profile_completed_at }
     end
