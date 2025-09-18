@@ -80,12 +80,12 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
   - **Branch**: `feature/location-profiles` (merged)
   - **Details**: Parish model, location fields added to TradesPersonProfile, migrations, API updates, frontend forms and display logic, multi-select for additional parishes.
 
-- [ ] **Task 2.5**: Create experience level indicators
-  - Acceptance Criteria: Graduate, Intermediate, Expert, Master levels
+- [x] **Task 2.5**: Create experience level indicators
+  - Acceptance Criteria: Graduate, Intermediate, Expert, Master levels ✅
   - Estimated effort: 1 day
   - Dependencies: Task 2.1
-  - **Status**: 🗓 **PLANNED** - Experience level system aligned with TVET
-  - **Branch**: `feature/experience-levels`
+  - **Status**: ✅ **COMPLETED** - Experience level enum defined in model, added to profile form and display, updated completion logic, and covered by comprehensive tests.
+  - **Branch**: `feature/experience-levels` (merged)
 
 - [ ] **Task 2.6**: Add availability and pricing fields
   - Acceptance Criteria: Tradespeople can set rates and availability
@@ -138,10 +138,12 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
   - Estimated effort: 2 days
   - Dependencies: Task 2.6, Task 3.1
 
-- [ ] **Task 3.4**: Add experience level filters
-  - Acceptance Criteria: Filter by graduate-friendly or experienced-only
+- [x] **Task 3.4**: Add experience level filters
+  - Acceptance Criteria: Filter by graduate-friendly or experienced-only ✅
   - Estimated effort: 1 day
   - Dependencies: Task 2.5, Task 3.1
+  - **Status**: ✅ **COMPLETED** - Experience level filtering integrated into search controller and frontend search page.
+  - **Branch**: `feature/experience-levels` (merged into `development`)
 
 - [ ] **Task 3.5**: Create search results display with pagination
   - Acceptance Criteria: Clean, mobile-friendly search results display
