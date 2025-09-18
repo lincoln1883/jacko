@@ -1,7 +1,7 @@
 # 🇯🇲 Jamaica Skills & Trades Platform - Current Status
 
 **Last Updated**: September 10, 2025  
-**Current Branch**: `feature/frontend-fixes-linting-tests`  
+**Current Branch**: `feature/experience-levels`  
 **Overall Progress**: **60%** (13/23 major tasks completed)
 
 ---
@@ -58,7 +58,7 @@ The Jamaica Skills & Trades Platform is well underway with a solid foundation. T
 ### ✅ COMPLETED FEATURES (New)
 
 #### 👤 User Profiles System (75% Complete - 6/8)
-**Active Branch**: `feature/frontend-fixes-linting-tests`
+**Active Branch**: `feature/experience-levels`
 - [x] **User Roles** - Role system with CanCanCan authorization completed
 - [x] **Tradesperson Profiles (Basic)** - Model, validations, controller (show/edit/update), Inertia pages (edit/show)
 - [x] **Skills Taxonomy** - 40+ Jamaica trade categories with multi-select UI and comprehensive testing
@@ -243,8 +243,8 @@ The Jamaica Skills & Trades Platform is well underway with a solid foundation. T
 - **Setup**: `./bin/dev_setup` (complete environment setup)
 
 ### Repository
-- **Current Branch**: `feature/frontend-fixes-linting-tests`  
-- **Next Feature**: `feature/experience-levels` (or next planned task)
+- **Current Branch**: `feature/experience-levels`  
+- **Next Feature**: `feature/availability-pricing` (or next planned task)
 - **GitHub Issues**: Use templates in `.github/ISSUE_TEMPLATE/`
 - **Pull Requests**: Use template in `.github/pull_request_template.md`
 
