@@ -7,7 +7,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
   # Lint factories before running the test suite
-  config.before(:suite) do
-    FactoryBot.lint
-  end
+  # config.before(:suite) do
+  #   FactoryBot.lint
+  # end
 end

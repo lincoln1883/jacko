@@ -28,6 +28,7 @@ class TradesPersonProfilesController < ApplicationController
       user: serialize_user(current_user),
       skills: serialize_skills,
       skills_by_category: skills_by_category_hash,
+      parishes: serialize_parishes(Parish.all), # Pass all parishes
       errors: {}
     }
   end
@@ -47,6 +48,7 @@ class TradesPersonProfilesController < ApplicationController
         user: serialize_user(current_user),
         skills: serialize_skills,
         skills_by_category: skills_by_category_hash,
+        parishes: serialize_parishes(Parish.all), # Re-pass parishes on error
         errors: @profile.errors.as_json
       }, status: :unprocessable_entity
     end
@@ -74,7 +76,7 @@ class TradesPersonProfilesController < ApplicationController
     end
 
     # Preload avatar for better performance
-    @profile = TradesPersonProfile.includes(avatar_attachment: :blob)
+    @profile = TradesPersonProfile.includes(avatar_attachment: :blob, parish: [])
                                   .find(@profile.id) if @profile
   end
 
@@ -135,39 +137,35 @@ class TradesPersonProfilesController < ApplicationController
       :website,
       :availability_status,
       :description,
+      :parish_id,
+      :street_address,
+      :city_town,
+      :postal_code,
+      :service_radius_km,
+      :service_area_notes,
+      additional_parishes: [],
       skill_ids: []
     )
   end
 
   def serialize_profile(profile)
-    return {} unless profile
-
-    {
-      id: profile.id,
-      bio: profile.bio,
-      company_name: profile.company_name,
-      years_experience: profile.years_experience,
-      hourly_rate: profile.hourly_rate,
-      phone: profile.phone,
-      website: profile.website,
-      availability_status: profile.availability_status,
-      description: profile.description,
-      active: profile.active,
-      completion_percentage: profile.completion_percentage,
-      completed: profile.completed?,
-      display_hourly_rate: profile.display_hourly_rate,
-      display_experience: profile.display_experience,
-      display_availability: profile.display_availability,
-      availability_color: profile.availability_color,
-      skills: serialize_profile_skills(profile),
-      skill_ids: profile.skill_ids,
-      skills_by_category: profile.skills_by_category.transform_values { |skills| skills.map { |s| serialize_skill(s) } },
-      has_avatar: profile.has_avatar?,
-      avatar_url: profile.avatar_url,
-      avatar_thumbnail_url: profile.avatar_thumbnail_url,
-      created_at: profile.created_at,
-      updated_at: profile.updated_at
-    }
+    profile.as_json(methods: [
+      :completion_percentage,
+      :completed?,
+      :display_hourly_rate,
+      :display_experience,
+      :display_availability,
+      :availability_color,
+      :skill_ids,
+      :skills_by_category,
+      :has_avatar?,
+      :avatar_url,
+      :avatar_thumbnail_url
+    ],
+    include: {
+      parish: {only: [:id, :name]},
+      skills: {only: [:id, :name, :category, :description, :category_color]}
+    })
   end
 
   def serialize_user(user)
@@ -181,7 +179,7 @@ class TradesPersonProfilesController < ApplicationController
   end
 
   def serialize_skills
-    Skill.active.order(:category, :name).map { |skill| serialize_skill(skill) }
+    Skill.all.as_json(only: [:id, :name, :category, :description, :category_color])
   end
 
   def serialize_skill(skill)
@@ -199,49 +197,32 @@ class TradesPersonProfilesController < ApplicationController
   end
 
   def skills_by_category_hash
-    Skill.active.group_by(&:category).transform_values do |skills|
-      skills.map { |skill| serialize_skill(skill) }
+    Skill.all.group_by(&:category).transform_values do |skills|
+      skills.as_json(only: [:id, :name, :category, :description, :category_color])
     end
   end
 
   def serialize_public_profile(profile)
-    {
-      id: profile.id,
-      bio: profile.bio,
-      company_name: profile.company_name,
-      years_experience: profile.years_experience,
-      hourly_rate: profile.hourly_rate,
-      phone: profile.phone,
-      website: profile.website,
-      availability_status: profile.availability_status,
-      description: profile.description,
-      display_hourly_rate: profile.display_hourly_rate,
-      display_experience: profile.display_experience,
-      display_availability: profile.display_availability,
-      availability_color: profile.availability_color,
-      skills: serialize_profile_skills(profile),
-      skills_by_category: profile.skills_by_category.transform_values { |skills| skills.map { |s| serialize_skill(s) } },
-      completion_percentage: profile.completion_percentage,
-      portfolio_images: serialize_portfolio_images(profile),
-      parish: serialize_parish(profile.parish),
-      location: serialize_location_info(profile),
-      service_area: serialize_service_area(profile),
-      has_avatar: profile.has_avatar?,
-      avatar_url: profile.avatar_url,
-      avatar_thumbnail_url: profile.avatar_thumbnail_url,
-      created_at: profile.created_at,
-      updated_at: profile.updated_at
-    }
+    profile.as_json(methods: [
+      :display_hourly_rate,
+      :display_experience,
+      :display_availability,
+      :availability_color,
+      :skill_ids,
+      :skills_by_category,
+      :has_avatar?,
+      :avatar_url,
+      :avatar_thumbnail_url
+    ],
+    include: {
+      parish: {only: [:id, :name]},
+      skills: {only: [:id, :name, :category, :description, :category_color]},
+      portfolio_images: {methods: [:image_url, :thumbnail_url, :file_size_mb, :image_alt_text], only: [:id, :title, :description, :active, :position]}
+    })
   end
 
   def serialize_profile_owner(user)
-    {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      role_display: user.role_display,
-      verified: user.verified
-    }
+    user.as_json(only: [:id, :email, :role, :verified])
   end
 
   def serialize_portfolio_images(profile)
@@ -315,5 +296,9 @@ class TradesPersonProfilesController < ApplicationController
     end
 
     parts.join(" | ")
+  end
+
+  def serialize_parishes(parishes)
+    parishes.as_json(only: [:id, :name, :svg_path, :color])
   end
 end

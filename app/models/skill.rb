@@ -14,7 +14,7 @@ class Skill < ApplicationRecord
   # Scopes
   scope :active, -> { where(active: true) }
   scope :by_category, ->(category) { where(category: category) }
-  scope :search, ->(query) { where("name ILIKE ? OR description ILIKE ?", "%#{query}%", "%#{query}%") }
+  scope :search, ->(query) { where("name LIKE ? OR description LIKE ?", "%#{query}%", "%#{query}%") }
 
   # Category constants based on Jamaica trade sectors
   CATEGORIES = [

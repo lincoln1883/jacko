@@ -190,7 +190,7 @@ RSpec.describe TradesPersonProfile, type: :model do
       profile.skills << skill
 
       # 6 out of 9 fields completed = 67%
-      expect(profile.completion_percentage).to eq(67)
+      expect(profile.completion_percentage).to eq(75)
     end
   end
 

@@ -10,6 +10,9 @@ FactoryBot.define do
     hourly_rate { Faker::Number.decimal(l_digits: 2, r_digits: 2) }
     phone { "+1-876-#{Faker::Number.number(digits: 3)}-#{Faker::Number.number(digits: 4)}" }
     website { Faker::Internet.url }
+    service_radius_km { Faker::Number.between(from: 1, to: 500) }
+    service_area_notes { Faker::Lorem.sentence }
+    additional_parishes { ["St. Catherine", "Kingston"] }
     availability_status { :available }
     description { Faker::Lorem.paragraph(sentence_count: 4) }
     active { true }

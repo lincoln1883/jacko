@@ -130,12 +130,26 @@ vi.mock('../../../components', () => ({
   AvatarUpload: () => (
     <div data-testid="avatar-upload">Avatar Upload Component</div>
   ),
+  AdditionalParishesMultiSelect: ({
+    label = 'Additional Service Parishes',
+    selectedParishIds,
+    hint = 'Select other parishes you are willing to serve (optional)',
+  }: any) => (
+    <div data-testid="additional-parishes-multi-select">
+      <label>{label}</label>
+      <div data-selected-parish-ids={selectedParishIds?.join(',')}>
+        Additional Parishes Multi Select Component
+      </div>
+      {hint && <p data-testid="hint">{hint}</p>}
+    </div>
+  ),
 }));
 
 vi.mock('../../../contexts/ToastContext', () => ({
   useToast: () => ({
     success: vi.fn(),
     error: vi.fn(),
+    addToast: vi.fn(), // Added addToast mock
   }),
 }));
 
@@ -181,6 +195,24 @@ describe('TradesPersonEdit', () => {
     avatar_thumbnail_url: null,
     created_at: '2023-01-01T00:00:00.000Z',
     updated_at: '2023-01-01T00:00:00.000Z',
+    parish_id: 1,
+    parish: {
+      id: 1,
+      name: 'Kingston',
+      svg_path: null,
+      color: null,
+      created_at: '2023-01-01T00:00:00.000Z',
+      updated_at: '2023-01-01T00:00:00.000Z',
+    },
+    street_address: '123 Main St',
+    city_town: 'Kingston',
+    postal_code: 'KGN10',
+    latitude: 1.23,
+    longitude: 4.56,
+    service_radius_km: 50,
+    service_area_notes: 'Willing to travel to surrounding areas',
+    additional_parishes: ['St. Andrew', 'St. Catherine'],
+    portfolio_images: [], // Added portfolio_images to mockProfile
   };
 
   const mockUser = {
@@ -191,12 +223,40 @@ describe('TradesPersonEdit', () => {
     verified: true,
   };
 
+  const mockParishes = [
+    {
+      id: 1,
+      name: 'Kingston',
+      svg_path: null,
+      color: null,
+      created_at: '2023-01-01T00:00:00.000Z',
+      updated_at: '2023-01-01T00:00:00.000Z',
+    },
+    {
+      id: 2,
+      name: 'St. Andrew',
+      svg_path: null,
+      color: null,
+      created_at: '2023-01-01T00:00:00.000Z',
+      updated_at: '2023-01-01T00:00:00.000Z',
+    },
+    {
+      id: 3,
+      name: 'St. Catherine',
+      svg_path: null,
+      color: null,
+      created_at: '2023-01-01T00:00:00.000Z',
+      updated_at: '2023-01-01T00:00:00.000Z',
+    },
+  ];
+
   const defaultProps = {
     profile: mockProfile,
     user: mockUser,
     can_edit: true,
     skills: [],
     skills_by_category: {},
+    parishes: mockParishes, // Add parishes here
     errors: {},
   };
 
@@ -214,6 +274,14 @@ describe('TradesPersonEdit', () => {
         website: mockProfile.website,
         availability_status: mockProfile.availability_status,
         description: mockProfile.description,
+        skill_ids: mockProfile.skill_ids,
+        parish_id: mockProfile.parish?.id,
+        street_address: mockProfile.street_address,
+        city_town: mockProfile.city_town,
+        postal_code: mockProfile.postal_code,
+        service_radius_km: mockProfile.service_radius_km,
+        service_area_notes: mockProfile.service_area_notes,
+        additional_parishes: mockProfile.additional_parishes || [], // Initialize as empty array
       },
       setData: mockSetData,
       put: mockPut,
@@ -247,6 +315,18 @@ describe('TradesPersonEdit', () => {
       expect(screen.getByTestId('input-phone')).toBeInTheDocument();
       expect(screen.getByTestId('input-website')).toBeInTheDocument();
       expect(screen.getByTestId('textarea-description')).toBeInTheDocument();
+      expect(screen.getByTestId('select-parish_id')).toBeInTheDocument(); // New assertion
+      expect(screen.getByTestId('input-street_address')).toBeInTheDocument(); // New assertion
+      expect(screen.getByTestId('input-city_town')).toBeInTheDocument(); // New assertion
+      expect(screen.getByTestId('input-postal_code')).toBeInTheDocument(); // New assertion
+      expect(screen.getByTestId('input-service_radius_km')).toBeInTheDocument(); // New assertion
+      expect(
+        screen.getByTestId('textarea-service_area_notes')
+      ).toBeInTheDocument(); // New assertion
+      expect(
+        screen.getByTestId('additional-parishes-multi-select')
+      ).toBeInTheDocument(); // New assertion
+      expect(screen.getByTestId('portfolio-upload')).toBeInTheDocument(); // New assertion
     });
 
     it('displays profile completion indicator', async () => {
@@ -338,7 +418,7 @@ describe('TradesPersonEdit', () => {
   describe('Loading states', () => {
     it('shows loading state when form is processing', async () => {
       mockUseForm.mockReturnValue({
-        data: {},
+        data: { additional_parishes: [] }, // Ensure additional_parishes is an array
         setData: mockSetData,
         put: mockPut,
         processing: true,
@@ -354,7 +434,7 @@ describe('TradesPersonEdit', () => {
 
     it('disables form fields during processing', async () => {
       mockUseForm.mockReturnValue({
-        data: {},
+        data: { additional_parishes: [] }, // Ensure additional_parishes is an array
         setData: mockSetData,
         put: mockPut,
         processing: true,
@@ -377,6 +457,8 @@ describe('TradesPersonEdit', () => {
           bio: ['Bio is too long'],
           years_experience: ['Must be a valid number'],
           hourly_rate: ['Must be greater than 0'],
+          parish_id: ['Parish cannot be blank'],
+          service_radius_km: ['Must be a valid number'],
         },
       };
 
@@ -385,8 +467,9 @@ describe('TradesPersonEdit', () => {
       });
 
       expect(screen.getByText('Bio is too long')).toBeInTheDocument();
-      expect(screen.getByText('Must be a valid number')).toBeInTheDocument();
+      expect(screen.getAllByText('Must be a valid number').length).toBe(2);
       expect(screen.getByText('Must be greater than 0')).toBeInTheDocument();
+      expect(screen.getByText('Parish cannot be blank')).toBeInTheDocument();
     });
 
     it('displays multiple errors for the same field', async () => {
@@ -423,6 +506,15 @@ describe('TradesPersonEdit', () => {
       expect(
         screen.getByLabelText('Describe Your Services')
       ).toBeInTheDocument();
+      expect(screen.getByLabelText('Parish')).toBeInTheDocument(); // New assertion
+      expect(screen.getByLabelText('Street Address')).toBeInTheDocument(); // New assertion
+      expect(screen.getByLabelText('City/Town')).toBeInTheDocument(); // New assertion
+      expect(screen.getByLabelText('Postal Code')).toBeInTheDocument(); // New assertion
+      expect(screen.getByLabelText('Service Radius (km)')).toBeInTheDocument(); // New assertion
+      expect(screen.getByLabelText('Service Area Notes')).toBeInTheDocument(); // New assertion
+      expect(
+        screen.getByText(/Additional Service Parishes/i) // Revert to getByText for the label
+      ).toBeInTheDocument(); // New assertion
     });
 
     it('has proper heading hierarchy', async () => {
@@ -442,6 +534,9 @@ describe('TradesPersonEdit', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: /experience & pricing/i })
       ).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 2, name: /location information/i })
+      ).toBeInTheDocument(); // New assertion
     });
 
     it('provides helpful field hints', async () => {
@@ -464,6 +559,23 @@ describe('TradesPersonEdit', () => {
           'Detailed description of your services to help clients understand what you offer (max 2000 characters)'
         )
       ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Distance from your location you are willing to travel'
+        )
+      ).toBeInTheDocument(); // New assertion
+      expect(
+        screen.getByText(
+          'Describe any specific areas you serve or travel limitations.'
+        )
+      ).toBeInTheDocument(); // New assertion
+      expect(
+        screen
+          .getByTestId('additional-parishes-multi-select')
+          .querySelector('[data-testid="hint"]')
+      ).toHaveTextContent(
+        /Select other parishes you are willing to serve \(optional\)/i
+      ); // New assertion
     });
 
     it('marks error messages with proper ARIA roles', async () => {
@@ -471,6 +583,7 @@ describe('TradesPersonEdit', () => {
         ...defaultProps,
         errors: {
           bio: ['Bio is required'],
+          parish_id: ['Parish cannot be blank'],
         },
       };
 
@@ -478,8 +591,10 @@ describe('TradesPersonEdit', () => {
         render(<TradesPersonEdit {...propsWithErrors} />);
       });
 
-      const errorMessage = screen.getByRole('alert');
-      expect(errorMessage).toHaveTextContent('Bio is required');
+      const errorMessages = screen.getAllByRole('alert');
+      expect(errorMessages).toHaveLength(2);
+      expect(errorMessages[0]).toHaveTextContent('Bio is required');
+      expect(errorMessages[1]).toHaveTextContent('Parish cannot be blank');
     });
   });
 

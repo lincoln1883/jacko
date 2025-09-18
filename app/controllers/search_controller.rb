@@ -10,7 +10,8 @@ class SearchController < ApplicationController
     render inertia: "Search/Index", props: {
       skills_by_category: skills_by_category,
       availability_options: availability_options,
-      experience_options: experience_options
+      experience_options: experience_options,
+      parish_options: parish_options # New: Pass parish options
     }
   end
 
@@ -24,6 +25,7 @@ class SearchController < ApplicationController
       skills_by_category: skills_by_category,
       availability_options: availability_options,
       experience_options: experience_options,
+      parish_options: parish_options, # New: Pass parish options
       pagination: pagination_meta(@paginated_result)
     }
   end
@@ -31,11 +33,20 @@ class SearchController < ApplicationController
   private
 
   def search_params
-    params.permit(:query, :page, :per_page, skill_ids: [], availability: [], experience_range: [])
+    params.permit(
+      :query,
+      :page,
+      :per_page,
+      :parish_id,
+      :service_radius_km,
+      skill_ids: [],
+      availability: [],
+      experience_range: []
+    )
   end
 
   def search_tradespeople(search_params)
-    base_query = TradesPersonProfile.active.completed
+    base_query = TradesPersonProfile.active.completed.includes(:parish)
 
     # Start with a subquery for skill filtering if needed
     if search_params[:skill_ids].present? && search_params[:skill_ids].any?
@@ -79,6 +90,21 @@ class SearchController < ApplicationController
           profiles = profiles.where("years_experience >= 16")
         end
       end
+    end
+
+    # New: Filter by parish_id
+    if search_params[:parish_id].present?
+      profiles = profiles.where(parish_id: search_params[:parish_id].to_i)
+    end
+
+    # New: Filter by service_radius_km
+    if search_params[:service_radius_km].present?
+      radius = search_params[:service_radius_km].to_i
+      # This needs more advanced geographical search, but for now, we'll assume a simple filter.
+      # For a real implementation, you'd use a gem like Geocoder or PostGIS.
+      # For simplicity, we'll filter for profiles that have a service_radius_km greater than or equal to the search radius
+      # This is a very basic interpretation and would ideally involve actual distance calculations.
+      profiles = profiles.where("service_radius_km >= ?", radius)
     end
 
     # Pagination
@@ -147,7 +173,14 @@ class SearchController < ApplicationController
         end,
         has_avatar: profile.has_avatar?,
         avatar_url: profile.avatar_url,
-        avatar_thumbnail_url: profile.avatar_thumbnail_url
+        avatar_thumbnail_url: profile.avatar_thumbnail_url,
+        parish: profile.parish ? {id: profile.parish.id, name: profile.parish.name} : nil, # Include parish data
+        street_address: profile.street_address,
+        city_town: profile.city_town,
+        postal_code: profile.postal_code,
+        service_radius_km: profile.service_radius_km,
+        service_area_notes: profile.service_area_notes,
+        additional_parishes: profile.additional_parishes
       }
     end
   end
@@ -174,6 +207,10 @@ class SearchController < ApplicationController
       {value: "senior", label: "Senior (8-15 years)"},
       {value: "expert", label: "Expert (16+ years)"}
     ]
+  end
+
+  def parish_options
+    Parish.all.map { |parish| {value: parish.id, label: parish.name} }
   end
 
   def pagination_meta(paginated_result)

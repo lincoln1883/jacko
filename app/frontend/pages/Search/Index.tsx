@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, MapPin, Clock } from 'lucide-react';
 import { SkillsMultiSelect } from '@/components/ui/skills-multi-select';
+import { Select } from '@/components/ui/select'; // Import the Select component
 
 interface Skill {
   id: number;
@@ -29,16 +30,23 @@ interface ExperienceOption {
   label: string;
 }
 
+interface ParishOption {
+  value: number;
+  label: string;
+}
+
 interface SearchIndexProps {
   skills_by_category: SkillsByCategory;
   availability_options: AvailabilityOption[];
   experience_options: ExperienceOption[];
+  parish_options: ParishOption[]; // New: Parish options
 }
 
 export default function SearchIndex({
   skills_by_category,
   availability_options,
   experience_options,
+  parish_options, // Destructure new prop
 }: SearchIndexProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
@@ -46,6 +54,8 @@ export default function SearchIndex({
     []
   );
   const [selectedExperience, setSelectedExperience] = useState<string[]>([]);
+  const [selectedParishId, setSelectedParishId] = useState<string>(''); // New state for parish
+  const [serviceRadiusKm, setServiceRadiusKm] = useState<string>(''); // New state for service radius
   const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = () => {
@@ -73,6 +83,14 @@ export default function SearchIndex({
       });
     }
 
+    // New: Append location filters
+    if (selectedParishId) {
+      searchParams.append('parish_id', selectedParishId);
+    }
+    if (serviceRadiusKm && parseInt(serviceRadiusKm) > 0) {
+      searchParams.append('service_radius_km', serviceRadiusKm);
+    }
+
     router.get(`/search/tradespeople?${searchParams.toString()}`);
   };
 
@@ -81,6 +99,8 @@ export default function SearchIndex({
     setSelectedSkills([]);
     setSelectedAvailability([]);
     setSelectedExperience([]);
+    setSelectedParishId(''); // New: Clear parish
+    setServiceRadiusKm(''); // New: Clear service radius
   };
 
   const toggleAvailability = (value: string) => {
@@ -98,7 +118,9 @@ export default function SearchIndex({
   const hasActiveFilters =
     selectedSkills.length > 0 ||
     selectedAvailability.length > 0 ||
-    selectedExperience.length > 0;
+    selectedExperience.length > 0 ||
+    selectedParishId !== '' || // New: Check for active parish filter
+    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0); // New: Check for active radius filter
 
   return (
     <AppLayout title="Find Skilled Tradespeople">
@@ -143,7 +165,11 @@ export default function SearchIndex({
                 <Badge className="ml-2 bg-blue-100 text-blue-800">
                   {selectedSkills.length +
                     selectedAvailability.length +
-                    selectedExperience.length}
+                    selectedExperience.length +
+                    (selectedParishId !== '' ? 1 : 0) +
+                    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0
+                      ? 1
+                      : 0)}{' '}
                 </Badge>
               )}
             </Button>
@@ -155,6 +181,38 @@ export default function SearchIndex({
           {/* Filters Panel */}
           {showFilters && (
             <div className="border-t pt-6 space-y-6">
+              {/* Location Filter */}
+              <div>
+                <Label className="text-sm font-semibold mb-3 flex items-center">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Location
+                </Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select
+                    id="parish_id"
+                    label="Parish"
+                    value={selectedParishId}
+                    onChange={(e) => setSelectedParishId(e.target.value)}
+                    options={parish_options.map((p) => ({
+                      label: p.label,
+                      value: p.value.toString(),
+                    }))}
+                    placeholder="Select a parish"
+                  />
+                  <Input
+                    id="service_radius_km"
+                    label="Service Radius (km)"
+                    type="number"
+                    min="0"
+                    max="500"
+                    value={serviceRadiusKm}
+                    onChange={(e) => setServiceRadiusKm(e.target.value)}
+                    placeholder="E.g., 50"
+                    hint="Distance from primary location"
+                  />
+                </div>
+              </div>
+
               {/* Skills Filter */}
               <div>
                 <SkillsMultiSelect
@@ -168,7 +226,7 @@ export default function SearchIndex({
 
               {/* Availability Filter */}
               <div>
-                <Label className="text-sm font-semibold mb-3 block flex items-center">
+                <Label className="text-sm font-semibold mb-3 flex items-center">
                   <Clock className="h-4 w-4 mr-2" />
                   Availability
                 </Label>
@@ -194,7 +252,7 @@ export default function SearchIndex({
 
               {/* Experience Filter */}
               <div>
-                <Label className="text-sm font-semibold mb-3 block flex items-center">
+                <Label className="text-sm font-semibold mb-3 flex items-center">
                   <MapPin className="h-4 w-4 mr-2" />
                   Experience Level
                 </Label>

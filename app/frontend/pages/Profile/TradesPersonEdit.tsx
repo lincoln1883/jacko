@@ -6,18 +6,28 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select } from '../../components/ui/select';
 import { Button } from '../../components/ui/button';
 import { SkillsMultiSelect } from '../../components/ui/skills-multi-select';
-import { PortfolioUpload, AvatarUpload } from '../../components';
+import {
+  AdditionalParishesMultiSelect,
+  PortfolioUpload,
+  AvatarUpload,
+} from '../../components';
 import { useToast } from '../../contexts/ToastContext';
 import type {
   TradesPersonProfilePageProps,
   TradesPersonProfileFormData,
+  Parish,
 } from '../../types/profile';
 import { AVAILABILITY_STATUS_OPTIONS } from '../../types/profile';
 
-const TradesPersonEditContent: React.FC<TradesPersonProfilePageProps> = ({
+interface TradesPersonEditCustomProps extends TradesPersonProfilePageProps {
+  parishes: Parish[];
+}
+
+const TradesPersonEditContent: React.FC<TradesPersonEditCustomProps> = ({
   profile,
   skills,
   skills_by_category,
+  parishes,
   errors: serverErrors,
 }) => {
   const { data, setData, put, processing } =
@@ -31,6 +41,13 @@ const TradesPersonEditContent: React.FC<TradesPersonProfilePageProps> = ({
       availability_status: profile.availability_status,
       description: profile.description || '',
       skill_ids: profile.skill_ids || [],
+      parish_id: profile.parish?.id || '', // New field
+      street_address: profile.street_address || '', // New field
+      city_town: profile.city_town || '', // New field
+      postal_code: profile.postal_code || '', // New field
+      service_radius_km: profile.service_radius_km || '', // New field
+      service_area_notes: profile.service_area_notes || '', // New field
+      additional_parishes: profile.additional_parishes || [], // New field
     });
 
   // Avatar state
@@ -412,6 +429,88 @@ const TradesPersonEditContent: React.FC<TradesPersonProfilePageProps> = ({
             />
           </div>
 
+          {/* Location Information */}
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">
+              Location Information
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Select
+                id="parish_id"
+                label="Parish"
+                value={data.parish_id}
+                onChange={(e) => setData('parish_id', e.target.value)}
+                options={parishes.map((p) => ({
+                  label: p.name,
+                  value: p.id.toString(),
+                }))}
+                errors={serverErrors?.parish_id}
+                placeholder="Select your parish"
+              />
+              <Input
+                id="street_address"
+                label="Street Address"
+                type="text"
+                value={data.street_address}
+                onChange={(e) => setData('street_address', e.target.value)}
+                errors={serverErrors?.street_address}
+                placeholder="E.g., 123 Main St"
+              />
+              <Input
+                id="city_town"
+                label="City/Town"
+                type="text"
+                value={data.city_town}
+                onChange={(e) => setData('city_town', e.target.value)}
+                errors={serverErrors?.city_town}
+                placeholder="E.g., Kingston"
+              />
+              <Input
+                id="postal_code"
+                label="Postal Code"
+                type="text"
+                value={data.postal_code}
+                onChange={(e) => setData('postal_code', e.target.value)}
+                errors={serverErrors?.postal_code}
+                placeholder="E.g., KGN10"
+              />
+            </div>
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              <Input
+                id="service_radius_km"
+                label="Service Radius (km)"
+                type="number"
+                min="0"
+                max="500"
+                value={data.service_radius_km}
+                onChange={(e) => setData('service_radius_km', e.target.value)}
+                errors={serverErrors?.service_radius_km}
+                placeholder="E.g., 50"
+                hint="Distance from your location you are willing to travel"
+              />
+              <AdditionalParishesMultiSelect
+                parishes={parishes}
+                selectedParishIds={data.additional_parishes.map(Number)}
+                onSelectionChange={(selectedIds) =>
+                  setData('additional_parishes', selectedIds.map(String))
+                }
+                errors={serverErrors?.additional_parishes}
+              />
+            </div>
+            <div className="mt-6">
+              <Textarea
+                id="service_area_notes"
+                label="Service Area Notes"
+                value={data.service_area_notes}
+                onChange={(e) => setData('service_area_notes', e.target.value)}
+                errors={serverErrors?.service_area_notes}
+                placeholder="Any specific notes about your service areas or travel limitations..."
+                rows={3}
+                hint="Describe any specific areas you serve or travel limitations."
+              />
+            </div>
+          </div>
+
           {/* Experience & Pricing */}
           <div className="bg-card rounded-lg shadow-sm border p-6">
             <h2 className="text-xl font-semibold text-foreground mb-6">
@@ -546,7 +645,7 @@ const TradesPersonEditContent: React.FC<TradesPersonProfilePageProps> = ({
   );
 };
 
-const TradesPersonEdit: React.FC<TradesPersonProfilePageProps> = (props) => {
+const TradesPersonEdit: React.FC<TradesPersonEditCustomProps> = (props) => {
   return (
     <AppLayout title="Edit Tradesperson Profile">
       <TradesPersonEditContent {...props} />

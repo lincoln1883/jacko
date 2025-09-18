@@ -14,8 +14,11 @@ import {
   ChevronLeft,
   ChevronRight,
   User as UserIcon,
+  MapPin, // New import
 } from 'lucide-react';
 import { SkillsMultiSelect } from '@/components/ui/skills-multi-select';
+import { Select } from '@/components/ui/select'; // New import
+import { Label } from '@/components/ui/label'; // New import
 
 interface Skill {
   id: number;
@@ -51,6 +54,13 @@ interface TradesPersonProfile {
   has_avatar: boolean;
   avatar_url: string | null;
   avatar_thumbnail_url: string | null;
+  parish: { id: number; name: string } | null; // New: Parish data
+  street_address: string | null; // New: Location data
+  city_town: string | null; // New: Location data
+  postal_code: string | null; // New: Location data
+  service_radius_km: number | null; // New: Service area data
+  service_area_notes: string | null; // New: Service area data
+  additional_parishes: string[]; // New: Service area data
 }
 
 interface SkillsByCategory {
@@ -68,6 +78,11 @@ interface ExperienceOption {
   label: string;
 }
 
+interface ParishOption {
+  value: number;
+  label: string;
+}
+
 interface SearchParams {
   query?: string;
   skill_ids?: string[];
@@ -75,6 +90,8 @@ interface SearchParams {
   experience_range?: string[];
   page?: string;
   per_page?: string;
+  parish_id?: string; // New: Parish ID
+  service_radius_km?: string; // New: Service radius
 }
 
 interface PaginationMeta {
@@ -92,6 +109,7 @@ interface SearchTradespeopleProps {
   skills_by_category: SkillsByCategory;
   availability_options: AvailabilityOption[];
   experience_options: ExperienceOption[];
+  parish_options: ParishOption[]; // New: Parish options
   pagination: PaginationMeta;
 }
 
@@ -101,6 +119,7 @@ export default function SearchTradespeople({
   skills_by_category,
   availability_options,
   experience_options,
+  parish_options,
   pagination,
 }: SearchTradespeopleProps) {
   const [searchQuery, setSearchQuery] = useState(search_params.query || '');
@@ -113,6 +132,12 @@ export default function SearchTradespeople({
   const [selectedExperience, setSelectedExperience] = useState<string[]>(
     search_params.experience_range || []
   );
+  const [selectedParishId, setSelectedParishId] = useState<string>(
+    search_params.parish_id || ''
+  ); // New state for parish
+  const [serviceRadiusKm, setServiceRadiusKm] = useState<string>(
+    search_params.service_radius_km || ''
+  ); // New state for service radius
   const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = (page = 1) => {
@@ -140,6 +165,14 @@ export default function SearchTradespeople({
       });
     }
 
+    // New: Append location filters
+    if (selectedParishId) {
+      searchParams.append('parish_id', selectedParishId);
+    }
+    if (serviceRadiusKm && parseInt(serviceRadiusKm) > 0) {
+      searchParams.append('service_radius_km', serviceRadiusKm);
+    }
+
     if (page > 1) {
       searchParams.append('page', page.toString());
     }
@@ -152,6 +185,8 @@ export default function SearchTradespeople({
     setSelectedSkills([]);
     setSelectedAvailability([]);
     setSelectedExperience([]);
+    setSelectedParishId(''); // New: Clear parish
+    setServiceRadiusKm(''); // New: Clear service radius
   };
 
   const toggleAvailability = (value: string) => {
@@ -170,7 +205,9 @@ export default function SearchTradespeople({
     selectedSkills.length > 0 ||
     selectedAvailability.length > 0 ||
     selectedExperience.length > 0 ||
-    searchQuery.trim().length > 0;
+    searchQuery.trim().length > 0 ||
+    selectedParishId !== '' || // New: Check for active parish filter
+    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0); // New: Check for active radius filter
 
   const goToPage = (page: number) => {
     handleSearch(page);
@@ -226,6 +263,14 @@ export default function SearchTradespeople({
           )}
         </div>
       </div>
+
+      {/* Location (New) */}
+      {(profile.parish || profile.street_address || profile.city_town) && (
+        <div className="flex items-center text-sm text-gray-600 mb-4">
+          <MapPin className="w-4 h-4 mr-1" />
+          {[profile.city_town, profile.parish?.name].filter(Boolean).join(', ')}
+        </div>
+      )}
 
       {/* Experience and Rate */}
       <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
@@ -382,7 +427,11 @@ export default function SearchTradespeople({
                 <Badge className="ml-2 bg-blue-100 text-blue-800">
                   {selectedSkills.length +
                     selectedAvailability.length +
-                    selectedExperience.length || 1}
+                    selectedExperience.length +
+                    (selectedParishId !== '' ? 1 : 0) +
+                    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0
+                      ? 1
+                      : 0)}
                 </Badge>
               )}
             </Button>
@@ -392,6 +441,38 @@ export default function SearchTradespeople({
           {/* Filters Panel - Similar to Index page */}
           {showFilters && (
             <div className="border-t pt-4 space-y-4">
+              {/* Location Filter */}
+              <div>
+                <Label className="text-sm font-semibold mb-3 flex items-center">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Location
+                </Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select
+                    id="parish_id"
+                    label="Parish"
+                    value={selectedParishId}
+                    onChange={(e) => setSelectedParishId(e.target.value)}
+                    options={parish_options.map((p) => ({
+                      label: p.label,
+                      value: p.value.toString(),
+                    }))}
+                    placeholder="Select a parish"
+                  />
+                  <Input
+                    id="service_radius_km"
+                    label="Service Radius (km)"
+                    type="number"
+                    min="0"
+                    max="500"
+                    value={serviceRadiusKm}
+                    onChange={(e) => setServiceRadiusKm(e.target.value)}
+                    placeholder="E.g., 50"
+                    hint="Distance from primary location"
+                  />
+                </div>
+              </div>
+
               {/* Skills Filter */}
               <div>
                 <SkillsMultiSelect
@@ -406,9 +487,9 @@ export default function SearchTradespeople({
               {/* Availability and Experience Filters */}
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm font-medium mb-2 block">
+                  <Label className="text-sm font-semibold mb-2 flex items-center">
                     Availability
-                  </div>
+                  </Label>
                   <div className="flex flex-wrap gap-2">
                     {availability_options.map((option) => (
                       <button
@@ -427,9 +508,9 @@ export default function SearchTradespeople({
                 </div>
 
                 <div>
-                  <div className="text-sm font-medium mb-2 block">
+                  <Label className="text-sm font-semibold mb-2 flex items-center">
                     Experience Level
-                  </div>
+                  </Label>
                   <div className="flex flex-wrap gap-2">
                     {experience_options.map((option) => (
                       <button

@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_09_102633) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
+ActiveRecord::Schema[8.0].define(version: 2025_09_18_142450) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -43,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_102633) do
   end
 
   create_table "client_profiles", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.string "company_name", limit: 255
     t.integer "preferred_contact_method", default: 0, null: false
     t.string "project_budget_range", limit: 100
@@ -59,39 +56,38 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_102633) do
 
   create_table "parishes", force: :cascade do |t|
     t.string "name", null: false
-    t.string "code", limit: 3, null: false
-    t.decimal "latitude", precision: 10, scale: 6
-    t.decimal "longitude", precision: 10, scale: 6
+    t.string "code", null: false
     t.text "description"
-    t.boolean "active", default: true, null: false
+    t.boolean "active"
     t.integer "population"
     t.string "main_city"
+    t.decimal "latitude"
+    t.decimal "longitude"
+    t.string "svg_path"
+    t.string "color"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["active"], name: "index_parishes_on_active"
     t.index ["code"], name: "index_parishes_on_code", unique: true
-    t.index ["latitude", "longitude"], name: "index_parishes_on_latitude_and_longitude"
-    t.index ["name"], name: "index_parishes_on_name", unique: true
   end
 
   create_table "portfolio_images", force: :cascade do |t|
-    t.bigint "trades_person_profile_id", null: false
+    t.integer "trades_person_profile_id", null: false
     t.string "title", limit: 255
-    t.text "description"
+    t.text "description", limit: 1000
     t.integer "display_order", default: 0, null: false
     t.boolean "active", default: true, null: false
     t.string "image_alt_text", limit: 255
-    t.jsonb "metadata", default: "{}", null: false
+    t.json "metadata", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["metadata"], name: "index_portfolio_images_on_metadata", using: :gin
+    t.index ["metadata"], name: "index_portfolio_images_on_metadata"
     t.index ["trades_person_profile_id", "active"], name: "index_portfolio_images_on_trades_person_profile_id_and_active"
     t.index ["trades_person_profile_id", "display_order"], name: "idx_on_trades_person_profile_id_display_order_e7c8b6a1c4"
     t.index ["trades_person_profile_id"], name: "index_portfolio_images_on_trades_person_profile_id"
   end
 
   create_table "sessions", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.string "user_agent"
     t.string "ip_address"
     t.datetime "created_at", null: false
@@ -112,7 +108,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_102633) do
   end
 
   create_table "trades_person_profiles", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.text "bio"
     t.string "company_name"
     t.integer "years_experience", default: 0
@@ -125,26 +121,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_102633) do
     t.datetime "profile_completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "parish_id", null: false
+    t.integer "parish_id"
     t.string "street_address"
     t.string "city_town"
     t.string "postal_code"
-    t.decimal "latitude", precision: 10, scale: 6
-    t.decimal "longitude", precision: 10, scale: 6
+    t.decimal "latitude"
+    t.decimal "longitude"
     t.integer "service_radius_km"
     t.text "service_area_notes"
-    t.string "additional_parishes", default: [], array: true
+    t.json "additional_parishes"
     t.index ["active"], name: "index_trades_person_profiles_on_active"
     t.index ["availability_status"], name: "index_trades_person_profiles_on_availability_status"
-    t.index ["latitude", "longitude"], name: "index_trades_person_profiles_on_latitude_and_longitude"
     t.index ["parish_id"], name: "index_trades_person_profiles_on_parish_id"
     t.index ["user_id"], name: "index_trades_person_profiles_on_user_id", unique: true
     t.index ["years_experience"], name: "index_trades_person_profiles_on_years_experience"
   end
 
   create_table "trades_person_skills", force: :cascade do |t|
-    t.bigint "trades_person_profile_id", null: false
-    t.bigint "skill_id", null: false
+    t.integer "trades_person_profile_id", null: false
+    t.integer "skill_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["skill_id"], name: "index_trades_person_skills_on_skill_id"
