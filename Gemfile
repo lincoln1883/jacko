@@ -4,9 +4,7 @@ source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.2", ">= 8.0.2.1"
-# Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
-# Use SQLite3 as the database for production (container-based)
+# Use SQLite3 as the database for all environments
 gem "sqlite3", "~> 2.5"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"

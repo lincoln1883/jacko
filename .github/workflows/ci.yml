@@ -9,21 +9,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: jacko_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,15 +36,12 @@ jobs:
       - name: Setup test database
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/jacko_test
         run: |
-          bin/rails db:create db:schema:load
+          bin/rails db:create db:schema:load db:test:prepare
 
       - name: Run RSpec tests with coverage
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/jacko_test
-          COVERAGE: true
         run: bundle exec rspec --format progress
           
       - name: Upload coverage

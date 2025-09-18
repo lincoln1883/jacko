@@ -13,9 +13,9 @@ module Searchable
 
     scope :search_by_text, ->(query) {
       where(
-        "trades_person_profiles.bio ILIKE :query OR
-         trades_person_profiles.description ILIKE :query OR
-         trades_person_profiles.company_name ILIKE :query",
+        "trades_person_profiles.bio LIKE :query OR
+         trades_person_profiles.description LIKE :query OR
+         trades_person_profiles.company_name LIKE :query",
         query: "%#{query}%"
       )
     }

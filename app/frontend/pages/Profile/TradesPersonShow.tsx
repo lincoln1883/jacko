@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react';
 import { AppLayout } from '../../components/layouts/AppLayout';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
-import { User } from 'lucide-react';
+import { User, MapPin, Target } from 'lucide-react';
 import type { TradesPersonProfilePageProps } from '../../types/profile';
 
 const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
@@ -98,6 +98,93 @@ const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
             </Badge>
           </div>
         </div>
+
+        {/* Location Information */}
+        {(profile.parish?.name ||
+          profile.street_address ||
+          profile.city_town ||
+          profile.postal_code ||
+          profile.service_radius_km ||
+          profile.service_area_notes ||
+          profile.additional_parishes.length > 0) && (
+          <div className="bg-card rounded-lg shadow-sm border p-6 mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Location & Service Area
+            </h2>
+            <div className="space-y-4">
+              {(profile.street_address ||
+                profile.city_town ||
+                profile.postal_code) && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Primary Location
+                  </h3>
+                  <div className="flex items-start">
+                    <MapPin className="w-4 h-4 text-muted-foreground mr-2 mt-1" />
+                    <p className="text-foreground">
+                      {[
+                        profile.street_address,
+                        profile.city_town,
+                        profile.postal_code,
+                      ]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {profile.parish && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Parish
+                  </h3>
+                  <p className="text-foreground">{profile.parish.name}</p>
+                </div>
+              )}
+
+              {profile.service_radius_km && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Service Radius
+                  </h3>
+                  <div className="flex items-center">
+                    <Target className="w-4 h-4 text-muted-foreground mr-2" />
+                    <p className="text-foreground">
+                      Willing to travel up to {profile.service_radius_km} km
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {profile.additional_parishes.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Additional Service Parishes
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.additional_parishes.map((parishName, index) => (
+                      <Badge key={index} variant="outline">
+                        {parishName}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {profile.service_area_notes && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Service Area Notes
+                  </h3>
+                  <p className="text-foreground whitespace-pre-wrap">
+                    {profile.service_area_notes}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Skills & Services */}
         {profile.skills && profile.skills.length > 0 && (

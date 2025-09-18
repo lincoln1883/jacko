@@ -13,6 +13,15 @@ export interface SkillsCategory {
   [category: string]: Skill[];
 }
 
+export interface Parish {
+  id: number;
+  name: string;
+  svg_path: string | null;
+  color: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface TradesPersonProfile {
   id: number;
   bio: string | null;
@@ -30,6 +39,16 @@ export interface TradesPersonProfile {
   display_experience: string;
   display_availability: string;
   availability_color: string;
+  parish: Parish | null;
+  parish_id: number | null;
+  street_address: string | null;
+  city_town: string | null;
+  postal_code: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  service_radius_km: number | null;
+  service_area_notes: string | null;
+  additional_parishes: string[];
   skills: Skill[];
   skill_ids: number[];
   skills_by_category: SkillsCategory;
@@ -38,6 +57,19 @@ export interface TradesPersonProfile {
   avatar_thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
+  portfolio_images: PortfolioImage[]; // New field
+}
+
+export interface PortfolioImage {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  thumbnail_url: string;
+  file_size_mb: number;
+  image_alt_text: string;
+  active: boolean;
+  position: number;
 }
 
 export interface ClientProfile {
@@ -78,6 +110,13 @@ export interface TradesPersonProfileFormData {
   availability_status: 'available' | 'busy' | 'unavailable' | 'booked';
   description: string;
   skill_ids: number[];
+  parish_id: number | string;
+  street_address: string;
+  city_town: string;
+  postal_code: string;
+  service_radius_km: number | string;
+  service_area_notes: string;
+  additional_parishes: string[];
 }
 
 export interface ClientProfileFormData {

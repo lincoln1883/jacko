@@ -72,12 +72,13 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
   - **Branch**: `feature/frontend-fixes-linting-tests`
   - **Details**: PortfolioImage model with Active Storage, PortfolioUpload and AvatarUpload React components, comprehensive test coverage, ESLint fixes
 
-- [ ] **Task 2.4**: Add location-based profile fields
-  - Acceptance Criteria: Profiles include parish and service area information
+- [x] **Task 2.4**: Add location-based profile fields
+  - Acceptance Criteria: Profiles include parish and service area information ✅
   - Estimated effort: 2 days
   - Dependencies: Task 2.1
-  - **Status**: 🗓 **PLANNED** - Jamaica parish system with service areas
-  - **Branch**: `feature/location-profiles`
+  - **Status**: ✅ **COMPLETED** - Jamaica parish system with service areas, including additional parishes, service radius, and notes. Frontend UI integrated and validated.
+  - **Branch**: `feature/location-profiles` (merged)
+  - **Details**: Parish model, location fields added to TradesPersonProfile, migrations, API updates, frontend forms and display logic, multi-select for additional parishes.
 
 - [ ] **Task 2.5**: Create experience level indicators
   - Acceptance Criteria: Graduate, Intermediate, Expert, Master levels
@@ -124,10 +125,13 @@ This document outlines all tasks required to build the MVP (Phase 1) of the Jama
     - Full test coverage with integration tests
   - **Branch**: `development` (merged)
 
-- [ ] **Task 3.2**: Add location-based filtering
-  - Acceptance Criteria: Search results can be filtered by parish/distance
+- [x] **Task 3.2**: Add location-based filtering
+  - Acceptance Criteria: Search results can be filtered by parish/distance ✅
   - Estimated effort: 3 days
   - Dependencies: Task 2.4, Task 3.1
+  - **Status**: ✅ **COMPLETED** - Location filters (parish_id, service_radius_km) integrated into search controller and frontend search page.
+  - **Branch**: `feature/search-system` (merged)
+  - **Details**: Search controller updated to permit location parameters, filtering logic added, frontend search page (`Search/Index.tsx`) updated with UI components for parish and service radius selection.
 
 - [ ] **Task 3.3**: Implement availability filtering
   - Acceptance Criteria: Filter by immediate, weekly, monthly availability

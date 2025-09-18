@@ -6,7 +6,39 @@
 
 # Sample Users and Profiles for Development
 if Rails.env.development?
-  puts "Creating sample tradesperson profiles for development..."
+  puts "Setting up Jamaica parishes..."
+
+  # Create Jamaica parishes first
+  jamaica_parishes = [
+    {name: "Kingston", code: "KIN", main_city: "Kingston", latitude: 17.9712, longitude: -76.7936, population: 89057},
+    {name: "St. Andrew", code: "SAN", main_city: "Half Way Tree", latitude: 18.0179, longitude: -76.8099, population: 573369},
+    {name: "St. Thomas", code: "STH", main_city: "Morant Bay", latitude: 17.8816, longitude: -76.4093, population: 93902},
+    {name: "Portland", code: "POR", main_city: "Port Antonio", latitude: 18.1758, longitude: -76.4451, population: 82183},
+    {name: "St. Mary", code: "STM", main_city: "Port Maria", latitude: 18.3708, longitude: -76.9058, population: 113615},
+    {name: "St. Ann", code: "STA", main_city: "Saint Ann's Bay", latitude: 18.4372, longitude: -77.2076, population: 172362},
+    {name: "Trelawny", code: "TRL", main_city: "Falmouth", latitude: 18.4917, longitude: -77.6510, population: 75558},
+    {name: "St. James", code: "STJ", main_city: "Montego Bay", latitude: 18.4762, longitude: -77.8937, population: 185801},
+    {name: "Hanover", code: "HAN", main_city: "Lucea", latitude: 18.4509, longitude: -78.1736, population: 69533},
+    {name: "Westmoreland", code: "WES", main_city: "Savanna-la-Mar", latitude: 18.2186, longitude: -78.1336, population: 144817},
+    {name: "St. Elizabeth", code: "STE", main_city: "Black River", latitude: 18.0264, longitude: -77.8564, population: 150205},
+    {name: "Manchester", code: "MAN", main_city: "Mandeville", latitude: 18.0438, longitude: -77.5016, population: 189797},
+    {name: "Clarendon", code: "CLA", main_city: "May Pen", latitude: 17.9651, longitude: -77.2456, population: 245103},
+    {name: "St. Catherine", code: "STC", main_city: "Spanish Town", latitude: 17.9909, longitude: -76.9590, population: 516218}
+  ]
+
+  jamaica_parishes.each do |parish_data|
+    parish = Parish.find_or_create_by(code: parish_data[:code]) do |p|
+      p.name = parish_data[:name]
+      p.main_city = parish_data[:main_city]
+      p.latitude = parish_data[:latitude]
+      p.longitude = parish_data[:longitude]
+      p.population = parish_data[:population]
+      p.active = true
+    end
+    puts "✓ Created parish: #{parish.name} (#{parish.code})"
+  end
+
+  puts "\nCreating sample tradesperson profiles for development..."
 
   # Create sample tradespeople with profiles
   sample_trades = [
@@ -19,6 +51,8 @@ if Rails.env.development?
       phone: "+1-876-555-0101",
       website: "https://marcusconstruction.jm",
       availability_status: :available,
+      parish_code: "KIN",
+      city_town: "Kingston",
       description: "I provide high-quality construction services across Kingston and surrounding areas. From small repairs to complete builds, I deliver on time and within budget. All work comes with a satisfaction guarantee."
     },
     {
@@ -29,6 +63,8 @@ if Rails.env.development?
       hourly_rate: 55.00,
       phone: "+1-876-555-0102",
       availability_status: :busy,
+      parish_code: "SAN",
+      city_town: "Half Way Tree",
       description: "Professional electrical services with focus on safety and code compliance. I handle everything from outlet installations to complete electrical system upgrades. Solar panel installation specialist."
     },
     {
@@ -40,6 +76,8 @@ if Rails.env.development?
       phone: "+1-876-555-0103",
       website: "https://flowrightplumbing.jm",
       availability_status: :available,
+      parish_code: "STJ",
+      city_town: "Montego Bay",
       description: "24/7 emergency plumbing services. Specializing in pipe repairs, bathroom installations, water heater servicing, and drain cleaning. Quick response times guaranteed."
     },
     {
@@ -50,6 +88,8 @@ if Rails.env.development?
       hourly_rate: 30.00,
       phone: "+1-876-555-0104",
       availability_status: :available,
+      parish_code: "MAN",
+      city_town: "Mandeville",
       description: "Transform your space with professional painting services. Interior design consultation included. Eco-friendly paint options available. Free color consultations and estimates."
     },
     {
@@ -61,6 +101,8 @@ if Rails.env.development?
       phone: "+1-876-555-0105",
       website: "https://davesautorepair.jm",
       availability_status: :booked,
+      parish_code: "STC",
+      city_town: "Spanish Town",
       description: "Complete automotive repair services including engine work, transmissions, brakes, and electrical systems. All makes and models welcome. Warranty on all work performed."
     }
   ]
@@ -73,6 +115,9 @@ if Rails.env.development?
       u.verified = true
     end
 
+    # Find the parish for this tradesperson
+    parish = Parish.find_by(code: trade_data[:parish_code])
+
     # Create or update tradesperson profile
     profile = user.trades_person_profile || user.build_trades_person_profile
     profile.update!(
@@ -84,6 +129,8 @@ if Rails.env.development?
       website: trade_data[:website],
       availability_status: trade_data[:availability_status],
       description: trade_data[:description],
+      parish: parish,
+      city_town: trade_data[:city_town],
       active: true
     )
     profile.mark_as_completed!

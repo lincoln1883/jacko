@@ -8,6 +8,7 @@ class Parish < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :code, presence: true, uniqueness: true, length: {maximum: 3}
   validates :active, inclusion: {in: [true, false]}
+  validates :svg_path, :color, length: {maximum: 255}, allow_nil: true
 
   # Scopes
   scope :active, -> { where(active: true) }

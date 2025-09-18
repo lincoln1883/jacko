@@ -48,6 +48,16 @@ class TradesPersonProfile < ApplicationRecord
     allow_blank: true
   }
   validates :availability_status, presence: true
+  validates :service_radius_km, numericality: {
+    greater_than: 0,
+    less_than_or_equal_to: 500,
+    allow_nil: true
+  }
+  # validates :additional_parishes, array: {
+  #   of: :string,
+  #   message: "must be an array of strings",
+  #   allow_nil: true
+  # }
 
   # Avatar validations
   validate :avatar_validation
@@ -60,18 +70,20 @@ class TradesPersonProfile < ApplicationRecord
   scope :completed, -> { where.not(profile_completed_at: nil) }
   scope :with_skills, ->(skill_ids) { joins(:skills).where(skills: {id: skill_ids}) }
   scope :with_skill_categories, ->(categories) { joins(:skills).where(skills: {category: categories}) }
-  scope :search_by_text, ->(query) { where("bio ILIKE ? OR description ILIKE ? OR company_name ILIKE ?", "%#{query}%", "%#{query}%", "%#{query}%") }
+  scope :search_by_text, ->(query) { where("bio LIKE ? OR description LIKE ? OR company_name LIKE ?", "%#{query}%", "%#{query}%", "%#{query}%") }
 
   # Profile completion tracking
   def completed?
     profile_completed_at.present? &&
       bio.present? &&
       description.present? &&
-      years_experience.present?
+      years_experience.present? &&
+      parish_id.present? &&
+      service_area_notes.present?
   end
 
   def completion_percentage
-    total_fields = 9
+    total_fields = 12 # Increased from 11 to account for location fields
     completed_fields = 0
 
     completed_fields += 1 if bio.present?
@@ -83,13 +95,16 @@ class TradesPersonProfile < ApplicationRecord
     completed_fields += 1 if skills.any?
     completed_fields += 1 if portfolio_images.active.any?
     completed_fields += 1 if avatar.attached?
+    completed_fields += 1 if parish_id.present?
+    completed_fields += 1 if service_area_notes.present?
+    completed_fields += 1 if service_radius_km.present?
 
     (completed_fields.to_f / total_fields * 100).round
   end
 
   def mark_as_completed!
     # Check if profile has required fields (excluding profile_completed_at)
-    if bio.present? && description.present? && years_experience.present? && skills.any? && profile_completed_at.nil?
+    if bio.present? && description.present? && years_experience.present? && skills.any? && parish_id.present? && service_area_notes.present? && profile_completed_at.nil?
       update!(profile_completed_at: Time.current)
     end
   end

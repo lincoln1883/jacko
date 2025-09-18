@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Button } from './ui/button';
-import { useToast } from '../contexts/ToastContext';
+import { Button } from './button';
+import { useToast } from '../../contexts/ToastContext';
 import { User, Upload, X, Camera, Loader2 } from 'lucide-react';
 
 interface AvatarUploadProps {

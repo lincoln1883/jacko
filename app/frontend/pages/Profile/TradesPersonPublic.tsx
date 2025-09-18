@@ -19,102 +19,15 @@ import {
   Target,
   Share2,
 } from 'lucide-react';
+import type {
+  TradesPersonProfilePageProps as BaseTradesPersonPublicProps,
+  TradesPersonProfile,
+  User as ProfileOwner,
+} from '../../types/profile';
 
-interface Skill {
-  id: number;
-  name: string;
-  category: string;
-  description?: string;
-  category_color: string;
-}
-
-interface SkillsByCategory {
-  [category: string]: Skill[];
-}
-
-interface PortfolioImage {
-  id: number;
-  title: string;
-  description: string;
-  alt_text: string;
-  display_order: number;
-  image_url: string;
-  thumbnail_url: string;
-  created_at: string;
-}
-
-interface Parish {
-  id: number;
-  name: string;
-  code: string;
-  main_city: string;
-  description: string;
-}
-
-interface LocationInfo {
-  street_address: string;
-  city_town: string;
-  postal_code: string;
-  parish_name: string;
-  display_address: string;
-}
-
-interface ServiceArea {
-  service_radius_km: number;
-  service_area_notes: string;
-  additional_parishes: string[];
-  coverage_description: string;
-}
-
-interface ProfileOwner {
-  id: number;
-  email: string;
-  role: string;
-  role_display: string;
-  verified: boolean;
-}
-
-interface TradesPersonProfile {
-  id: number;
-  bio: string;
-  company_name: string;
-  years_experience: number;
-  hourly_rate: number;
-  phone: string;
-  website: string;
-  availability_status: string;
-  description: string;
-  display_hourly_rate: string;
-  display_experience: string;
-  display_availability: string;
-  availability_color: string;
-  skills: Skill[];
-  skills_by_category: SkillsByCategory;
-  completion_percentage: number;
-  portfolio_images: PortfolioImage[];
-  parish: Parish;
-  location: LocationInfo;
-  service_area: ServiceArea;
-  has_avatar: boolean;
-  avatar_url: string;
-  avatar_thumbnail_url: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface CurrentUser {
-  id: number;
-  email: string;
-  role: string;
-  role_display: string;
-  verified: boolean;
-}
-
-interface TradesPersonPublicProps {
+interface TradesPersonPublicProps extends BaseTradesPersonPublicProps {
   profile: TradesPersonProfile;
   profile_owner: ProfileOwner;
-  can_edit: boolean;
-  current_user: CurrentUser | null;
 }
 
 export default function TradesPersonPublic({
@@ -320,7 +233,9 @@ export default function TradesPersonPublic({
                           <img
                             src={image.thumbnail_url || image.image_url}
                             alt={
-                              image.alt_text || image.title || 'Portfolio image'
+                              image.image_alt_text ||
+                              image.title ||
+                              'Portfolio image'
                             }
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                             loading="lazy"
@@ -433,17 +348,28 @@ export default function TradesPersonPublic({
               </div>
 
               {/* Location Information */}
-              {(profile.location?.display_address || profile.parish?.name) && (
+              {(profile.parish?.name ||
+                profile.street_address ||
+                profile.city_town ||
+                profile.postal_code) && (
                 <div className="bg-white rounded-lg shadow-lg p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     Location
                   </h2>
                   <div className="space-y-4">
-                    {profile.location?.display_address && (
+                    {(profile.street_address ||
+                      profile.city_town ||
+                      profile.postal_code) && (
                       <div className="flex items-start">
                         <MapPin className="w-4 h-4 text-gray-400 mr-3 mt-1" />
                         <span className="text-gray-700">
-                          {profile.location.display_address}
+                          {[
+                            profile.street_address,
+                            profile.city_town,
+                            profile.postal_code,
+                          ]
+                            .filter(Boolean)
+                            .join(', ')}
                         </span>
                       </div>
                     )}
@@ -455,11 +381,6 @@ export default function TradesPersonPublic({
                         </div>
                         <div className="font-medium text-gray-900">
                           {profile.parish.name}
-                          {profile.parish.main_city && (
-                            <span className="text-gray-600 ml-2">
-                              • {profile.parish.main_city}
-                            </span>
-                          )}
                         </div>
                       </div>
                     )}
@@ -468,29 +389,48 @@ export default function TradesPersonPublic({
               )}
 
               {/* Service Area */}
-              {(profile.service_area?.coverage_description ||
-                profile.service_area?.service_area_notes) && (
+              {(profile.service_radius_km ||
+                profile.service_area_notes ||
+                profile.additional_parishes.length > 0) && (
                 <div className="bg-white rounded-lg shadow-lg p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     Service Area
                   </h2>
                   <div className="space-y-4">
-                    {profile.service_area.coverage_description && (
+                    {profile.service_radius_km && (
                       <div className="flex items-start">
                         <Target className="w-4 h-4 text-gray-400 mr-3 mt-1" />
                         <span className="text-gray-700">
-                          {profile.service_area.coverage_description}
+                          Willing to travel up to {profile.service_radius_km} km
+                          from primary location.
                         </span>
                       </div>
                     )}
 
-                    {profile.service_area.service_area_notes && (
+                    {profile.additional_parishes.length > 0 && (
+                      <div className="pt-3 border-t">
+                        <div className="text-sm text-gray-600 mb-2">
+                          Additional Parishes:
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {profile.additional_parishes.map(
+                            (parishName, index) => (
+                              <Badge key={index} variant="outline">
+                                {parishName}
+                              </Badge>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {profile.service_area_notes && (
                       <div className="pt-3 border-t">
                         <div className="text-sm text-gray-600 mb-2">
                           Additional Notes:
                         </div>
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          {profile.service_area.service_area_notes}
+                          {profile.service_area_notes}
                         </p>
                       </div>
                     )}
