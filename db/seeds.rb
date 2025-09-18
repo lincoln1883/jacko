@@ -51,6 +51,7 @@ if Rails.env.development?
       phone: "+1-876-555-0101",
       website: "https://marcusconstruction.jm",
       availability_status: :available,
+      experience_level: :expert,
       parish_code: "KIN",
       city_town: "Kingston",
       description: "I provide high-quality construction services across Kingston and surrounding areas. From small repairs to complete builds, I deliver on time and within budget. All work comes with a satisfaction guarantee."
@@ -63,6 +64,7 @@ if Rails.env.development?
       hourly_rate: 55.00,
       phone: "+1-876-555-0102",
       availability_status: :busy,
+      experience_level: :intermediate,
       parish_code: "SAN",
       city_town: "Half Way Tree",
       description: "Professional electrical services with focus on safety and code compliance. I handle everything from outlet installations to complete electrical system upgrades. Solar panel installation specialist."
@@ -76,6 +78,7 @@ if Rails.env.development?
       phone: "+1-876-555-0103",
       website: "https://flowrightplumbing.jm",
       availability_status: :available,
+      experience_level: :intermediate,
       parish_code: "STJ",
       city_town: "Montego Bay",
       description: "24/7 emergency plumbing services. Specializing in pipe repairs, bathroom installations, water heater servicing, and drain cleaning. Quick response times guaranteed."
@@ -88,6 +91,7 @@ if Rails.env.development?
       hourly_rate: 30.00,
       phone: "+1-876-555-0104",
       availability_status: :available,
+      experience_level: :graduate,
       parish_code: "MAN",
       city_town: "Mandeville",
       description: "Transform your space with professional painting services. Interior design consultation included. Eco-friendly paint options available. Free color consultations and estimates."
@@ -101,6 +105,7 @@ if Rails.env.development?
       phone: "+1-876-555-0105",
       website: "https://davesautorepair.jm",
       availability_status: :booked,
+      experience_level: :master,
       parish_code: "STC",
       city_town: "Spanish Town",
       description: "Complete automotive repair services including engine work, transmissions, brakes, and electrical systems. All makes and models welcome. Warranty on all work performed."
@@ -128,6 +133,7 @@ if Rails.env.development?
       phone: trade_data[:phone],
       website: trade_data[:website],
       availability_status: trade_data[:availability_status],
+      experience_level: trade_data[:experience_level],
       description: trade_data[:description],
       parish: parish,
       city_town: trade_data[:city_town],

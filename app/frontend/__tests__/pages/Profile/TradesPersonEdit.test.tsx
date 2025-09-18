@@ -179,6 +179,7 @@ describe('TradesPersonEdit', () => {
     phone: '+1-876-123-4567',
     website: 'https://test.com',
     availability_status: 'available' as const,
+    experience_level: 'intermediate' as const,
     description: 'Test description',
     completion_percentage: 85,
     completed: false,
@@ -273,6 +274,7 @@ describe('TradesPersonEdit', () => {
         phone: mockProfile.phone,
         website: mockProfile.website,
         availability_status: mockProfile.availability_status,
+        experience_level: mockProfile.experience_level,
         description: mockProfile.description,
         skill_ids: mockProfile.skill_ids,
         parish_id: mockProfile.parish?.id,
@@ -311,6 +313,7 @@ describe('TradesPersonEdit', () => {
       ).toBeInTheDocument();
       expect(screen.getByTestId('textarea-bio')).toBeInTheDocument();
       expect(screen.getByTestId('input-years_experience')).toBeInTheDocument();
+      expect(screen.getByTestId('select-experience_level')).toBeInTheDocument(); // New assertion
       expect(screen.getByTestId('input-hourly_rate')).toBeInTheDocument();
       expect(screen.getByTestId('input-phone')).toBeInTheDocument();
       expect(screen.getByTestId('input-website')).toBeInTheDocument();
@@ -499,6 +502,7 @@ describe('TradesPersonEdit', () => {
       expect(screen.getByLabelText('Company Name')).toBeInTheDocument();
       expect(screen.getByLabelText('Professional Bio')).toBeInTheDocument();
       expect(screen.getByLabelText('Years of Experience')).toBeInTheDocument();
+      expect(screen.getByLabelText('Experience Level')).toBeInTheDocument(); // New assertion
       expect(screen.getByLabelText('Hourly Rate (USD)')).toBeInTheDocument();
       expect(screen.getByLabelText('Phone Number')).toBeInTheDocument();
       expect(screen.getByLabelText('Website')).toBeInTheDocument();

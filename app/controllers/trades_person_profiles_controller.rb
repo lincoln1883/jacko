@@ -72,7 +72,7 @@ class TradesPersonProfilesController < ApplicationController
     unless @profile
       # Ensure we have a default parish for profile creation in tests and dev
       default_parish = Parish.first || Parish.create!(name: "Kingston", code: "KIN", active: true)
-      @profile = current_user.create_trades_person_profile!(parish: default_parish)
+      @profile = current_user.create_trades_person_profile!(parish: default_parish, experience_level: :graduate)
     end
 
     # Preload avatar for better performance
@@ -156,6 +156,7 @@ class TradesPersonProfilesController < ApplicationController
       :display_experience,
       :display_availability,
       :availability_color,
+      :experience_level,
       :skill_ids,
       :skills_by_category,
       :has_avatar?,
@@ -208,6 +209,7 @@ class TradesPersonProfilesController < ApplicationController
       :display_experience,
       :display_availability,
       :availability_color,
+      :experience_level,
       :skill_ids,
       :skills_by_category,
       :has_avatar?,

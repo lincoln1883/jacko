@@ -17,7 +17,10 @@ import type {
   TradesPersonProfileFormData,
   Parish,
 } from '../../types/profile';
-import { AVAILABILITY_STATUS_OPTIONS } from '../../types/profile';
+import {
+  AVAILABILITY_STATUS_OPTIONS,
+  EXPERIENCE_LEVEL_OPTIONS,
+} from '../../types/profile';
 
 interface TradesPersonEditCustomProps extends TradesPersonProfilePageProps {
   parishes: Parish[];
@@ -39,6 +42,7 @@ const TradesPersonEditContent: React.FC<TradesPersonEditCustomProps> = ({
       phone: profile.phone || '',
       website: profile.website || '',
       availability_status: profile.availability_status,
+      experience_level: profile.experience_level || null,
       description: profile.description || '',
       skill_ids: profile.skill_ids || [],
       parish_id: profile.parish?.id || '', // New field
@@ -529,6 +533,22 @@ const TradesPersonEditContent: React.FC<TradesPersonEditCustomProps> = ({
                 errors={serverErrors?.years_experience}
                 placeholder="0"
                 hint="Total years in your trade"
+              />
+
+              <Select
+                id="experience_level"
+                label="Experience Level"
+                value={data.experience_level || ''}
+                onChange={(e) =>
+                  setData(
+                    'experience_level',
+                    e.target
+                      .value as TradesPersonProfileFormData['experience_level']
+                  )
+                }
+                options={EXPERIENCE_LEVEL_OPTIONS}
+                errors={serverErrors?.experience_level}
+                placeholder="Select your experience level"
               />
 
               <Input

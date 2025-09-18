@@ -22,6 +22,14 @@ class TradesPersonProfile < ApplicationRecord
     booked: 3
   }, default: :available, validate: true
 
+  # Experience level enum
+  enum :experience_level, {
+    graduate: 0,
+    intermediate: 1,
+    expert: 2,
+    master: 3
+  }, default: nil, validate: true
+
   # Validations
   validates :user, presence: true, uniqueness: true
   validates :bio, length: {maximum: 1000}
@@ -48,6 +56,7 @@ class TradesPersonProfile < ApplicationRecord
     allow_blank: true
   }
   validates :availability_status, presence: true
+  validates :experience_level, presence: true, allow_nil: true
   validates :service_radius_km, numericality: {
     greater_than: 0,
     less_than_or_equal_to: 500,
@@ -78,17 +87,19 @@ class TradesPersonProfile < ApplicationRecord
       bio.present? &&
       description.present? &&
       years_experience.present? &&
+      experience_level.present? &&
       parish_id.present? &&
       service_area_notes.present?
   end
 
   def completion_percentage
-    total_fields = 12 # Increased from 11 to account for location fields
+    total_fields = 13 # Increased from 12 to account for experience_level
     completed_fields = 0
 
     completed_fields += 1 if bio.present?
     completed_fields += 1 if description.present?
     completed_fields += 1 if years_experience.present?
+    completed_fields += 1 if experience_level.present?
     completed_fields += 1 if hourly_rate.present?
     completed_fields += 1 if phone.present?
     completed_fields += 1 if company_name.present?
@@ -104,7 +115,7 @@ class TradesPersonProfile < ApplicationRecord
 
   def mark_as_completed!
     # Check if profile has required fields (excluding profile_completed_at)
-    if bio.present? && description.present? && years_experience.present? && skills.any? && parish_id.present? && service_area_notes.present? && profile_completed_at.nil?
+    if bio.present? && description.present? && years_experience.present? && experience_level.present? && skills.any? && parish_id.present? && service_area_notes.present? && profile_completed_at.nil?
       update!(profile_completed_at: Time.current)
     end
   end

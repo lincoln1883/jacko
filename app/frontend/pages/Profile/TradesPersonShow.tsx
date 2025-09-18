@@ -311,6 +311,18 @@ const TradesPersonShow: React.FC<TradesPersonProfilePageProps> = ({
                 </div>
               )}
 
+              {profile.experience_level && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                    Level
+                  </h3>
+                  <Badge variant="secondary">
+                    {profile.experience_level.charAt(0).toUpperCase() +
+                      profile.experience_level.slice(1)}
+                  </Badge>
+                </div>
+              )}
+
               {profile.hourly_rate && (
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">
