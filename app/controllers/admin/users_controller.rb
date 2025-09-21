@@ -60,7 +60,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:role, :verified)
+    params.require(:user).permit(:verified)
   end
 
   def authorize_admin!

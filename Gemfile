@@ -66,6 +66,7 @@ group :development, :test do
 
   # Rails controller testing utilities [https://github.com/rails/rails-controller-testing]
   gem "rails-controller-testing"
+  gem "database_cleaner"
 end
 
 group :development do
