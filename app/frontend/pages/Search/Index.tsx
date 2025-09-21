@@ -91,7 +91,7 @@ export default function SearchIndex({
       searchParams.append('service_radius_km', serviceRadiusKm);
     }
 
-    router.get(`/search/tradespeople?${searchParams.toString()}`);
+    router.get(`/search/suppliers?${searchParams.toString()}`);
   };
 
   const clearFilters = () => {
@@ -123,14 +123,14 @@ export default function SearchIndex({
     (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0); // New: Check for active radius filter
 
   return (
-    <AppLayout title="Find Skilled Tradespeople">
-      <Head title="Find Skilled Tradespeople" />
+    <AppLayout title="Find Skilled Suppliers">
+      <Head title="Find Skilled Suppliers" />
 
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Find Skilled Tradespeople in Jamaica
+            Find Skilled Suppliers in Jamaica
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Connect with verified professionals across construction, technology,

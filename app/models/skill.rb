@@ -2,8 +2,8 @@
 
 class Skill < ApplicationRecord
   # Associations
-  has_many :trades_person_skills, dependent: :destroy
-  has_many :trades_person_profiles, through: :trades_person_skills
+  has_many :supplier_skills, dependent: :destroy
+  has_many :supplier_profiles, through: :supplier_skills
 
   # Validations
   validates :name, presence: true, uniqueness: true, length: {maximum: 100}

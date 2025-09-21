@@ -5,8 +5,8 @@ require "rails_helper"
 RSpec.describe Skill, type: :model do
   # Associations
   describe "associations" do
-    it { is_expected.to have_many(:trades_person_skills).dependent(:destroy) }
-    it { is_expected.to have_many(:trades_person_profiles).through(:trades_person_skills) }
+    it { is_expected.to have_many(:supplier_skills).dependent(:destroy) }
+    it { is_expected.to have_many(:supplier_profiles).through(:supplier_skills) }
   end
 
   # Validations

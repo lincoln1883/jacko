@@ -11,13 +11,15 @@ class ClientProfilesController < ApplicationController
     render inertia: "Profile/ClientShow", props: {
       profile: serialize_profile(@profile),
       user: serialize_user(current_user),
-      can_edit: can_edit_profile?
+      can_edit: can_edit_profile?,
+      reviews: @profile.user.received_reviews.includes(:reviewer).as_json(include: {reviewer: {only: [:id, :email, :role_display]}}),
+      completedJobs: @profile.user.client_jobs.completed.as_json(include: [:parish]) # Fetch completed jobs
     }
   end
 
   def edit
     # Handle role switch if requested
-    if params[:switch_role] == "true" && current_user.tradesperson?
+    if params[:switch_role] == "true" && (current_user.supplier? || current_user.contractor?)
       handle_role_switch_to_client
       return
     end
@@ -47,7 +49,7 @@ class ClientProfilesController < ApplicationController
         contact_method_options: ClientProfile.contact_method_options,
         budget_range_options: ClientProfile.budget_range_options,
         errors: @profile.errors.as_json
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -68,19 +70,19 @@ class ClientProfilesController < ApplicationController
   end
 
   def ensure_client_or_allow_switch!
-    # Allow tradesperson to access edit page if they want to switch roles
+    # Allow supplier/contractor to access edit page if they want to switch roles
     return if current_user.client?
-    return if current_user.tradesperson? && params[:switch_role] == "true"
+    return if (current_user.supplier? || current_user.contractor?) && params[:switch_role] == "true"
 
     redirect_to root_path, alert: "Access denied. Only clients can access this page."
   end
 
   def handle_role_switch_to_client
-    # Switch user role from tradesperson to client
+    # Switch user role from supplier/contractor to client
     current_user.update!(role: "client")
 
-    # Clean up tradesperson profile if it exists
-    current_user.trades_person_profile&.destroy
+    # Clean up supplier profile if it exists
+    current_user.supplier_profile&.destroy
 
     # Redirect to the client profile edit page without the switch parameter
     redirect_to edit_profile_client_path, notice: "Your account has been switched to Client. Please complete your client profile."
@@ -122,7 +124,9 @@ class ClientProfilesController < ApplicationController
       display_budget_range: profile.display_budget_range,
       display_contact_method: profile.display_contact_method,
       created_at: profile.created_at,
-      updated_at: profile.updated_at
+      updated_at: profile.updated_at,
+      average_rating: profile.user.average_rating,
+      review_count: profile.user.review_count
     }
   end
 

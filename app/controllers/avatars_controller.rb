@@ -2,7 +2,7 @@
 
 class AvatarsController < ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_tradesperson!
+  before_action :ensure_supplier!
   before_action :set_profile
 
   def create
@@ -17,7 +17,7 @@ class AvatarsController < ApplicationController
       render json: {
         success: false,
         errors: @profile.errors.full_messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -37,7 +37,7 @@ class AvatarsController < ApplicationController
       render json: {
         success: false,
         errors: @profile.errors.full_messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -52,28 +52,28 @@ class AvatarsController < ApplicationController
       render json: {
         success: false,
         message: "No avatar to delete"
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
   private
 
   def set_profile
-    @profile = current_user.trades_person_profile
+    @profile = current_user.supplier_profile
 
     unless @profile
       render json: {
         success: false,
-        message: "Profile not found"
+        message: "Supplier profile not found"
       }, status: :not_found
     end
   end
 
-  def ensure_tradesperson!
-    unless current_user.tradesperson?
+  def ensure_supplier!
+    unless current_user.supplier? || current_user.contractor?
       render json: {
         success: false,
-        message: "Access denied. Only tradespeople can manage avatars."
+        message: "Access denied. Only suppliers or contractors can manage avatars."
       }, status: :forbidden
     end
   end

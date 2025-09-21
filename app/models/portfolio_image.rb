@@ -2,7 +2,7 @@
 
 class PortfolioImage < ApplicationRecord
   # Associations
-  belongs_to :trades_person_profile
+  belongs_to :supplier_profile
   has_one_attached :image
 
   # Validations
@@ -18,7 +18,7 @@ class PortfolioImage < ApplicationRecord
   # Scopes
   scope :active, -> { where(active: true) }
   scope :ordered, -> { order(:display_order, :created_at) }
-  scope :by_profile, ->(profile_id) { where(trades_person_profile_id: profile_id) }
+  scope :by_profile, ->(profile_id) { where(supplier_profile_id: profile_id) }
 
   # Callbacks
   before_validation :set_default_display_order, on: :create
@@ -81,7 +81,7 @@ class PortfolioImage < ApplicationRecord
   def set_default_display_order
     return if display_order.present?
 
-    max_order = trades_person_profile&.portfolio_images&.maximum(:display_order) || 0
+    max_order = supplier_profile&.portfolio_images&.maximum(:display_order) || 0
     self.display_order = max_order + 1
   end
 
@@ -89,9 +89,9 @@ class PortfolioImage < ApplicationRecord
     return if image_alt_text.present? || !image.attached?
 
     self.image_alt_text = if title.present?
-      "#{title} - #{trades_person_profile&.company_name || 'Portfolio'} work"
+      "#{title} - #{supplier_profile&.company_name || 'Portfolio'} work"
     else
-      "Portfolio work by #{trades_person_profile&.company_name || 'tradesperson'}"
+      "Portfolio work by #{supplier_profile&.company_name || 'supplier'}"
     end
   end
 

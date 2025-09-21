@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_21_122242) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,6 +39,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "bids", force: :cascade do |t|
+    t.integer "job_id", null: false
+    t.decimal "amount"
+    t.text "message"
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "supplier_profile_id", null: false
+    t.index ["job_id"], name: "index_bids_on_job_id"
+    t.index ["status"], name: "index_bids_on_status"
+    t.index ["supplier_profile_id"], name: "index_bids_on_supplier_profile_id"
+  end
+
   create_table "client_profiles", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "company_name", limit: 255
@@ -52,6 +65,49 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
     t.index ["active"], name: "index_client_profiles_on_active"
     t.index ["preferred_contact_method"], name: "index_client_profiles_on_preferred_contact_method"
     t.index ["user_id"], name: "index_client_profiles_on_user_id", unique: true
+  end
+
+  create_table "construction_services", force: :cascade do |t|
+    t.string "name"
+    t.string "unit"
+    t.decimal "price"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "description"
+  end
+
+  create_table "disputes", force: :cascade do |t|
+    t.integer "job_id", null: false
+    t.integer "reporter_id", null: false
+    t.integer "reported_user_id", null: false
+    t.string "reason"
+    t.text "description"
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_disputes_on_job_id"
+    t.index ["reported_user_id"], name: "index_disputes_on_reported_user_id"
+    t.index ["reporter_id"], name: "index_disputes_on_reporter_id"
+    t.index ["status"], name: "index_disputes_on_status"
+  end
+
+  create_table "jobs", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.decimal "budget"
+    t.date "due_date"
+    t.string "location"
+    t.integer "parish_id", null: false
+    t.integer "client_id", null: false
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "supplier_profile_id"
+    t.index ["client_id"], name: "index_jobs_on_client_id"
+    t.index ["parish_id"], name: "index_jobs_on_parish_id"
+    t.index ["status"], name: "index_jobs_on_status"
+    t.index ["supplier_profile_id"], name: "index_jobs_on_supplier_profile_id"
   end
 
   create_table "parishes", force: :cascade do |t|
@@ -71,7 +127,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
   end
 
   create_table "portfolio_images", force: :cascade do |t|
-    t.integer "trades_person_profile_id", null: false
+    t.integer "supplier_profile_id", null: false
     t.string "title", limit: 255
     t.text "description", limit: 1000
     t.integer "display_order", default: 0, null: false
@@ -81,9 +137,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["metadata"], name: "index_portfolio_images_on_metadata"
-    t.index ["trades_person_profile_id", "active"], name: "index_portfolio_images_on_trades_person_profile_id_and_active"
-    t.index ["trades_person_profile_id", "display_order"], name: "idx_on_trades_person_profile_id_display_order_e7c8b6a1c4"
-    t.index ["trades_person_profile_id"], name: "index_portfolio_images_on_trades_person_profile_id"
+    t.index ["supplier_profile_id", "active"], name: "index_portfolio_images_on_supplier_profile_id_and_active"
+    t.index ["supplier_profile_id", "display_order"], name: "idx_on_supplier_profile_id_display_order_5e178485c1"
+    t.index ["supplier_profile_id"], name: "index_portfolio_images_on_supplier_profile_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.integer "job_id", null: false
+    t.integer "reviewer_id", null: false
+    t.integer "reviewee_id", null: false
+    t.integer "rating"
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_reviews_on_job_id"
+    t.index ["rating"], name: "index_reviews_on_rating"
+    t.index ["reviewee_id"], name: "index_reviews_on_reviewee_id"
+    t.index ["reviewer_id"], name: "index_reviews_on_reviewer_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -107,7 +177,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
     t.index ["name"], name: "index_skills_on_name", unique: true
   end
 
-  create_table "trades_person_profiles", force: :cascade do |t|
+  create_table "supplier_profiles", force: :cascade do |t|
     t.integer "user_id", null: false
     t.text "bio"
     t.string "company_name"
@@ -131,21 +201,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
     t.text "service_area_notes"
     t.json "additional_parishes"
     t.integer "experience_level"
-    t.index ["active"], name: "index_trades_person_profiles_on_active"
-    t.index ["availability_status"], name: "index_trades_person_profiles_on_availability_status"
-    t.index ["parish_id"], name: "index_trades_person_profiles_on_parish_id"
-    t.index ["user_id"], name: "index_trades_person_profiles_on_user_id", unique: true
-    t.index ["years_experience"], name: "index_trades_person_profiles_on_years_experience"
+    t.index ["active"], name: "index_supplier_profiles_on_active"
+    t.index ["availability_status"], name: "index_supplier_profiles_on_availability_status"
+    t.index ["parish_id"], name: "index_supplier_profiles_on_parish_id"
+    t.index ["user_id"], name: "index_supplier_profiles_on_user_id", unique: true
+    t.index ["years_experience"], name: "index_supplier_profiles_on_years_experience"
   end
 
-  create_table "trades_person_skills", force: :cascade do |t|
-    t.integer "trades_person_profile_id", null: false
+  create_table "supplier_skills", force: :cascade do |t|
+    t.integer "supplier_profile_id", null: false
     t.integer "skill_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["skill_id"], name: "index_trades_person_skills_on_skill_id"
-    t.index ["trades_person_profile_id", "skill_id"], name: "index_profile_skills_unique", unique: true
-    t.index ["trades_person_profile_id"], name: "index_trades_person_skills_on_trades_person_profile_id"
+    t.index ["skill_id"], name: "index_supplier_skills_on_skill_id"
+    t.index ["supplier_profile_id", "skill_id"], name: "index_profile_skills_unique", unique: true
+    t.index ["supplier_profile_id"], name: "index_supplier_skills_on_supplier_profile_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -159,13 +229,35 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_185816) do
     t.index ["role"], name: "index_users_on_role"
   end
 
+  create_table "verification_requests", force: :cascade do |t|
+    t.integer "supplier_id", null: false
+    t.integer "status", default: 0
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_verification_requests_on_status"
+    t.index ["supplier_id"], name: "index_verification_requests_on_supplier_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bids", "jobs"
+  add_foreign_key "bids", "supplier_profiles"
   add_foreign_key "client_profiles", "users"
-  add_foreign_key "portfolio_images", "trades_person_profiles"
+  add_foreign_key "disputes", "jobs"
+  add_foreign_key "disputes", "users", column: "reported_user_id"
+  add_foreign_key "disputes", "users", column: "reporter_id"
+  add_foreign_key "jobs", "parishes"
+  add_foreign_key "jobs", "supplier_profiles"
+  add_foreign_key "jobs", "users", column: "client_id"
+  add_foreign_key "portfolio_images", "supplier_profiles"
+  add_foreign_key "reviews", "jobs"
+  add_foreign_key "reviews", "users", column: "reviewee_id"
+  add_foreign_key "reviews", "users", column: "reviewer_id"
   add_foreign_key "sessions", "users"
-  add_foreign_key "trades_person_profiles", "parishes"
-  add_foreign_key "trades_person_profiles", "users"
-  add_foreign_key "trades_person_skills", "skills"
-  add_foreign_key "trades_person_skills", "trades_person_profiles"
+  add_foreign_key "supplier_profiles", "parishes"
+  add_foreign_key "supplier_profiles", "users"
+  add_foreign_key "supplier_skills", "skills"
+  add_foreign_key "supplier_skills", "supplier_profiles"
+  add_foreign_key "verification_requests", "users", column: "supplier_id"
 end

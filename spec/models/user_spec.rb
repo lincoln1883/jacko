@@ -11,7 +11,7 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_uniqueness_of(:email).ignoring_case_sensitivity }
     it { is_expected.to validate_presence_of(:role) }
-    it { is_expected.to validate_inclusion_of(:role).in_array(%w[client tradesperson admin]) }
+    it { is_expected.to validate_inclusion_of(:role).in_array(%w[client supplier contractor admin]) }
 
     it "validates email format" do
       user.email = "invalid_email"
@@ -192,7 +192,7 @@ RSpec.describe User, type: :model do
 
   describe "roles" do
     describe "enum" do
-      it { is_expected.to define_enum_for(:role).with_values(client: 0, tradesperson: 1, admin: 2) }
+      it { is_expected.to define_enum_for(:role).with_values(client: 0, supplier: 1, contractor: 2, admin: 3) }
     end
 
     describe "default role" do
@@ -207,13 +207,13 @@ RSpec.describe User, type: :model do
       it "correctly identifies client role" do
         user = create(:user, role: :client)
         expect(user).to be_client
-        expect(user).not_to be_tradesperson
+        expect(user).not_to be_supplier
         expect(user).not_to be_admin
       end
 
-      it "correctly identifies tradesperson role" do
-        user = create(:user, role: :tradesperson)
-        expect(user).to be_tradesperson
+      it "correctly identifies supplier role" do
+        user = create(:user, role: :supplier)
+        expect(user).to be_supplier
         expect(user).not_to be_client
         expect(user).not_to be_admin
       end
@@ -222,21 +222,21 @@ RSpec.describe User, type: :model do
         user = create(:user, role: :admin)
         expect(user).to be_admin
         expect(user).not_to be_client
-        expect(user).not_to be_tradesperson
+        expect(user).not_to be_supplier
       end
     end
 
     describe "scopes" do
       let!(:client) { create(:user, role: :client) }
-      let!(:tradesperson) { create(:user, role: :tradesperson) }
+      let!(:supplier) { create(:user, role: :supplier) }
       let!(:admin) { create(:user, role: :admin) }
 
       it "filters clients" do
         expect(User.clients).to contain_exactly(client)
       end
 
-      it "filters tradespeople" do
-        expect(User.tradespeople).to contain_exactly(tradesperson)
+      it "filters suppliers" do
+        expect(User.tradespeople).to contain_exactly(supplier)
       end
 
       it "filters admins" do
@@ -246,20 +246,20 @@ RSpec.describe User, type: :model do
 
     describe "role helper methods" do
       let(:client) { create(:user, role: :client) }
-      let(:tradesperson) { create(:user, role: :tradesperson) }
+      let(:supplier) { create(:user, role: :supplier) }
       let(:admin) { create(:user, role: :admin) }
 
       describe "#role_display" do
         it "returns formatted role names" do
           expect(client.role_display).to eq("Client")
-          expect(tradesperson.role_display).to eq("Tradesperson")
+          expect(supplier.role_display).to eq("Supplier")
           expect(admin.role_display).to eq("Administrator")
         end
       end
 
       describe "#can_create_profile?" do
-        it "returns true for tradespeople" do
-          expect(tradesperson.can_create_profile?).to be true
+        it "returns true for suppliers" do
+          expect(supplier.can_create_profile?).to be true
         end
 
         it "returns false for clients and admins" do
@@ -273,8 +273,8 @@ RSpec.describe User, type: :model do
           expect(client.can_hire?).to be true
         end
 
-        it "returns false for tradespeople and admins" do
-          expect(tradesperson.can_hire?).to be false
+        it "returns false for suppliers and admins" do
+          expect(supplier.can_hire?).to be false
           expect(admin.can_hire?).to be false
         end
       end
@@ -284,9 +284,9 @@ RSpec.describe User, type: :model do
           expect(admin.has_admin_access?).to be true
         end
 
-        it "returns false for clients and tradespeople" do
+        it "returns false for clients and suppliers" do
           expect(client.has_admin_access?).to be false
-          expect(tradesperson.has_admin_access?).to be false
+          expect(supplier.has_admin_access?).to be false
         end
       end
     end

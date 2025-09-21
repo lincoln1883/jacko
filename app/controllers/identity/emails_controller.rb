@@ -20,7 +20,7 @@ class Identity::EmailsController < ApplicationController
           email: @user.email
         },
         errors: @user.errors.messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 

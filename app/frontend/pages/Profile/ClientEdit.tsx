@@ -39,7 +39,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
                 Edit Your Profile
               </h1>
               <p className="text-muted-foreground mt-2">
-                Update your client profile to help tradespeople understand your
+                Update your client profile to help suppliers understand your
                 needs.
               </p>
             </div>
@@ -72,7 +72,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
             />
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Complete your profile to help tradespeople understand your project
+            Complete your profile to help suppliers understand your project
             requirements.
           </p>
         </div>
@@ -99,7 +99,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
                     <div className="w-3 h-3 bg-primary rounded-full"></div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    I want to hire tradespeople for projects
+                    I want to hire suppliers for projects
                   </p>
                   <p className="text-xs text-muted-foreground">
                     ✓ Currently selected
@@ -110,20 +110,20 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
                   className="flex-1 p-4 border-2 border-border hover:border-primary/50 rounded-lg transition-colors cursor-pointer w-full text-left"
                   onClick={() =>
                     (window.location.href =
-                      '/profile/tradesperson/edit?switch_role=true')
+                      '/profile/supplier/edit?switch_role=true')
                   }
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-foreground">
-                      Tradesperson Account
+                      Supplier Account
                     </h3>
                     <div className="w-3 h-3 bg-muted rounded-full"></div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    I am a tradesperson looking for work
+                    I am a supplier looking for work
                   </p>
                   <p className="text-xs text-primary hover:underline">
-                    → Switch to tradesperson
+                    → Switch to supplier
                   </p>
                 </button>
               </div>
@@ -158,7 +158,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
                 options={budget_range_options}
                 errors={serverErrors?.project_budget_range}
                 placeholder="Select budget range..."
-                hint="This helps tradespeople understand the scale of your projects"
+                hint="This helps suppliers understand the scale of your projects"
               />
             </div>
           </div>
@@ -179,7 +179,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
               }
               options={contact_method_options}
               errors={serverErrors?.preferred_contact_method}
-              hint="How would you like tradespeople to contact you?"
+              hint="How would you like suppliers to contact you?"
             />
           </div>
 
@@ -197,7 +197,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
               errors={serverErrors?.description}
               placeholder="Describe the types of projects you typically hire for, your expectations, and any specific requirements..."
               rows={6}
-              hint="Help tradespeople understand what types of projects you typically hire for (max 1500 characters)"
+              hint="Help suppliers understand what types of projects you typically hire for (max 1500 characters)"
             />
           </div>
 
@@ -223,8 +223,7 @@ const ClientEdit: React.FC<ClientProfilePageProps> = ({
             <li>• Be clear about your typical project requirements</li>
             <li>• Specify your preferred communication method</li>
             <li>
-              • Provide a realistic budget range to attract suitable
-              tradespeople
+              • Provide a realistic budget range to attract suitable suppliers
             </li>
             <li>• Describe any specific standards or expectations you have</li>
           </ul>

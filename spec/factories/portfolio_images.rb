@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :portfolio_image do
-    association :trades_person_profile
+    association :supplier_profile
     sequence(:title) { |n| "Portfolio Image #{n}" }
     description { Faker::Lorem.paragraph(sentence_count: 2) }
     sequence(:display_order) { |n| n }

@@ -9,6 +9,8 @@ const ClientShow: React.FC<ClientProfilePageProps> = ({
   profile,
   user,
   can_edit,
+  reviews,
+  completedJobs,
 }) => {
   const completionColor =
     profile.completion_percentage >= 80
@@ -16,6 +18,17 @@ const ClientShow: React.FC<ClientProfilePageProps> = ({
       : profile.completion_percentage >= 50
         ? 'yellow'
         : 'red';
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <span
+        key={i}
+        className={i < rating ? 'text-yellow-400' : 'text-gray-300'}
+      >
+        ★
+      </span>
+    ));
+  };
 
   return (
     <AppLayout title="Client Profile">
@@ -30,6 +43,18 @@ const ClientShow: React.FC<ClientProfilePageProps> = ({
               <p className="text-lg text-muted-foreground mt-1">
                 {user.role_display}
               </p>
+              {profile.average_rating !== undefined &&
+                profile.review_count !== undefined && (
+                  <div className="flex items-center mt-2 text-muted-foreground">
+                    <div className="flex text-yellow-400">
+                      {renderStars(profile.average_rating)}
+                    </div>
+                    <span className="ml-2 text-sm">
+                      {profile.average_rating.toFixed(1)} (
+                      {profile.review_count} reviews)
+                    </span>
+                  </div>
+                )}
             </div>
 
             {can_edit && (
@@ -157,6 +182,71 @@ const ClientShow: React.FC<ClientProfilePageProps> = ({
               <p className="text-foreground whitespace-pre-wrap">
                 {profile.description}
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* Reviews Section */}
+        {reviews && reviews.length > 0 && (
+          <div className="bg-card rounded-lg shadow-sm border p-6 mt-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Reviews
+            </h2>
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="border-b pb-4 last:border-b-0 last:pb-0"
+                >
+                  <div className="flex items-center mb-2">
+                    <p className="font-medium text-foreground">
+                      {review.reviewer?.email} ({review.reviewer?.role_display})
+                    </p>
+                    <div className="ml-3 flex text-yellow-400">
+                      {renderStars(review.rating)}
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    {review.comment}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Reviewed on:{' '}
+                    {new Date(review.created_at!).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Completed Jobs Section */}
+        {completedJobs && completedJobs.length > 0 && (
+          <div className="bg-card rounded-lg shadow-sm border p-6 mt-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Completed Jobs
+            </h2>
+            <div className="space-y-4">
+              {completedJobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="border-b pb-4 last:border-b-0 last:pb-0"
+                >
+                  <h3 className="font-medium text-foreground text-lg">
+                    <Link
+                      href={window.route('jobs.show', job.id)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {job.title}
+                    </Link>
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Status: {job.status.replace(/_/g, ' ')}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Completed on: {new Date(job.due_date).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         )}

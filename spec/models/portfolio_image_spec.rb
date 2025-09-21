@@ -3,12 +3,12 @@
 require "rails_helper"
 
 RSpec.describe PortfolioImage, type: :model do
-  let(:user) { create(:user, :tradesperson) }
-  let(:profile) { create(:trades_person_profile, user: user) }
-  let(:portfolio_image) { create(:portfolio_image, trades_person_profile: profile) }
+  let(:user) { create(:user, :supplier) }
+  let(:profile) { create(:supplier_profile, user: user) }
+  let(:portfolio_image) { create(:portfolio_image, supplier_profile: profile) }
 
   describe "associations" do
-    it { should belong_to(:trades_person_profile) }
+    it { should belong_to(:supplier_profile) }
     it { should have_one_attached(:image) }
   end
 
@@ -24,9 +24,9 @@ RSpec.describe PortfolioImage, type: :model do
   end
 
   describe "scopes" do
-    let!(:active_image) { create(:portfolio_image, trades_person_profile: profile, active: true, display_order: 1) }
-    let!(:inactive_image) { create(:portfolio_image, trades_person_profile: profile, active: false, display_order: 2) }
-    let!(:later_image) { create(:portfolio_image, trades_person_profile: profile, active: true, display_order: 3) }
+    let!(:active_image) { create(:portfolio_image, supplier_profile: profile, active: true, display_order: 1) }
+    let!(:inactive_image) { create(:portfolio_image, supplier_profile: profile, active: false, display_order: 2) }
+    let!(:later_image) { create(:portfolio_image, supplier_profile: profile, active: true, display_order: 3) }
 
     describe ".active" do
       it "returns only active images" do
@@ -41,8 +41,8 @@ RSpec.describe PortfolioImage, type: :model do
     end
 
     describe ".by_profile" do
-      let(:other_profile) { create(:trades_person_profile) }
-      let!(:other_image) { create(:portfolio_image, trades_person_profile: other_profile) }
+      let(:other_profile) { create(:supplier_profile) }
+      let!(:other_image) { create(:portfolio_image, supplier_profile: other_profile) }
 
       it "returns images for specific profile" do
         expect(PortfolioImage.by_profile(profile.id)).to contain_exactly(active_image, inactive_image, later_image)
@@ -55,8 +55,8 @@ RSpec.describe PortfolioImage, type: :model do
     describe "before_validation" do
       context "when display_order is not set" do
         it "sets default display_order" do
-          existing_image = create(:portfolio_image, trades_person_profile: profile, display_order: 5)
-          new_image = build(:portfolio_image, trades_person_profile: profile, display_order: nil)
+          existing_image = create(:portfolio_image, supplier_profile: profile, display_order: 5)
+          new_image = build(:portfolio_image, supplier_profile: profile, display_order: nil)
 
           new_image.valid?
           expect(new_image.display_order).to eq(6)
@@ -66,7 +66,7 @@ RSpec.describe PortfolioImage, type: :model do
       context "when image_alt_text is missing" do
         it "generates alt text from title" do
           image = build(:portfolio_image,
-            trades_person_profile: profile,
+            supplier_profile: profile,
             title: "Kitchen Renovation",
             image_alt_text: nil
           )
@@ -78,7 +78,7 @@ RSpec.describe PortfolioImage, type: :model do
 
         it "generates generic alt text when title is missing" do
           image = build(:portfolio_image,
-            trades_person_profile: profile,
+            supplier_profile: profile,
             title: nil,
             image_alt_text: nil
           )

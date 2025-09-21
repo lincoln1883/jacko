@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe SearchController, type: :controller do
   let(:user) { create(:user, :client) }
-  let(:tradesperson_user) { create(:user, :tradesperson) }
+  let(:supplier_user) { create(:user, :supplier) }
   let(:skills) { create_list(:skill, 3, active: true) }
 
   before do
@@ -45,21 +45,21 @@ RSpec.describe SearchController, type: :controller do
     end
   end
 
-  describe "GET #tradespeople" do
+  describe "GET #suppliers" do
     let!(:profile1) do
-      create(:trades_person_profile,
+      create(:supplier_profile,
         bio: "Expert plumber with 10 years experience",
         company_name: "ABC Plumbing",
         years_experience: 10,
         hourly_rate: 75,
-        availability_status: :available,
+        availability_status: :is_available,
         active: true,
         profile_completed_at: 1.week.ago
       )
     end
 
     let!(:profile2) do
-      create(:trades_person_profile,
+      create(:supplier_profile,
         bio: "Professional electrician",
         company_name: "XYZ Electric",
         years_experience: 5,
@@ -71,7 +71,7 @@ RSpec.describe SearchController, type: :controller do
     end
 
     let!(:inactive_profile) do
-      create(:trades_person_profile,
+      create(:supplier_profile,
         bio: "Inactive profile",
         active: false,
         profile_completed_at: 1.week.ago
@@ -89,62 +89,62 @@ RSpec.describe SearchController, type: :controller do
 
     context "when user is authenticated" do
       it "returns all active completed profiles when no filters are applied" do
-        get :tradespeople
+        get :suppliers
 
         expect(response).to have_http_status(:success)
       end
 
       it "filters by text query" do
-        get :tradespeople, params: {query: "plumber"}
+        get :suppliers, params: {query: "plumber"}
 
         expect(response).to have_http_status(:success)
       end
 
       it "filters by skills" do
         skill = profile1.skills.first
-        get :tradespeople, params: {skill_ids: [skill.id]}
+        get :suppliers, params: {skill_ids: [skill.id]}
 
         expect(response).to have_http_status(:success)
       end
 
       it "filters by availability status" do
-        get :tradespeople, params: {availability: ["available"]}
+        get :suppliers, params: {availability: ["available"]}
 
         expect(response).to have_http_status(:success)
       end
 
       it "filters by experience range" do
-        get :tradespeople, params: {experience_range: ["experienced"]}
+        get :suppliers, params: {experience_range: ["experienced"]}
 
         expect(response).to have_http_status(:success)
       end
 
       it "handles pagination parameters" do
-        get :tradespeople, params: {page: 1, per_page: 5}
+        get :suppliers, params: {page: 1, per_page: 5}
 
         expect(response).to have_http_status(:success)
       end
 
       it "caps per_page at 50" do
-        get :tradespeople, params: {per_page: 100}
+        get :suppliers, params: {per_page: 100}
 
         expect(response).to have_http_status(:success)
       end
 
       it "excludes inactive profiles" do
-        get :tradespeople
+        get :suppliers
 
         expect(response).to have_http_status(:success)
         # In a real test, you'd verify the response data doesn't include inactive_profile
       end
 
       it "excludes incomplete profiles" do
-        incomplete_profile = create(:trades_person_profile,
+        incomplete_profile = create(:supplier_profile,
           active: true,
           profile_completed_at: nil
         )
 
-        get :tradespeople
+        get :suppliers
 
         expect(response).to have_http_status(:success)
       end
@@ -152,7 +152,7 @@ RSpec.describe SearchController, type: :controller do
       context "with combined filters" do
         it "applies multiple filters correctly" do
           skill = profile1.skills.first
-          get :tradespeople, params: {
+          get :suppliers, params: {
             query: "plumber",
             skill_ids: [skill.id],
             availability: ["available"],
@@ -170,7 +170,7 @@ RSpec.describe SearchController, type: :controller do
       end
 
       it "redirects to sign in page" do
-        get :tradespeople
+        get :suppliers
 
         expect(response).to redirect_to(sign_in_path)
       end
@@ -252,19 +252,19 @@ RSpec.describe SearchController, type: :controller do
 
   describe "search logic integration" do
     let!(:plumber_profile) do
-      create(:trades_person_profile,
+      create(:supplier_profile,
         bio: "Expert plumber with 15 years experience in residential and commercial plumbing",
         company_name: "Premier Plumbing Services",
         years_experience: 15,
         hourly_rate: 85,
-        availability_status: :available,
+        availability_status: :is_available,
         active: true,
         profile_completed_at: 1.week.ago
       )
     end
 
     let!(:electrician_profile) do
-      create(:trades_person_profile,
+      create(:supplier_profile,
         bio: "Licensed electrician specializing in home rewiring",
         company_name: "Spark Electric Co",
         years_experience: 3,
@@ -286,18 +286,18 @@ RSpec.describe SearchController, type: :controller do
     it "searches by text in bio, description, and company name" do
       # This would be a more comprehensive test in a real scenario
       # where you'd actually check the filtered results
-      get :tradespeople, params: {query: "plumber"}
+      get :suppliers, params: {query: "plumber"}
       expect(response).to have_http_status(:success)
 
-      get :tradespeople, params: {query: "Premier"}
+      get :suppliers, params: {query: "Premier"}
       expect(response).to have_http_status(:success)
     end
 
     it "filters by experience ranges correctly" do
-      get :tradespeople, params: {experience_range: ["entry_level"]}
+      get :suppliers, params: {experience_range: ["entry_level"]}
       expect(response).to have_http_status(:success)
 
-      get :tradespeople, params: {experience_range: ["expert"]}
+      get :suppliers, params: {experience_range: ["expert"]}
       expect(response).to have_http_status(:success)
     end
   end

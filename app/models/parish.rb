@@ -2,7 +2,7 @@
 
 class Parish < ApplicationRecord
   # Associations
-  has_many :trades_person_profiles, dependent: :destroy
+  has_many :supplier_profiles, dependent: :destroy
 
   # Validations
   validates :name, presence: true, uniqueness: true

@@ -15,8 +15,10 @@ class Ability
       case user.role
       when "client"
         client_permissions(user)
-      when "tradesperson"
-        tradesperson_permissions(user)
+      when "supplier"
+        supplier_permissions(user)
+      when "contractor"
+        contractor_permissions(user)
       when "admin"
         admin_permissions(user)
       end
@@ -38,12 +40,12 @@ class Ability
     # can [:read, :update], Review, client: user
 
     # For now, basic permissions until we have these models
-    can :read, :tradesperson_profiles
+    can :read, :supplier_profiles
     can :create, :project_inquiries
   end
 
-  def tradesperson_permissions(user)
-    # Tradespeople can manage their own profile and portfolio
+  def supplier_permissions(user)
+    # Suppliers can manage their own profile and portfolio
     # can [:create, :read, :update], TradesPersonProfile, user: user
     # can [:create, :read, :update, :destroy], Portfolio, tradesperson: user
     # can [:read, :update], Message, recipient: user
@@ -51,6 +53,13 @@ class Ability
     # can :read, Review, tradesperson: user
     # can :create, VerificationRequest, user: user
 
+    # For now, basic permissions until we have these models
+    can :manage, :own_profile
+    can :read, :client_inquiries
+    can :create, :verification_requests
+  end
+
+  def contractor_permissions(user)
     # For now, basic permissions until we have these models
     can :manage, :own_profile
     can :read, :client_inquiries
