@@ -1,6 +1,37 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  # Removed global pricing calculator routes
+  # Removed global review routes
+
+  namespace :admin do
+    get "construction_services/index"
+    get "construction_services/new"
+    get "construction_services/create"
+    get "construction_services/edit"
+    get "construction_services/update"
+    get "construction_services/destroy"
+    get "users/index"
+    get "users/show"
+    get "users/update"
+    resources :verification_requests, only: [:index, :show, :update]
+    resources :disputes, only: [:index, :show, :update]
+    resource :dashboard, only: [:show]
+    resources :users, only: [:index, :show, :update]
+    resources :jobs
+    resources :construction_services
+  end
+  resources :verification_requests, only: [:new, :create, :show]
+  resources :jobs do
+    resources :bids, only: [:new, :create, :update]
+    resources :reviews, only: [:new, :create]
+    resources :disputes, only: [:new, :create]
+  end
+
+  resource :pricing_calculator, controller: "pricing_calculator", only: [:show, :create] do
+    post :calculate, on: :collection
+  end
+
   # Portfolio images routes
   resources :portfolio_images, except: [:new, :edit] do
     collection do
@@ -12,7 +43,7 @@ Rails.application.routes.draw do
   resource :avatar, only: [:create, :update, :destroy]
   # Profile routes
   resource :profile, only: [] do
-    resource :tradesperson, controller: "trades_person_profiles", only: [:show, :edit, :update]
+    resource :supplier, controller: "supplier_profiles", only: [:show, :edit, :update], as: :supplier
     resource :client, controller: "client_profiles", only: [:show, :edit, :update]
   end
   get  "sign_in", to: "sessions#new"
@@ -29,10 +60,10 @@ Rails.application.routes.draw do
   end
   # Search routes
   get "search", to: "search#index"
-  get "search/tradespeople", to: "search#tradespeople"
+  get "search/suppliers", to: "search#suppliers", as: :search_suppliers
 
   # Public profile viewing routes
-  get "tradespeople/:id", to: "trades_person_profiles#public_show", as: :public_tradesperson_profile
+  get "suppliers/:id", to: "supplier_profiles#public_show", as: :public_supplier_profile
 
   root "home#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

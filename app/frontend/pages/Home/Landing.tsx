@@ -18,7 +18,7 @@ import {
 
 const Landing: React.FC = () => {
   // Features for tradespeople
-  const tradespeopleFeatures = [
+  const supplierFeatures = [
     {
       icon: Search,
       title: 'Get Found by Clients',
@@ -118,7 +118,7 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {tradespeopleFeatures.map((feature, index) => (
+            {supplierFeatures.map((feature, index) => (
               <FeatureCard
                 key={index}
                 icon={feature.icon}

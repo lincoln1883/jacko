@@ -20,8 +20,8 @@ FactoryBot.define do
       role { :client }
     end
 
-    trait :tradesperson do
-      role { :tradesperson }
+    trait :supplier do
+      role { :supplier }
     end
 
     trait :admin do

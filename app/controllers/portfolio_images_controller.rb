@@ -25,12 +25,12 @@ class PortfolioImagesController < ApplicationController
   # POST /portfolio_images
   def create
     unless @profile.can_add_portfolio_image?
-      render json: {error: "Portfolio image limit reached (#{@profile.max_portfolio_images} maximum)"}, status: :unprocessable_entity
+      render json: {error: "Portfolio image limit reached (#{@profile.max_portfolio_images} maximum)"}, status: :unprocessable_content
       return
     end
 
     unless @profile.portfolio_storage_available?
-      render json: {error: "Storage limit reached (#{@profile.max_portfolio_storage_mb}MB maximum)"}, status: :unprocessable_entity
+      render json: {error: "Storage limit reached (#{@profile.max_portfolio_storage_mb}MB maximum)"}, status: :unprocessable_content
       return
     end
 
@@ -45,7 +45,7 @@ class PortfolioImagesController < ApplicationController
       render json: {
         error: "Failed to upload portfolio image",
         errors: @portfolio_image.errors.full_messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -67,7 +67,7 @@ class PortfolioImagesController < ApplicationController
       render json: {
         error: "Failed to update portfolio image",
         errors: @portfolio_image.errors.full_messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -80,7 +80,7 @@ class PortfolioImagesController < ApplicationController
     else
       render json: {
         error: "Failed to delete portfolio image"
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -102,10 +102,10 @@ class PortfolioImagesController < ApplicationController
   private
 
   def set_profile
-    @profile = current_user.trades_person_profile
+    @profile = current_user.supplier_profile
 
     unless @profile
-      render json: {error: "Tradesperson profile not found"}, status: :not_found
+      render json: {error: "Supplier profile not found"}, status: :not_found
     end
   end
 

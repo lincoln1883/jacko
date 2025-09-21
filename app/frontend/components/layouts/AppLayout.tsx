@@ -5,6 +5,7 @@ import { ToastProvider } from '../../contexts/ToastContext';
 import ToastContainer from '../ui/toast-container';
 import { useFlashToast } from '../../hooks/useFlashToast';
 import type { PageProps } from '../../types/auth';
+import AdminLayout from './AdminLayout'; // Corrected to default import
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,35 +33,30 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({
 
   // Calculate role-based permissions from page data
   const isAdmin = pageUser?.role === 'admin';
-  const isClient = pageUser?.role === 'client';
-  const isTradesperson = pageUser?.role === 'tradesperson';
 
-  // This layout should only be used for authenticated users
+  // If admin, render AdminLayout
+  if (isAdmin) {
+    return <AdminLayout title={title}>{children}</AdminLayout>;
+  }
+
+  // For unauthenticated users, or non-admin roles, render the regular authenticated layout structure.
+  // If there's no authenticated user, the backend should redirect to login for pages using AppLayout.
   if (!pageUser) {
-    return null;
+    return null; // Or render a GuestLayout/redirect to login explicitly if not handled by middleware
   }
 
   return (
     <>
       <Head title={title} />
       <div className="min-h-screen bg-background">
-        <Navigation variant="app" user={pageUser} session={pageSession} />
+        <Navigation user={pageUser} session={pageSession} />
 
         <main>
-          {/* Role-based content wrapper */}
           <div className={`${className || ''}`}>
-            {/* Admin users see everything */}
-            {isAdmin && children}
-
-            {/* Tradespeople see their content */}
-            {isTradesperson && !isAdmin && children}
-
-            {/* Clients see their content */}
-            {isClient && !isAdmin && children}
+            {children} {/* Children for non-admin authenticated users */}
           </div>
         </main>
 
-        {/* Toast notifications */}
         <ToastContainer position="bottom-right" />
       </div>
     </>

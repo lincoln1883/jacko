@@ -15,7 +15,7 @@ module InertiaHelpers
         # Mock the response
         if options[:status] == :unprocessable_content
           controller.response.status = 422
-        elsif options[:status] == :unprocessable_entity
+        elsif options[:status] == :unprocessable_content
           controller.response.status = 422
         elsif options[:status]
           controller.response.status = options[:status]

@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe ClientProfilesController, type: :controller do
   let(:user) { create(:user, :client) }
-  let(:tradesperson_user) { create(:user, :tradesperson) }
+  let(:supplier_user) { create(:user, :supplier) }
   let(:profile) { create(:client_profile, user: user) }
 
   before do
@@ -32,7 +32,7 @@ RSpec.describe ClientProfilesController, type: :controller do
     end
 
     context "when user is not a client" do
-      before { sign_in(tradesperson_user) }
+      before { sign_in(supplier_user) }
 
       it "redirects with access denied" do
         get :show
@@ -62,20 +62,20 @@ RSpec.describe ClientProfilesController, type: :controller do
       end
     end
 
-    context "when tradesperson wants to switch roles" do
-      before { sign_in(tradesperson_user) }
+    context "when supplier wants to switch roles" do
+      before { sign_in(supplier_user) }
 
       it "handles role switch to client" do
         get :edit, params: {switch_role: "true"}
 
         expect(response).to redirect_to(edit_profile_client_path)
         expect(flash[:notice]).to include("switched to Client")
-        expect(tradesperson_user.reload.role).to eq("client")
+        expect(supplier_user.reload.role).to eq("client")
       end
     end
 
     context "when user is not authorized" do
-      before { sign_in(tradesperson_user) }
+      before { sign_in(supplier_user) }
 
       it "redirects with access denied" do
         get :edit
@@ -138,7 +138,7 @@ RSpec.describe ClientProfilesController, type: :controller do
       it "renders edit template with errors" do
         patch :update, params: invalid_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect_inertia_render("Profile/ClientEdit")
       end
 
@@ -171,20 +171,20 @@ RSpec.describe ClientProfilesController, type: :controller do
   end
 
   describe "role switching" do
-    let(:tradesperson_with_profile) { create(:user, :tradesperson) }
+    let(:supplier_with_profile) { create(:user, :supplier) }
 
     before do
-      create(:trades_person_profile, user: tradesperson_with_profile)
-      sign_in(tradesperson_with_profile)
+      create(:supplier_profile, user: supplier_with_profile)
+      sign_in(supplier_with_profile)
     end
 
-    it "destroys tradesperson profile when switching to client" do
-      expect(tradesperson_with_profile.trades_person_profile).to be_present
+    it "destroys supplier profile when switching to client" do
+      expect(supplier_with_profile.supplier_profile).to be_present
 
       get :edit, params: {switch_role: "true"}
 
-      expect(tradesperson_with_profile.reload.trades_person_profile).to be_nil
-      expect(tradesperson_with_profile.role).to eq("client")
+      expect(supplier_with_profile.reload.supplier_profile).to be_nil
+      expect(supplier_with_profile.role).to eq("client")
     end
   end
 

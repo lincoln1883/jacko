@@ -3,16 +3,16 @@
 require "rails_helper"
 
 RSpec.describe "PortfolioImages", type: :request do
-  let(:user) { create(:user, :tradesperson) }
-  let!(:profile) { create(:trades_person_profile, user: user) }
-  let(:portfolio_image) { create(:portfolio_image, trades_person_profile: profile) }
+  let(:user) { create(:user, :supplier) }
+  let!(:profile) { create(:supplier_profile, user: user) }
+  let(:portfolio_image) { create(:portfolio_image, supplier_profile: profile) }
 
   before do
     sign_in user
   end
 
   describe "GET /portfolio_images" do
-    it "returns portfolio images for authenticated tradesperson" do
+    it "returns portfolio images for authenticated supplier" do
       get "/portfolio_images"
       expect(response).to have_http_status(:success)
       expect(response.content_type).to match(a_string_including("application/json"))

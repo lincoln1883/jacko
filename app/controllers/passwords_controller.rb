@@ -13,7 +13,7 @@ class PasswordsController < ApplicationController
     else
       render inertia: "Passwords/Edit", props: {
         errors: @user.errors.messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 

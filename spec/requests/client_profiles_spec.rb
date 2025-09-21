@@ -52,9 +52,9 @@ RSpec.describe "ClientProfiles", type: :request do
   end
 
   describe "authorization" do
-    it "redirects tradespeople away from client profile" do
-      tradesperson = create(:user, :tradesperson)
-      sign_in(tradesperson)
+    it "redirects suppliers away from client profile" do
+      supplier = create(:user, :supplier)
+      sign_in(supplier)
 
       get profile_client_path
       expect(response).to redirect_to(root_path)

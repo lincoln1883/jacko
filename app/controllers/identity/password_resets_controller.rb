@@ -28,7 +28,7 @@ class Identity::PasswordResetsController < ApplicationController
     else
       render inertia: "Identity/PasswordResets/Edit", props: {
         errors: @user.errors.messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 

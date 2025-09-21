@@ -17,7 +17,7 @@ interface NavigationProps {
   user?: {
     id: number;
     email: string;
-    role: 'client' | 'tradesperson' | 'admin';
+    role: 'client' | 'supplier' | 'contractor' | 'admin';
     created_at: string;
   } | null;
   session?: {
@@ -41,13 +41,15 @@ export const Navigation: React.FC<NavigationProps> = ({
   // For guest pages, we should show guest links regardless of user state
   const shouldShowGuestLinks = variant === 'guest' || !isAuthenticated;
   const isClient = user?.role === 'client';
-  const isTradesperson = user?.role === 'tradesperson';
+  const isSupplier = user?.role === 'supplier'; // Changed from isTradesperson
+  const isContractor = user?.role === 'contractor'; // Added new role
   const isAdmin = user?.role === 'admin';
-  const canAccessProfile = isClient || isTradesperson;
+  const canAccessProfile = isClient || isSupplier || isContractor;
 
   const getProfilePath = (): string | null => {
-    if (isTradesperson) return '/profile/tradesperson';
+    if (isSupplier) return '/profile/supplier'; // Updated path
     if (isClient) return '/profile/client';
+    if (isContractor) return '/profile/contractor'; // Added new path for contractor
     return null;
   };
 

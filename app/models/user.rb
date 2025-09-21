@@ -6,8 +6,9 @@ class User < ApplicationRecord
   # Role-based functionality
   enum :role, {
     client: 0,
-    tradesperson: 1,
-    admin: 2
+    supplier: 1,
+    contractor: 2,
+    admin: 3
   }, default: 0, validate: true
 
   generates_token_for :email_verification, expires_in: 2.days do
@@ -20,8 +21,18 @@ class User < ApplicationRecord
 
 
   has_many :sessions, dependent: :destroy
-  has_one :trades_person_profile, dependent: :destroy
+  has_one :supplier_profile, dependent: :destroy
   has_one :client_profile, dependent: :destroy
+
+  has_many :client_jobs, class_name: "Job", foreign_key: "client_id", dependent: :destroy
+  has_many :supplier_jobs, through: :supplier_profile, source: :jobs, dependent: :destroy
+  has_many :verification_requests, class_name: "VerificationRequest", foreign_key: "supplier_id", dependent: :destroy
+
+  has_many :given_reviews, class_name: "Review", foreign_key: "reviewer_id", dependent: :destroy
+  has_many :received_reviews, class_name: "Review", foreign_key: "reviewee_id", dependent: :destroy
+
+  has_many :reported_disputes, class_name: "Dispute", foreign_key: "reporter_id", dependent: :destroy
+  has_many :received_disputes, class_name: "Dispute", foreign_key: "reported_user_id", dependent: :destroy
 
   validates :email, presence: true, uniqueness: true, format: {with: URI::MailTo::EMAIL_REGEXP}
   validates :password, allow_nil: true, length: {minimum: 12}
@@ -38,13 +49,13 @@ class User < ApplicationRecord
   end
 
   # Role-based scopes
-  scope :tradespeople, -> { where(role: :tradesperson) }
+  scope :tradespeople, -> { where(role: [:supplier, :contractor]) }
   scope :clients, -> { where(role: :client) }
   scope :admins, -> { where(role: :admin) }
 
   # Role helper methods
   def can_create_profile?
-    tradesperson?
+    supplier? || contractor?
   end
 
   def can_hire?
@@ -67,8 +78,10 @@ class User < ApplicationRecord
     case role
     when "client"
       "Client"
-    when "tradesperson"
-      "Tradesperson"
+    when "supplier"
+      "Supplier"
+    when "contractor"
+      "Contractor"
     when "admin"
       "Administrator"
     else
@@ -82,7 +95,7 @@ class User < ApplicationRecord
 
   def role_color
     case role
-    when "tradesperson"
+    when "supplier", "contractor"
       "blue"
     when "client"
       "green"
@@ -96,8 +109,8 @@ class User < ApplicationRecord
   # Profile helper methods
   def profile
     case role
-    when "tradesperson"
-      trades_person_profile
+    when "supplier", "contractor"
+      supplier_profile
     when "client"
       client_profile
     else
@@ -121,8 +134,8 @@ class User < ApplicationRecord
 
   def create_appropriate_profile!
     case role
-    when "tradesperson"
-      create_trades_person_profile! unless trades_person_profile.present?
+    when "supplier", "contractor"
+      create_supplier_profile! unless supplier_profile.present?
     when "client"
       create_client_profile! unless client_profile.present?
     end
@@ -135,12 +148,20 @@ class User < ApplicationRecord
 
   def profile_path
     case role
-    when "tradesperson"
-      "/profile/tradesperson"
+    when "supplier", "contractor"
+      "/profile/supplier"
     when "client"
       "/profile/client"
     else
       "/dashboard"
     end
+  end
+
+  def average_rating
+    received_reviews.average(:rating).to_f.round(2)
+  end
+
+  def review_count
+    received_reviews.count
   end
 end

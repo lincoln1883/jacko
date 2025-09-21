@@ -30,8 +30,8 @@ class HomeController < ApplicationController
     return if current_user.admin? # Admins don't need profiles
 
     # Check if user has a profile and if it's incomplete
-    if current_user.tradesperson? && (!current_user.has_profile? || !current_user.profile_completed?)
-      redirect_to edit_profile_tradesperson_path,
+    if (current_user.supplier? || current_user.contractor?) && (!current_user.has_profile? || !current_user.profile_completed?)
+      redirect_to edit_profile_supplier_path,
         notice: "Please complete your profile to access all features."
     elsif current_user.client? && (!current_user.has_profile? || !current_user.profile_completed?)
       redirect_to edit_profile_client_path,

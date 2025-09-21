@@ -45,8 +45,8 @@ RSpec.describe Ability, type: :model do
         expect(ability).to be_able_to(:read, :public_profiles)
       end
 
-      it "can read tradesperson profiles" do
-        expect(ability).to be_able_to(:read, :tradesperson_profiles)
+      it "can read supplier profiles" do
+        expect(ability).to be_able_to(:read, :supplier_profiles)
       end
 
       it "can create project inquiries" do
@@ -64,8 +64,8 @@ RSpec.describe Ability, type: :model do
       end
     end
 
-    context "when user is a tradesperson" do
-      let(:role) { :tradesperson }
+    context "when user is a supplier" do
+      let(:role) { :supplier }
 
       it "can read and update own user record" do
         expect(ability).to be_able_to(:read, user)

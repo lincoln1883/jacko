@@ -1,11 +1,15 @@
 export interface User {
   id: number;
   email: string;
-  role: 'client' | 'tradesperson' | 'admin';
+  role: 'client' | 'supplier' | 'contractor' | 'admin';
+  role_display?: string; // Add role_display
   created_at: string;
   updated_at?: string;
   profile_completed?: boolean;
   has_profile?: boolean;
+  average_rating?: number;
+  review_count?: number;
+  verified?: boolean; // Add verified property
 }
 
 export interface Session {
@@ -47,10 +51,11 @@ export interface PageProps {
     user: {
       id: number;
       email: string;
-      role: 'client' | 'tradesperson' | 'admin';
+      role: 'client' | 'supplier' | 'contractor' | 'admin'; // Corrected roles
       created_at: string;
       profile_completed?: boolean;
       has_profile?: boolean;
+      verified?: boolean; // Add verified property to nested User
     };
     session?: {
       id: string;
@@ -73,7 +78,7 @@ export interface IdentityFormData {
 }
 
 // Navigation and Layout Types
-export type UserRole = 'client' | 'tradesperson' | 'admin';
+export type UserRole = 'client' | 'supplier' | 'contractor' | 'admin';
 
 export interface NavigationLink {
   label: string;

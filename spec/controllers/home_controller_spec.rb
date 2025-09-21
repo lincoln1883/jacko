@@ -20,15 +20,15 @@ RSpec.describe HomeController, type: :controller do
     end
 
     context "when user has a valid session" do
-      let(:user) { create(:user, :tradesperson, :verified) }
+      let(:user) { create(:user, :supplier, :verified) }
       let(:session) { create(:session, user: user) }
 
       before do
-        cookies.signed[:session_token] = session.id
+        sign_in(user)
       end
 
       it "renders the home page successfully" do
-        create(:trades_person_profile, :completed, user: user)
+        create(:supplier_profile, :completed, user: user)
 
         get :index
 
@@ -41,7 +41,7 @@ RSpec.describe HomeController, type: :controller do
         let(:session) { create(:session, user: user) }
 
         before do
-          cookies.signed[:session_token] = session.id
+          sign_in(user)
         end
 
         it "renders home page without redirect" do
@@ -52,39 +52,39 @@ RSpec.describe HomeController, type: :controller do
         end
       end
 
-      context "when user is tradesperson" do
-        let(:user) { create(:user, :tradesperson, :verified) }
+      context "when user is supplier" do
+        let(:user) { create(:user, :supplier, :verified) }
         let(:session) { create(:session, user: user) }
 
         before do
-          cookies.signed[:session_token] = session.id
+          sign_in(user)
         end
 
         context "without profile" do
           it "redirects to profile creation" do
             get :index
 
-            expect(response).to redirect_to(edit_profile_tradesperson_path)
+            expect(response).to redirect_to(edit_profile_supplier_path)
             expect(flash[:notice]).to include("Please complete your profile")
           end
         end
 
         context "with incomplete profile" do
           before do
-            create(:trades_person_profile, user: user, profile_completed_at: nil)
+            create(:supplier_profile, user: user, profile_completed_at: nil)
           end
 
           it "redirects to profile completion" do
             get :index
 
-            expect(response).to redirect_to(edit_profile_tradesperson_path)
+            expect(response).to redirect_to(edit_profile_supplier_path)
             expect(flash[:notice]).to include("Please complete your profile")
           end
         end
 
         context "with completed profile" do
           before do
-            create(:trades_person_profile, :completed, user: user)
+            create(:supplier_profile, :completed, user: user)
           end
 
           it "renders home page" do
@@ -101,7 +101,7 @@ RSpec.describe HomeController, type: :controller do
         let(:session) { create(:session, user: user) }
 
         before do
-          cookies.signed[:session_token] = session.id
+          sign_in(user)
         end
 
         context "without profile" do

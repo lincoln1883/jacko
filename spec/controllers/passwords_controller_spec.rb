@@ -78,7 +78,7 @@ RSpec.describe PasswordsController, type: :controller do
 
         patch :update, params: invalid_params_short
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect_inertia_render("Passwords/Edit")
       end
 
@@ -89,7 +89,7 @@ RSpec.describe PasswordsController, type: :controller do
 
         patch :update, params: invalid_params_mismatch
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect_inertia_render("Passwords/Edit")
       end
 
@@ -102,7 +102,7 @@ RSpec.describe PasswordsController, type: :controller do
         patch :update, params: params_without_challenge
 
         # Should render edit with errors since password_challenge is not valid
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect_inertia_render("Passwords/Edit")
       end
     end
@@ -116,7 +116,7 @@ RSpec.describe PasswordsController, type: :controller do
 
         patch :update, params: short_password_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(assigns(:user).errors[:password]).to be_present
       end
 
@@ -127,7 +127,7 @@ RSpec.describe PasswordsController, type: :controller do
 
         patch :update, params: mismatch_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(assigns(:user).errors[:password_confirmation]).to be_present
       end
     end
@@ -136,7 +136,7 @@ RSpec.describe PasswordsController, type: :controller do
       it "handles empty parameters" do
         patch :update, params: {}
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect_inertia_render("Passwords/Edit")
       end
 
@@ -145,7 +145,7 @@ RSpec.describe PasswordsController, type: :controller do
 
         patch :update, params: nil_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect_inertia_render("Passwords/Edit")
       end
 

@@ -206,7 +206,7 @@ describe('ClientEdit', () => {
       expect(screen.getByText('Edit Your Profile')).toBeInTheDocument();
       expect(
         screen.getByText(
-          'Update your client profile to help tradespeople understand your needs.'
+          'Update your client profile to help suppliers understand your needs.'
         )
       ).toBeInTheDocument();
       expect(screen.getByTestId('input-company_name')).toBeInTheDocument();
@@ -226,7 +226,7 @@ describe('ClientEdit', () => {
       expect(screen.getByText('75%')).toBeInTheDocument();
       expect(
         screen.getByText(
-          'Complete your profile to help tradespeople understand your project requirements.'
+          'Complete your profile to help suppliers understand your project requirements.'
         )
       ).toBeInTheDocument();
     });
@@ -236,7 +236,7 @@ describe('ClientEdit', () => {
 
       expect(screen.getByText('Account Type')).toBeInTheDocument();
       expect(screen.getByText('Client Account')).toBeInTheDocument();
-      expect(screen.getByText('Tradesperson Account')).toBeInTheDocument();
+      expect(screen.getByText('Supplier Account')).toBeInTheDocument();
       expect(screen.getByText('✓ Currently selected')).toBeInTheDocument();
     });
 
@@ -266,7 +266,7 @@ describe('ClientEdit', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          '• Provide a realistic budget range to attract suitable tradespeople'
+          '• Provide a realistic budget range to attract suitable suppliers'
         )
       ).toBeInTheDocument();
       expect(
@@ -439,15 +439,15 @@ describe('ClientEdit', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          'This helps tradespeople understand the scale of your projects'
+          'This helps suppliers understand the scale of your projects'
         )
       ).toBeInTheDocument();
       expect(
-        screen.getByText('How would you like tradespeople to contact you?')
+        screen.getByText('How would you like suppliers to contact you?')
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          'Help tradespeople understand what types of projects you typically hire for (max 1500 characters)'
+          'Help suppliers understand what types of projects you typically hire for (max 1500 characters)'
         )
       ).toBeInTheDocument();
     });
@@ -472,15 +472,15 @@ describe('ClientEdit', () => {
       render(<ClientEdit {...defaultProps} />);
 
       const switchButton = screen.getByRole('button', {
-        name: /switch to tradesperson/i,
+        name: /switch to supplier/i,
       });
       expect(switchButton).toBeInTheDocument();
 
       fireEvent.click(switchButton);
 
-      // This should trigger navigation to the tradesperson edit page with switch_role param
+      // This should trigger navigation to the supplier edit page with switch_role param
       expect(window.location.href).toBe(
-        '/profile/tradesperson/edit?switch_role=true'
+        '/profile/supplier/edit?switch_role=true'
       );
     });
   });

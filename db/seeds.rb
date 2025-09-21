@@ -4,6 +4,8 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+require_relative "seeds/construction_services"
+
 # Sample Users and Profiles for Development
 if Rails.env.development?
   puts "Setting up Jamaica parishes..."
@@ -38,7 +40,7 @@ if Rails.env.development?
     puts "✓ Created parish: #{parish.name} (#{parish.code})"
   end
 
-  puts "\nCreating sample tradesperson profiles for development..."
+  puts "\nCreating sample supplier profiles for development..."
 
   # Create sample tradespeople with profiles
   sample_trades = [
@@ -50,7 +52,7 @@ if Rails.env.development?
       hourly_rate: 45.00,
       phone: "+1-876-555-0101",
       website: "https://marcusconstruction.jm",
-      availability_status: :available,
+      availability_status: :is_available,
       experience_level: :expert,
       parish_code: "KIN",
       city_town: "Kingston",
@@ -77,7 +79,7 @@ if Rails.env.development?
       hourly_rate: 40.00,
       phone: "+1-876-555-0103",
       website: "https://flowrightplumbing.jm",
-      availability_status: :available,
+      availability_status: :is_available,
       experience_level: :intermediate,
       parish_code: "STJ",
       city_town: "Montego Bay",
@@ -90,7 +92,7 @@ if Rails.env.development?
       years_experience: 4,
       hourly_rate: 30.00,
       phone: "+1-876-555-0104",
-      availability_status: :available,
+      availability_status: :is_available,
       experience_level: :graduate,
       parish_code: "MAN",
       city_town: "Mandeville",
@@ -116,15 +118,15 @@ if Rails.env.development?
     # Create or find user
     user = User.find_or_create_by(email: trade_data[:email]) do |u|
       u.password = "secure_password_123"
-      u.role = :tradesperson
+      u.role = :supplier # Changed from :tradesperson
       u.verified = true
     end
 
-    # Find the parish for this tradesperson
+    # Find the parish for this supplier
     parish = Parish.find_by(code: trade_data[:parish_code])
 
-    # Create or update tradesperson profile
-    profile = user.trades_person_profile || user.build_trades_person_profile
+    # Create or update supplier profile
+    profile = user.supplier_profile || user.build_supplier_profile
     profile.update!(
       company_name: trade_data[:company_name],
       bio: trade_data[:bio],
@@ -172,7 +174,7 @@ if Rails.env.development?
   puts "✓ Created admin user (#{admin.email})" if admin.persisted?
 
   puts "\nSample data created! You can sign in with:"
-  puts "Tradespeople: marcus.builder@example.com, sarah.electrician@example.com, etc."
+  puts "Suppliers: marcus.builder@example.com, sarah.electrician@example.com, etc."
   puts "Client: client.test@example.com"
   puts "Admin: admin@jacko.com"
   puts "Password for all: secure_password_123 (or secure_admin_password_123 for admin)"
@@ -292,9 +294,9 @@ if Rails.env.development?
     puts "✓ Created skill: #{skill.name} (#{skill.category})"
   end
 
-  # Add some skills to existing tradesperson profiles
-  puts "\nAssigning skills to existing tradesperson profiles..."
-  TradesPersonProfile.includes(:user, :skills).each do |profile|
+  # Add some skills to existing supplier profiles
+  puts "\nAssigning skills to existing supplier profiles..."
+  SupplierProfile.includes(:user, :skills).each do |profile|
     next if profile.skills.any? # Skip if already has skills
 
     # Assign relevant skills based on existing profile data

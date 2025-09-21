@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
                   Start Searching
                 </Link>
                 <Link
-                  href="/search/tradespeople"
+                  href="/search/suppliers"
                   className="inline-flex items-center px-4 py-2 border border-blue-300 text-blue-700 font-medium rounded-md hover:bg-blue-50 transition-colors dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900"
                 >
                   <Users className="w-4 h-4 mr-2" />

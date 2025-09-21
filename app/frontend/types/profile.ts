@@ -1,3 +1,5 @@
+import { Review } from './review';
+import { Job } from './job'; // Import Job
 // Profile types for the Jamaica Skills & Trades Platform
 
 // Skills types
@@ -22,7 +24,7 @@ export interface Parish {
   updated_at: string;
 }
 
-export interface TradesPersonProfile {
+export interface SupplierProfile {
   id: number;
   bio: string | null;
   company_name: string | null;
@@ -59,6 +61,12 @@ export interface TradesPersonProfile {
   created_at: string;
   updated_at: string;
   portfolio_images: PortfolioImage[]; // New field
+  average_rating?: number; // Add average_rating
+  review_count?: number; // Add review_count
+  contact_email?: string | null; // Added
+  contact_phone?: string | null; // Added
+  location?: string | null; // Added
+  cover_image_url?: string | null; // Added
 }
 
 export interface PortfolioImage {
@@ -90,18 +98,23 @@ export interface ClientProfile {
   display_contact_method: string;
   created_at: string;
   updated_at: string;
+  average_rating?: number;
+  review_count?: number;
+  contact_email?: string | null; // Added
+  contact_phone?: string | null; // Added
+  location?: string | null; // Added
 }
 
 export interface User {
   id: number;
   email: string;
-  role: 'client' | 'tradesperson' | 'admin';
+  role: 'client' | 'supplier' | 'contractor' | 'admin';
   role_display: string;
   verified: boolean;
 }
 
 // Form data types
-export interface TradesPersonProfileFormData {
+export interface SupplierProfileFormData {
   bio: string;
   company_name: string;
   years_experience: number | string;
@@ -133,8 +146,8 @@ export interface ClientProfileFormData {
 }
 
 // Page props
-export interface TradesPersonProfilePageProps {
-  profile: TradesPersonProfile;
+export interface SupplierProfilePageProps {
+  profile: SupplierProfile;
   user: User;
   can_edit: boolean;
   skills?: Skill[];
@@ -145,6 +158,8 @@ export interface TradesPersonProfilePageProps {
     notice?: string;
   };
   errors?: Record<string, string[]>;
+  completedJobs?: Job[];
+  reviews?: Review[]; // Add reviews
 }
 
 export interface ClientProfilePageProps {
@@ -159,6 +174,8 @@ export interface ClientProfilePageProps {
     notice?: string;
   };
   errors?: Record<string, string[]>;
+  reviews?: Review[];
+  completedJobs?: Job[];
 }
 
 // Option types for selects

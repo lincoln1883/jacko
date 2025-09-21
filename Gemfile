@@ -62,9 +62,11 @@ group :development, :test do
 
   # Shoulda matchers for cleaner tests [https://github.com/thoughtbot/shoulda-matchers]
   gem "shoulda-matchers"
+  gem "kaminari" # For pagination
 
   # Rails controller testing utilities [https://github.com/rails/rails-controller-testing]
   gem "rails-controller-testing"
+  gem "database_cleaner"
 end
 
 group :development do
