@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '../../../components/layouts/AdminLayout';
 import { AdminVerificationRequestsIndexProps } from '../../../types/admin';
@@ -26,6 +26,8 @@ const Index: React.FC<AdminVerificationRequestsIndexProps> = ({
   pagination,
   allStatuses,
 }) => {
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
@@ -39,13 +41,21 @@ const Index: React.FC<AdminVerificationRequestsIndexProps> = ({
     }
   };
 
-  const handleStatusChange = (status: string) => {
-    router.get(
-      window.route('admin.verification_requests.index', {
-        status: status === 'all' ? undefined : status,
-      }),
-      { preserveState: true }
-    );
+  const filterAndPaginate = (status: string | null, page: number) => {
+    const queryParams = new URLSearchParams();
+    if (status) {
+      queryParams.append('status', status);
+    }
+    if (page > 1) {
+      queryParams.append('page', page.toString());
+    }
+    router.get(`/admin/verification_requests?${queryParams.toString()}`);
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    const statusFilter = newStatus === 'all' ? null : newStatus;
+    setSelectedStatus(statusFilter);
+    filterAndPaginate(statusFilter, 1);
   };
 
   const statusOptions = [
@@ -108,10 +118,7 @@ const Index: React.FC<AdminVerificationRequestsIndexProps> = ({
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={window.route(
-                            'admin.verification_requests.show',
-                            request.id
-                          )}
+                          href={`/admin/verification_requests/${request.id}`}
                           className="text-blue-600 hover:underline"
                         >
                           View / Review
@@ -126,10 +133,7 @@ const Index: React.FC<AdminVerificationRequestsIndexProps> = ({
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={(page) => {
-                router.get(
-                  window.route('admin.verification_requests.index', { page }),
-                  { preserveState: true }
-                );
+                filterAndPaginate(selectedStatus, page);
               }}
             />
           </CardContent>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, router } from '@inertiajs/react';
 import { AppLayout } from '../../components/layouts/AppLayout';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
@@ -12,6 +12,12 @@ import {
   AvatarUpload,
 } from '../../components';
 import { useToast } from '../../contexts/ToastContext';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '../../components/ui/card';
 import type {
   SupplierProfilePageProps,
   SupplierProfileFormData,
@@ -267,383 +273,418 @@ const SupplierEditContent: React.FC<SupplierEditCustomProps> = ({
 
   return (
     <>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Edit Your Profile
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                Update your supplier profile to attract more clients.
-              </p>
-            </div>
-            <Link href="/profile/supplier">
-              <Button variant="outline">View Profile</Button>
-            </Link>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Edit Your Profile
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Update your supplier profile to attract more clients.
+            </p>
           </div>
+          <Link href="/profile/supplier">
+            <Button variant="outline">View Profile</Button>
+          </Link>
         </div>
 
         {/* Profile completion indicator */}
-        <div className="bg-card rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Profile Completion
-            </span>
-            <span className="text-sm font-medium text-muted-foreground">
-              {profile.completion_percentage}%
-            </span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all duration-300 ${
-                profile.completion_percentage >= 80
-                  ? 'bg-green-600'
-                  : profile.completion_percentage >= 50
-                    ? 'bg-yellow-500'
-                    : 'bg-red-500'
-              }`}
-              style={{ width: `${profile.completion_percentage}%` }}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Complete all sections to improve your profile visibility.
-          </p>
-        </div>
+        <Card className="mb-6 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Profile Completion
+              </span>
+              <span className="text-sm font-medium text-gray-700">
+                {profile.completion_percentage}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  profile.completion_percentage >= 80
+                    ? 'bg-green-600'
+                    : profile.completion_percentage >= 50
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
+                }`}
+                style={{ width: `${profile.completion_percentage}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-600 mt-2">
+              Complete all sections to improve your profile visibility.
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Account Type Selection */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Account Type
-            </h2>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                You&apos;re currently set up as a{' '}
-                <span className="font-semibold text-foreground">Supplier</span>.
-                Would you like to change your account type?
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  type="button"
-                  className="flex-1 p-4 border-2 border-border hover:border-primary/50 rounded-lg transition-colors cursor-pointer w-full text-left"
-                  onClick={() =>
-                    (window.location.href =
-                      '/profile/client/edit?switch_role=true')
-                  }
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-foreground">
-                      Client Account
-                    </h3>
-                    <div className="w-3 h-3 bg-muted rounded-full"></div>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Account Type
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">
+                  You&apos;re currently set up as a{' '}
+                  <span className="font-semibold text-gray-800">Supplier</span>.
+                  Would you like to change your account type?
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    type="button"
+                    className="flex-1 p-4 border-2 border-gray-200 hover:border-blue-300 rounded-lg transition-colors cursor-pointer w-full text-left"
+                    onClick={() =>
+                      router.visit('/profile/client/edit?switch_role=true')
+                    }
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900">
+                        Client Account
+                      </h3>
+                      <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      I want to hire suppliers for projects
+                    </p>
+                    <p className="text-xs text-blue-600 hover:underline">
+                      → Switch to client
+                    </p>
+                  </button>
+                  <div className="flex-1 p-4 border-2 border-blue-500 bg-blue-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900">
+                        Supplier Account
+                      </h3>
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      I am a supplier looking for work
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      ✓ Currently selected
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    I want to hire suppliers for projects
-                  </p>
-                  <p className="text-xs text-primary hover:underline">
-                    → Switch to client
-                  </p>
-                </button>
-                <div className="flex-1 p-4 border-2 border-primary bg-primary/5 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-foreground">
-                      Supplier Account
-                    </h3>
-                    <div className="w-3 h-3 bg-primary rounded-full"></div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    I am a supplier looking for work
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    ✓ Currently selected
-                  </p>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Basic Information */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Basic Information
-            </h2>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Basic Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Input
+                  id="company_name"
+                  label="Company Name"
+                  type="text"
+                  value={data.company_name}
+                  onChange={(e) => setData('company_name', e.target.value)}
+                  errors={serverErrors?.company_name}
+                  placeholder="Your business name (optional)"
+                />
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <Input
-                id="company_name"
-                label="Company Name"
-                type="text"
-                value={data.company_name}
-                onChange={(e) => setData('company_name', e.target.value)}
-                errors={serverErrors?.company_name}
-                placeholder="Your business name (optional)"
-              />
+                <Select
+                  id="availability_status"
+                  label="Availability Status"
+                  value={data.availability_status}
+                  onChange={(e) =>
+                    setData(
+                      'availability_status',
+                      e.target
+                        .value as SupplierProfileFormData['availability_status']
+                    )
+                  }
+                  options={AVAILABILITY_STATUS_OPTIONS}
+                  errors={serverErrors?.availability_status}
+                />
+              </div>
 
-              <Select
-                id="availability_status"
-                label="Availability Status"
-                value={data.availability_status}
-                onChange={(e) =>
-                  setData(
-                    'availability_status',
-                    e.target
-                      .value as SupplierProfileFormData['availability_status']
-                  )
-                }
-                options={AVAILABILITY_STATUS_OPTIONS}
-                errors={serverErrors?.availability_status}
-              />
-            </div>
-
-            <div className="mt-6">
-              <Textarea
-                id="bio"
-                label="Professional Bio"
-                value={data.bio}
-                onChange={(e) => setData('bio', e.target.value)}
-                errors={serverErrors?.bio}
-                placeholder="Tell clients about your professional background..."
-                rows={3}
-                hint="Brief overview of your skills and experience (max 1000 characters)"
-              />
-            </div>
-          </div>
+              <div className="mt-6">
+                <Textarea
+                  id="bio"
+                  label="Professional Bio"
+                  value={data.bio}
+                  onChange={(e) => setData('bio', e.target.value)}
+                  errors={serverErrors?.bio}
+                  placeholder="Tell clients about your professional background..."
+                  rows={3}
+                  hint="Brief overview of your skills and experience (max 1000 characters)"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Profile Avatar */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Profile Avatar
-            </h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              Upload a professional photo to personalize your profile and build
-              trust with potential clients.
-            </p>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Profile Avatar
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600 mb-6">
+                Upload a professional photo to personalize your profile and
+                build trust with potential clients.
+              </p>
 
-            <AvatarUpload
-              currentAvatarUrl={avatarUrl}
-              currentThumbnailUrl={avatarThumbnailUrl}
-              onUploadSuccess={handleAvatarUploadSuccess}
-              onDeleteSuccess={handleAvatarDeleteSuccess}
-            />
-          </div>
+              <AvatarUpload
+                currentAvatarUrl={avatarUrl}
+                currentThumbnailUrl={avatarThumbnailUrl}
+                onUploadSuccess={handleAvatarUploadSuccess}
+                onDeleteSuccess={handleAvatarDeleteSuccess}
+              />
+            </CardContent>
+          </Card>
 
           {/* Location Information */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Location Information
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <Select
-                id="parish_id"
-                label="Parish"
-                value={data.parish_id}
-                onChange={(e) => setData('parish_id', e.target.value)}
-                options={parishes.map((p) => ({
-                  label: p.name,
-                  value: p.id.toString(),
-                }))}
-                errors={serverErrors?.parish_id}
-                placeholder="Select your parish"
-              />
-              <Input
-                id="street_address"
-                label="Street Address"
-                type="text"
-                value={data.street_address}
-                onChange={(e) => setData('street_address', e.target.value)}
-                errors={serverErrors?.street_address}
-                placeholder="E.g., 123 Main St"
-              />
-              <Input
-                id="city_town"
-                label="City/Town"
-                type="text"
-                value={data.city_town}
-                onChange={(e) => setData('city_town', e.target.value)}
-                errors={serverErrors?.city_town}
-                placeholder="E.g., Kingston"
-              />
-              <Input
-                id="postal_code"
-                label="Postal Code"
-                type="text"
-                value={data.postal_code}
-                onChange={(e) => setData('postal_code', e.target.value)}
-                errors={serverErrors?.postal_code}
-                placeholder="E.g., KGN10"
-              />
-            </div>
-            <div className="mt-6 grid md:grid-cols-2 gap-6">
-              <Input
-                id="service_radius_km"
-                label="Service Radius (km)"
-                type="number"
-                min="0"
-                max="500"
-                value={data.service_radius_km}
-                onChange={(e) => setData('service_radius_km', e.target.value)}
-                errors={serverErrors?.service_radius_km}
-                placeholder="E.g., 50"
-                hint="Distance from your location you are willing to travel"
-              />
-              <AdditionalParishesMultiSelect
-                parishes={parishes}
-                selectedParishIds={data.additional_parishes.map(Number)}
-                onSelectionChange={(selectedIds) =>
-                  setData('additional_parishes', selectedIds.map(String))
-                }
-                errors={serverErrors?.additional_parishes}
-              />
-            </div>
-            <div className="mt-6">
-              <Textarea
-                id="service_area_notes"
-                label="Service Area Notes"
-                value={data.service_area_notes}
-                onChange={(e) => setData('service_area_notes', e.target.value)}
-                errors={serverErrors?.service_area_notes}
-                placeholder="Any specific notes about your service areas or travel limitations..."
-                rows={3}
-                hint="Describe any specific areas you serve or travel limitations."
-              />
-            </div>
-          </div>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Location Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Select
+                  id="parish_id"
+                  label="Parish"
+                  value={data.parish_id}
+                  onChange={(e) => setData('parish_id', e.target.value)}
+                  options={parishes.map((p) => ({
+                    label: p.name,
+                    value: p.id.toString(),
+                  }))}
+                  errors={serverErrors?.parish_id}
+                  placeholder="Select your parish"
+                />
+                <Input
+                  id="street_address"
+                  label="Street Address"
+                  type="text"
+                  value={data.street_address}
+                  onChange={(e) => setData('street_address', e.target.value)}
+                  errors={serverErrors?.street_address}
+                  placeholder="E.g., 123 Main St"
+                />
+                <Input
+                  id="city_town"
+                  label="City/Town"
+                  type="text"
+                  value={data.city_town}
+                  onChange={(e) => setData('city_town', e.target.value)}
+                  errors={serverErrors?.city_town}
+                  placeholder="E.g., Kingston"
+                />
+                <Input
+                  id="postal_code"
+                  label="Postal Code"
+                  type="text"
+                  value={data.postal_code}
+                  onChange={(e) => setData('postal_code', e.target.value)}
+                  errors={serverErrors?.postal_code}
+                  placeholder="E.g., KGN10"
+                />
+              </div>
+              <div className="mt-6 grid md:grid-cols-2 gap-6">
+                <Input
+                  id="service_radius_km"
+                  label="Service Radius (km)"
+                  type="number"
+                  min="0"
+                  max="500"
+                  value={data.service_radius_km}
+                  onChange={(e) => setData('service_radius_km', e.target.value)}
+                  errors={serverErrors?.service_radius_km}
+                  placeholder="E.g., 50"
+                  hint="Distance from your location you are willing to travel"
+                />
+                <AdditionalParishesMultiSelect
+                  parishes={parishes}
+                  selectedParishIds={data.additional_parishes.map(Number)}
+                  onSelectionChange={(selectedIds) =>
+                    setData('additional_parishes', selectedIds.map(String))
+                  }
+                  errors={serverErrors?.additional_parishes}
+                />
+              </div>
+              <div className="mt-6">
+                <Textarea
+                  id="service_area_notes"
+                  label="Service Area Notes"
+                  value={data.service_area_notes}
+                  onChange={(e) =>
+                    setData('service_area_notes', e.target.value)
+                  }
+                  errors={serverErrors?.service_area_notes}
+                  placeholder="Any specific notes about your service areas or travel limitations..."
+                  rows={3}
+                  hint="Describe any specific areas you serve or travel limitations."
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Experience & Pricing */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Experience & Pricing
-            </h2>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Experience & Pricing
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Input
+                  id="years_experience"
+                  label="Years of Experience"
+                  type="number"
+                  min="0"
+                  max="50"
+                  value={data.years_experience}
+                  onChange={(e) => setData('years_experience', e.target.value)}
+                  errors={serverErrors?.years_experience}
+                  placeholder="0"
+                  hint="Total years in your trade"
+                />
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <Input
-                id="years_experience"
-                label="Years of Experience"
-                type="number"
-                min="0"
-                max="50"
-                value={data.years_experience}
-                onChange={(e) => setData('years_experience', e.target.value)}
-                errors={serverErrors?.years_experience}
-                placeholder="0"
-                hint="Total years in your trade"
-              />
+                <Select
+                  id="experience_level"
+                  label="Experience Level"
+                  value={data.experience_level || ''}
+                  onChange={(e) =>
+                    setData(
+                      'experience_level',
+                      e.target
+                        .value as SupplierProfileFormData['experience_level']
+                    )
+                  }
+                  options={EXPERIENCE_LEVEL_OPTIONS}
+                  errors={serverErrors?.experience_level}
+                  placeholder="Select your experience level"
+                />
 
-              <Select
-                id="experience_level"
-                label="Experience Level"
-                value={data.experience_level || ''}
-                onChange={(e) =>
-                  setData(
-                    'experience_level',
-                    e.target
-                      .value as SupplierProfileFormData['experience_level']
-                  )
-                }
-                options={EXPERIENCE_LEVEL_OPTIONS}
-                errors={serverErrors?.experience_level}
-                placeholder="Select your experience level"
-              />
-
-              <Input
-                id="hourly_rate"
-                label="Hourly Rate (USD)"
-                type="number"
-                min="1"
-                max="10000"
-                step="0.01"
-                value={data.hourly_rate}
-                onChange={(e) => setData('hourly_rate', e.target.value)}
-                errors={serverErrors?.hourly_rate}
-                placeholder="50.00"
-                hint="Your standard hourly rate"
-              />
-            </div>
-          </div>
+                <Input
+                  id="hourly_rate"
+                  label="Hourly Rate (USD)"
+                  type="number"
+                  min="1"
+                  max="10000"
+                  step="0.01"
+                  value={data.hourly_rate}
+                  onChange={(e) => setData('hourly_rate', e.target.value)}
+                  errors={serverErrors?.hourly_rate}
+                  placeholder="50.00"
+                  hint="Your standard hourly rate"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Contact Information */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Contact Information
-            </h2>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Contact Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Input
+                  id="phone"
+                  label="Phone Number"
+                  type="tel"
+                  value={data.phone}
+                  onChange={(e) => setData('phone', e.target.value)}
+                  errors={serverErrors?.phone}
+                  placeholder="+1-876-123-4567"
+                  hint="Your business phone number"
+                />
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <Input
-                id="phone"
-                label="Phone Number"
-                type="tel"
-                value={data.phone}
-                onChange={(e) => setData('phone', e.target.value)}
-                errors={serverErrors?.phone}
-                placeholder="+1-876-123-4567"
-                hint="Your business phone number"
-              />
-
-              <Input
-                id="website"
-                label="Website"
-                type="url"
-                value={data.website}
-                onChange={(e) => setData('website', e.target.value)}
-                errors={serverErrors?.website}
-                placeholder="https://yourwebsite.com"
-                hint="Your business website (optional)"
-              />
-            </div>
-          </div>
+                <Input
+                  id="website"
+                  label="Website"
+                  type="url"
+                  value={data.website}
+                  onChange={(e) => setData('website', e.target.value)}
+                  errors={serverErrors?.website}
+                  placeholder="https://yourwebsite.com"
+                  hint="Your business website (optional)"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Skills & Services Selection */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Skills & Services
-            </h2>
-
-            <SkillsMultiSelect
-              skills={skills}
-              skillsByCategory={skills_by_category}
-              selectedSkillIds={data.skill_ids}
-              onSelectionChange={(skillIds) => setData('skill_ids', skillIds)}
-              label="Your Skills & Services"
-              hint="Select up to 10 skills that best represent your expertise and services (required)"
-              errors={serverErrors?.skill_ids}
-              maxSelections={10}
-            />
-          </div>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Skills & Services
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SkillsMultiSelect
+                skills={skills}
+                skillsByCategory={skills_by_category}
+                selectedSkillIds={data.skill_ids}
+                onSelectionChange={(skillIds) => setData('skill_ids', skillIds)}
+                label="Your Skills & Services"
+                hint="Select up to 10 skills that best represent your expertise and services (required)"
+                errors={serverErrors?.skill_ids}
+                maxSelections={10}
+              />
+            </CardContent>
+          </Card>
 
           {/* Services Description */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Services Description
-            </h2>
-
-            <Textarea
-              id="description"
-              label="Describe Your Services"
-              value={data.description}
-              onChange={(e) => setData('description', e.target.value)}
-              errors={serverErrors?.description}
-              placeholder="Describe the services you offer, your specialties, and what makes you unique..."
-              rows={6}
-              hint="Detailed description of your services to help clients understand what you offer (max 2000 characters)"
-            />
-          </div>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Services Description
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                id="description"
+                label="Describe Your Services"
+                value={data.description}
+                onChange={(e) => setData('description', e.target.value)}
+                errors={serverErrors?.description}
+                placeholder="Describe the services you offer, your specialties, and what makes you unique..."
+                rows={6}
+                hint="Detailed description of your services to help clients understand what you offer (max 2000 characters)"
+              />
+            </CardContent>
+          </Card>
 
           {/* Portfolio Images */}
-          <div className="bg-card rounded-lg shadow-sm border p-6">
-            <PortfolioUpload
-              portfolioImages={portfolioImages}
-              meta={portfolioMeta}
-              onUpload={handlePortfolioUpload}
-              onUpdate={handlePortfolioUpdate}
-              onDelete={handlePortfolioDelete}
-              onReorder={handlePortfolioReorder}
-              loading={portfolioLoading}
-              error={portfolioError || undefined}
-            />
-          </div>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Portfolio Images
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PortfolioUpload
+                portfolioImages={portfolioImages}
+                meta={portfolioMeta}
+                onUpload={handlePortfolioUpload}
+                onUpdate={handlePortfolioUpdate}
+                onDelete={handlePortfolioDelete}
+                onReorder={handlePortfolioReorder}
+                loading={portfolioLoading}
+                error={portfolioError || undefined}
+              />
+            </CardContent>
+          </Card>
 
           {/* Form Actions */}
           <div className="flex justify-end space-x-4">

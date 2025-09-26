@@ -19,15 +19,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="space-y-2">
           <label
             htmlFor={inputId}
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm font-medium text-gray-700 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {label}
           </label>
           <input
             type={type}
             className={cn(
-              'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
-              hasErrors && 'border-destructive focus-visible:ring-destructive',
+              'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50',
+              hasErrors && 'border-red-500 focus-visible:ring-red-500',
               className
             )}
             ref={ref}
@@ -35,12 +35,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {hint && !hasErrors && (
-            <p className="text-sm text-muted-foreground">{hint}</p>
+            <p className="text-sm text-gray-500 mt-1">{hint}</p>
           )}
           {hasErrors && (
-            <div className="space-y-1">
+            <div className="space-y-1 mt-1">
               {errors.map((error, index) => (
-                <p key={index} className="text-sm text-destructive">
+                <p key={index} className="text-sm text-red-500">
                   {error}
                 </p>
               ))}
@@ -54,8 +54,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
-          hasErrors && 'border-destructive focus-visible:ring-destructive',
+          'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50',
+          hasErrors && 'border-red-500 focus-visible:ring-red-500',
           className
         )}
         ref={ref}

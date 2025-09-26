@@ -21,7 +21,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 - **💳 Payment Processing**: Secure payment handling with escrow services
 - **📊 Analytics Dashboard**: Earnings tracking and market insights
 - **🎓 Training Integration**: HEART/NSTA certification programs
-- **🤖 AI Matching**: Smart project-tradesperson matching algorithms
+- **🤖 AI Matching**: Smart project-supplier matching algorithms
 
 ## 🛠 Technology Stack
 
@@ -247,7 +247,7 @@ bin/test
 ## 🎯 Success Metrics
 
 ### Year 1 Targets
-- **10,000+** verified tradesperson profiles
+- **10,000+** verified supplier profiles
 - **1,000+** successful project matches
 - **85%+** client satisfaction rate
 - **70%+** repeat usage rate

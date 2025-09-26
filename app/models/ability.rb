@@ -33,37 +33,30 @@ class Ability
 
   def client_permissions(user)
     # Clients can create and manage their own projects/inquiries
-    # can [:create, :read, :update], Project, user: user
-    # can [:create, :read], Message, recipient: user
-    # can [:create, :read], Message, sender: user
-    # can :create, Review # can leave reviews
-    # can [:read, :update], Review, client: user
-
     # For now, basic permissions until we have these models
     can :read, :supplier_profiles
     can :create, :project_inquiries
+    can :read, Job, client_id: user.id # Clients can read their own jobs
   end
 
   def supplier_permissions(user)
     # Suppliers can manage their own profile and portfolio
-    # can [:create, :read, :update], TradesPersonProfile, user: user
-    # can [:create, :read, :update, :destroy], Portfolio, tradesperson: user
-    # can [:read, :update], Message, recipient: user
-    # can [:create, :read], Message, sender: user
-    # can :read, Review, tradesperson: user
-    # can :create, VerificationRequest, user: user
-
     # For now, basic permissions until we have these models
     can :manage, :own_profile
     can :read, :client_inquiries
     can :create, :verification_requests
+    can :read, Job # Suppliers can read all jobs (open for bidding)
+    # Note: Suppliers can only read their own user record (set in main permissions)
   end
 
   def contractor_permissions(user)
     # For now, basic permissions until we have these models
+    # Contractor permissions are similar to suppliers, potentially with some differences later
     can :manage, :own_profile
     can :read, :client_inquiries
     can :create, :verification_requests
+    can :read, Job # Contractors can read all jobs (open for bidding)
+    # Note: Contractors can only read their own user record (set in main permissions)
   end
 
   def admin_permissions(user)

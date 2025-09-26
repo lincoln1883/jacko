@@ -12,7 +12,6 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
 import { Select } from '../../../components/ui/select';
-// import { Checkbox } from '../../../components/ui/checkbox'; // Cannot find module
 import { Badge } from '../../../components/ui/badge';
 import { format } from 'date-fns';
 import { User } from '../../../types/auth';
@@ -34,7 +33,7 @@ const Show: React.FC<AdminUserShowProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(window.route('admin.users.update', data.id), {
+    put(`/admin/users/${data.id}`, {
       onSuccess: () => {
         // Optionally update local state or show a success message
       },
@@ -77,7 +76,7 @@ const Show: React.FC<AdminUserShowProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {flash.notice && (
+            {flash && (
               <div
                 className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
                 role="alert"
@@ -133,11 +132,6 @@ const Show: React.FC<AdminUserShowProps> = ({
               </div>
 
               <div className="flex items-center space-x-2">
-                {/* <Checkbox */}
-                {/*   id="verified" */}
-                {/*   checked={data.verified} */}
-                {/*   onCheckedChange={(checked: boolean) => setData('verified', checked)} */}
-                {/* /> */}
                 <input
                   type="checkbox"
                   id="verified"
@@ -170,22 +164,22 @@ const Show: React.FC<AdminUserShowProps> = ({
                 <strong>Updated At:</strong>{' '}
                 {format(new Date(initialUser.updated_at!), 'PPP')}
               </p>
-              <p>
+              <div>
                 <strong>Role:</strong>{' '}
                 <Badge
                   className={`${getRoleColor(initialUser.role)} text-white capitalize`}
                 >
                   {initialUser.role}
                 </Badge>
-              </p>
-              <p>
+              </div>
+              <div>
                 <strong>Verified:</strong>{' '}
                 <Badge
                   variant={initialUser.verified ? 'default' : 'destructive'}
                 >
                   {initialUser.verified ? 'Yes' : 'No'}
                 </Badge>
-              </p>
+              </div>
 
               {initialUser.supplier_profile &&
                 (initialUser.supplier_profile.company_name ||
@@ -365,10 +359,7 @@ const Show: React.FC<AdminUserShowProps> = ({
                             </p>
                           )}
                           <Link
-                            href={window.route(
-                              'admin.verification_requests.show',
-                              request.id
-                            )}
+                            href={`/admin/verification_requests/${request.id}`}
                             className="text-blue-600 hover:underline mt-2 inline-block"
                           >
                             View Request

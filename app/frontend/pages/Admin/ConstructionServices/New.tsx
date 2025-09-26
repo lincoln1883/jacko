@@ -11,6 +11,7 @@ import {
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
+import { router } from '@inertiajs/react';
 
 const New: React.FC<AdminConstructionServicesNewProps> = ({
   service: initialService,
@@ -28,9 +29,9 @@ const New: React.FC<AdminConstructionServicesNewProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(window.route('admin.construction_services.create'), {
+    post('/admin/construction_services', {
       onSuccess: () => {
-        // Optionally update local state or show a success message
+        router.visit('/admin/construction_services'); // Redirect to index after creation
       },
       onError: (err) => {
         console.error('Error creating service:', err);
@@ -49,7 +50,7 @@ const New: React.FC<AdminConstructionServicesNewProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {flash.notice && (
+            {flash && (
               <div
                 className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
                 role="alert"

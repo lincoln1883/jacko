@@ -31,6 +31,23 @@ class DisputesController < ApplicationController
     end
   end
 
+  def show
+    @dispute = Dispute.find(params[:id])
+    # Ensure the user has access to view this dispute
+    unless @dispute.reporter == current_user || @dispute.reported_user == current_user || current_user.admin?
+      redirect_to root_path, alert: "You are not authorized to view this dispute."
+      return
+    end
+
+    render inertia: "Disputes/Show", props: {
+      dispute: @dispute.as_json(include: {
+        job: {only: [:id, :title]},
+        reporter: {only: [:id, :email, :role_display]},
+        reported_user: {only: [:id, :email, :role_display]}
+      })
+    }
+  end
+
   private
 
   def set_job

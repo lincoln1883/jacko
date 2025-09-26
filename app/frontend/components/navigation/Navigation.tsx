@@ -10,6 +10,7 @@ import {
   Users,
   Home as HomeIcon,
   Search,
+  Briefcase,
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -53,6 +54,13 @@ export const Navigation: React.FC<NavigationProps> = ({
     return null;
   };
 
+  const getDashboardPath = (): string => {
+    if (isAdmin) return '/admin/dashboard';
+    if (isClient) return '/client_dashboard';
+    if (isSupplier || isContractor) return '/supplier_dashboard';
+    return '/'; // Default to home for unauthenticated or unknown roles
+  };
+
   const handleSignOut = () => {
     if (session?.id) {
       // Send session ID to destroy specific session
@@ -86,48 +94,61 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   // Guest navigation links
   const guestLinks = (
-    <>
+    <div className="flex items-center space-x-4">
       <Link
         href="/sign_in"
-        className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+        className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
       >
         Sign In
       </Link>
       <Link
         href="/sign_up"
-        className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm border border-blue-600"
+        className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm border border-transparent"
       >
         Get Started
       </Link>
-    </>
+    </div>
   );
 
   // Authenticated navigation links
   const authenticatedLinks = (
-    <>
+    <div className="flex items-center space-x-6">
       {/* Dashboard/Home Link */}
       <Link
-        href="/"
-        className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        href={getDashboardPath()}
+        className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
       >
         <HomeIcon className="w-4 h-4 mr-1" />
         Dashboard
       </Link>
 
       {/* Search Link */}
-      <Link
-        href="/search"
-        className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <Search className="w-4 h-4 mr-1" />
-        Find Tradespeople
-      </Link>
+      {(isClient || isSupplier || isContractor) && (
+        <Link
+          href="/search"
+          className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
+        >
+          <Search className="w-4 h-4 mr-1" />
+          Find Tradespeople
+        </Link>
+      )}
+
+      {/* Jobs Link for Suppliers/Contractors */}
+      {(isSupplier || isContractor) && (
+        <Link
+          href="/supplier_dashboard"
+          className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
+        >
+          <Briefcase className="w-4 h-4 mr-1" />
+          Jobs
+        </Link>
+      )}
 
       {/* Profile Link - Only for clients and tradespeople */}
       {canAccessProfile && (
         <Link
           href={getProfilePath() || '#'}
-          className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
         >
           <User className="w-4 h-4 mr-1" />
           My Profile
@@ -137,7 +158,7 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* Sessions Link */}
       <Link
         href="/sessions"
-        className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
       >
         <Shield className="w-4 h-4 mr-1" />
         Sessions
@@ -146,8 +167,8 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* Admin Links */}
       {isAdmin && (
         <Link
-          href="/admin"
-          className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          href="/admin/dashboard"
+          className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200"
         >
           <Users className="w-4 h-4 mr-1" />
           Admin
@@ -156,26 +177,28 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* User Info Dropdown */}
       <div className="relative group">
-        <button className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+        <button className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors duration-200 focus:outline-none">
           <div className="flex items-center space-x-2">
             <span className="hidden sm:inline-block">{user?.email}</span>
-            <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full capitalize">
+            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full capitalize">
               {user?.role}
             </span>
           </div>
         </button>
 
         {/* Dropdown Menu */}
-        <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
           <div className="py-1">
-            <div className="px-3 py-2 text-sm text-muted-foreground border-b border-border">
-              <div className="font-medium text-foreground">{user?.email}</div>
-              <div className="text-xs capitalize">{user?.role} Account</div>
+            <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
+              <div className="font-medium text-gray-900">{user?.email}</div>
+              <div className="text-xs capitalize text-gray-500">
+                {user?.role} Account
+              </div>
             </div>
 
             <Link
               href="/password/edit"
-              className="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
             >
               <Settings className="w-4 h-4 mr-2" />
               Account Settings
@@ -183,7 +206,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={handleSignOut}
-              className="flex items-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors text-left"
+              className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 text-left"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
@@ -191,16 +214,12 @@ export const Navigation: React.FC<NavigationProps> = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return (
     <nav
-      className={`${
-        variant === 'guest'
-          ? 'bg-white/95 backdrop-blur-sm border-gray-200'
-          : 'bg-white border-gray-200'
-      } shadow-sm border-b sticky top-0 z-[100]`}
+      className={`bg-white shadow-sm border-b border-gray-200 sticky top-0 z-[100] ${variant === 'guest' ? '' : ''}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
@@ -208,7 +227,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="flex items-center">
             <Link
               href="/"
-              className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
+              className="text-2xl font-bold tracking-tight text-blue-700 hover:text-blue-800 transition-colors duration-200"
             >
               Jacko
             </Link>
@@ -223,12 +242,13 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="md:hidden flex items-center">
             <button
               onClick={toggleMobileMenu}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors duration-200"
             >
+              <span className="sr-only">Open main menu</span>
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="block h-6 w-6" aria-hidden="true" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="block h-6 w-6" aria-hidden="true" />
               )}
             </button>
           </div>
@@ -236,20 +256,20 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border">
+          <div className="md:hidden border-t border-gray-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {shouldShowGuestLinks ? (
                 <>
                   <Link
                     href="/sign_in"
-                    className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/sign_up"
-                    className="block px-3 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-all duration-200 shadow-sm"
+                    className="block w-full text-center px-3 py-2 text-base font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-all duration-200 shadow-sm mt-1"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Get Started
@@ -258,71 +278,84 @@ export const Navigation: React.FC<NavigationProps> = ({
               ) : (
                 <>
                   {/* User Info */}
-                  <div className="px-3 py-2 text-sm border-b border-border mb-2">
-                    <div className="font-medium text-foreground">
+                  <div className="px-3 py-2 text-sm border-b border-gray-200 mb-2">
+                    <div className="font-medium text-gray-900">
                       {user?.email}
                     </div>
-                    <div className="text-xs text-muted-foreground capitalize">
+                    <div className="text-xs text-gray-500 capitalize">
                       {user?.role} Account
                     </div>
                   </div>
 
                   {/* Mobile authenticated links */}
                   <Link
-                    href="/"
-                    className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                    href={getDashboardPath()}
+                    className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <HomeIcon className="w-4 h-4 mr-2" />
+                    <HomeIcon className="w-5 h-5 mr-2" />
                     Dashboard
                   </Link>
 
-                  <Link
-                    href="/search"
-                    className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    Find Tradespeople
-                  </Link>
+                  {(isClient || isSupplier || isContractor) && (
+                    <Link
+                      href="/search"
+                      className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Search className="w-5 h-5 mr-2" />
+                      Find Tradespeople
+                    </Link>
+                  )}
+
+                  {(isSupplier || isContractor) && (
+                    <Link
+                      href="/supplier_dashboard"
+                      className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Briefcase className="w-5 h-5 mr-2" />
+                      Jobs
+                    </Link>
+                  )}
 
                   {canAccessProfile && (
                     <Link
                       href={getProfilePath() || '#'}
-                      className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                      className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <User className="w-4 h-4 mr-2" />
+                      <User className="w-5 h-5 mr-2" />
                       My Profile
                     </Link>
                   )}
 
                   <Link
                     href="/sessions"
-                    className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Shield className="w-4 h-4 mr-2" />
+                    <Shield className="w-5 h-5 mr-2" />
                     Sessions
                   </Link>
 
                   {isAdmin && (
                     <Link
-                      href="/admin"
-                      className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                      href="/admin/dashboard"
+                      className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <Users className="w-4 h-4 mr-2" />
+                      <Users className="w-5 h-5 mr-2" />
                       Admin
                     </Link>
                   )}
 
                   <Link
                     href="/password/edit"
-                    className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Settings className="w-4 h-4 mr-2" />
+                    <Settings className="w-5 h-5 mr-2" />
                     Account Settings
                   </Link>
 
@@ -331,9 +364,9 @@ export const Navigation: React.FC<NavigationProps> = ({
                       handleSignOut();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors text-left"
+                    className="flex items-center w-full px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors duration-200 text-left"
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
+                    <LogOut className="w-5 h-5 mr-2" />
                     Sign Out
                   </button>
                 </>

@@ -29,7 +29,7 @@ const Show: React.FC<AdminDisputeShowProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(window.route('admin.disputes.update', data.id), {
+    put(`/admin/disputes/${data.id}`, {
       onSuccess: () => {
         // Optionally update local state or show a success message
       },

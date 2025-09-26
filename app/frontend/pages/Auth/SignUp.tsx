@@ -68,18 +68,18 @@ const SignUp: React.FC<AuthPageProps> = ({ errors }) => {
         </Button>
 
         <div className="text-center">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-gray-600">
             Already have an account?{' '}
             <Link
               href="/sign_in"
-              className="font-medium text-primary hover:text-primary/80"
+              className="font-medium text-blue-600 hover:text-blue-800"
             >
               Sign in
             </Link>
           </span>
         </div>
 
-        <div className="text-xs text-muted-foreground text-center">
+        <div className="text-xs text-gray-500 text-center">
           By creating an account, you agree to our Terms of Service and Privacy
           Policy.
         </div>

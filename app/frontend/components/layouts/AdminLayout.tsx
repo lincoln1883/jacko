@@ -1,10 +1,6 @@
 import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
-// import ApplicationLogo from '../../ApplicationLogo'; // Cannot find module
-// import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'; // Cannot find module
-// import { Button } from '../ui/button'; // Removed unused import
 import {
-  // MenuIcon, // Removed unused import
   HomeIcon,
   UsersIcon,
   UserCheckIcon,
@@ -28,32 +24,34 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   const adminNavigation = [
     {
       label: 'Dashboard',
-      href: window.route('admin.dashboard.show'),
+      href: '/admin/dashboard',
       icon: HomeIcon,
     },
     {
       label: 'Users',
-      href: window.route('admin.users.index'),
+      href: '/admin/users',
       icon: UsersIcon,
     },
     {
       label: 'Verifications',
-      href: window.route('admin.verification_requests.index'),
+      href: '/admin/verification_requests',
       icon: UserCheckIcon,
     },
     {
       label: 'Jobs',
-      href: window.route('admin.jobs.index'),
+      href: '/admin/jobs',
       icon: BriefcaseIcon,
     },
     {
       label: 'Disputes',
-      href: window.route('admin.disputes.index'),
+      // Assuming '/admin/disputes' is the index route, if there's a show route like /admin/disputes/:id it would be handled in the specific component.
+      href: '/admin/disputes',
       icon: GavelIcon,
     },
     {
       label: 'Pricing Config',
-      href: window.route('admin.construction_services.index'),
+      // Assuming '/admin/construction_services' is the index route.
+      href: '/admin/construction_services',
       icon: CalculatorIcon,
     },
   ];
@@ -61,111 +59,78 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   return (
     <div>
       <Head title={title} />
-      <div className="min-h-screen bg-gray-100 flex flex-col">
+      <div className="min-h-screen bg-gray-50 flex flex-col font-sans antialiased text-gray-800">
         {/* Header */}
-        <header className="bg-white shadow-sm h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        <header className="bg-white shadow-md h-16 flex items-center justify-between px-6 lg:px-8 border-b border-gray-200">
           <div className="flex items-center">
-            {/* <Sheet> */}
-            {/*   <SheetTrigger asChild> */}
-            {/*     <Button variant="ghost" size="icon" className="lg:hidden mr-4"> */}
-            {/*       <MenuIcon className="h-6 w-6" /> */}
-            {/*     </Button> */}
-            {/*   </SheetTrigger> */}
-            {/*   <SheetContent side="left" className="w-64"> */}
-            <nav className="flex flex-col gap-2 p-4">
-              <Link href="/dashboard" className="mb-4">
-                {/* <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" /> */}
-                <span className="block h-9 w-auto fill-current text-gray-800">
-                  Admin Panel
-                </span>
-              </Link>
-              {adminNavigation.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-100 ${
-                    // Removed route().current(item.href) check due to type issues and unnecessary complexity
-                    // The active state can be managed by Inertia's active prop or other means if needed
-                    window.location.pathname.startsWith(item.href)
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-600'
-                  }`}
-                >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
-                </Link>
-              ))}
-              <Link
-                href={window.route('logout')}
-                method="post"
-                as="button"
-                className="flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-100 text-gray-600 w-full justify-start mt-4"
-              >
-                <LogOutIcon className="h-5 w-5" />
-                Log Out
-              </Link>
-            </nav>
-            {/*   </SheetContent> */}
-            {/* </Sheet> */}
-            <Link href="/admin/dashboard">
-              {/* <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" /> */}
-              <span className="block h-9 w-auto fill-current text-gray-800">
+            <Link
+              href="/admin/dashboard"
+              className="flex items-center space-x-2 text-blue-700 hover:text-blue-800 transition-colors duration-200"
+            >
+              <HomeIcon className="h-6 w-6" />
+              <span className="text-xl font-bold tracking-tight">
                 Admin Panel
               </span>
             </Link>
-            <span className="ml-3 text-lg font-semibold text-gray-800">
-              Admin
-            </span>
           </div>
 
           <div className="flex items-center space-x-4">
             {user ? (
-              <span className="text-gray-800 font-medium">{user.email}</span>
+              <span className="text-gray-700 font-medium">{user.email}</span>
             ) : (
               <Link
-                href={window.route('login')}
-                className="text-sm text-gray-700 underline"
+                href="/login"
+                className="text-sm text-blue-600 hover:underline"
               >
                 Log in
               </Link>
             )}
+            <Link
+              href="/sign_out"
+              method="delete"
+              as="button"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"
+            >
+              <LogOutIcon className="h-5 w-5" />
+              <span>Log Out</span>
+            </Link>
           </div>
         </header>
 
         {/* Main Content Area */}
         <div className="flex-grow flex">
           {/* Sidebar for larger screens */}
-          {/* <nav className="w-64 bg-white shadow-sm border-r p-4 hidden lg:flex flex-col gap-2"> */}
-          <nav className="w-64 bg-white shadow-sm border-r p-4 hidden lg:flex flex-col gap-2">
+          <nav className="w-64 bg-white shadow-md border-r border-gray-200 p-4 hidden lg:flex flex-col gap-1">
             {adminNavigation.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className={`flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-100 ${
-                  // Removed route().current(item.href) check due to type issues and unnecessary complexity
-                  // The active state can be managed by Inertia's active prop or other means if needed
-                  window.location.pathname.startsWith(item.href)
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-600'
-                }`}
+                className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200
+                  ${
+                    window.location.pathname.startsWith(item.href)
+                      ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
               >
                 <item.icon className="h-5 w-5" />
-                {item.label}
+                <span>{item.label}</span>
               </Link>
             ))}
             <Link
-              href={window.route('logout')}
-              method="post"
+              href="/sign_out"
+              method="delete"
               as="button"
-              className="flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-100 text-gray-600 w-full justify-start mt-auto"
+              className="flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200 w-full justify-start mt-auto"
             >
               <LogOutIcon className="h-5 w-5" />
-              Log Out
+              <span>Log Out</span>
             </Link>
           </nav>
 
           {/* Page Content */}
-          <main className="flex-1 p-6 overflow-auto">{children}</main>
+          <main className="flex-1 p-8 overflow-auto bg-gray-50">
+            {children}
+          </main>
         </div>
       </div>
     </div>

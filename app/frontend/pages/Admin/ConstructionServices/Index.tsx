@@ -26,7 +26,7 @@ const Index: React.FC<AdminConstructionServicesIndexProps> = ({
 }) => {
   const handleDelete = (id: number) => {
     if (window.confirm('Are you sure you want to delete this service?')) {
-      router.delete(window.route('admin.construction_services.destroy', id));
+      router.delete(`/admin/construction_services/destroy/${id}`);
     }
   };
 
@@ -39,7 +39,7 @@ const Index: React.FC<AdminConstructionServicesIndexProps> = ({
             <CardTitle className="text-3xl font-bold text-gray-900">
               Manage Construction Services
             </CardTitle>
-            <Link href={window.route('admin.construction_services.new')}>
+            <Link href={'/admin/construction_services/new'}>
               <Button>Add New Service</Button>
             </Link>
           </CardHeader>
@@ -62,16 +62,13 @@ const Index: React.FC<AdminConstructionServicesIndexProps> = ({
                       <TableCell>{service.id}</TableCell>
                       <TableCell>{service.name}</TableCell>
                       <TableCell>{service.unit}</TableCell>
-                      <TableCell>${service.price.toFixed(2)}</TableCell>
+                      <TableCell>${service.price}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">{service.category}</Badge>
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={window.route(
-                            'admin.construction_services.edit',
-                            service.id
-                          )}
+                          href={`/admin/construction_services/${service.id}/edit`}
                           className="text-blue-600 hover:underline mr-4"
                         >
                           Edit
@@ -93,9 +90,7 @@ const Index: React.FC<AdminConstructionServicesIndexProps> = ({
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={(page) => {
-                router.get(
-                  window.route('admin.construction_services.index', { page })
-                );
+                router.get(`/admin/construction_services?page=${page}`);
               }}
             />
           </CardContent>

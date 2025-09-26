@@ -29,7 +29,7 @@ const Show: React.FC<AdminVerificationRequestShowProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(window.route('admin.verification_requests.update', data.id), {
+    put(`/admin/verification_requests/${data.id}`, {
       onSuccess: () => {
         // Optionally update local state or show a success message
       },

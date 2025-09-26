@@ -83,7 +83,8 @@ class SupplierProfilesController < ApplicationController
   end
 
   def set_public_profile
-    @public_profile = SupplierProfile.active.completed
+    @public_profile = SupplierProfile.active
+                                         .completed
                                          .includes(:parish, :skills,
                                                   portfolio_images: {image_attachment: :blob},
                                                   avatar_attachment: :blob)

@@ -243,7 +243,7 @@ describe('SignUp', () => {
       ).toBeInTheDocument();
 
       const emailField = screen.getByLabelText('Email address');
-      expect(emailField).toHaveClass('border-destructive');
+      expect(emailField).toHaveClass('border-red-500');
     });
 
     it('displays password validation errors', () => {
@@ -261,7 +261,7 @@ describe('SignUp', () => {
       ).toBeInTheDocument();
 
       const passwordField = screen.getByLabelText('Password');
-      expect(passwordField).toHaveClass('border-destructive');
+      expect(passwordField).toHaveClass('border-red-500');
     });
 
     it('displays password confirmation validation errors', () => {
@@ -277,7 +277,7 @@ describe('SignUp', () => {
       expect(screen.getByText("Passwords don't match")).toBeInTheDocument();
 
       const confirmPasswordField = screen.getByLabelText('Confirm Password');
-      expect(confirmPasswordField).toHaveClass('border-destructive');
+      expect(confirmPasswordField).toHaveClass('border-red-500');
     });
 
     it('displays multiple validation errors', () => {

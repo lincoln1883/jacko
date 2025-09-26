@@ -83,7 +83,7 @@ const Index: React.FC<AdminJobsIndexProps> = ({ jobs, pagination }) => {
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={window.route('admin.jobs.show', job.id)}
+                          href={`/admin/jobs/${job.id}`}
                           className="text-blue-600 hover:underline"
                         >
                           View / Edit
@@ -98,7 +98,7 @@ const Index: React.FC<AdminJobsIndexProps> = ({ jobs, pagination }) => {
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={(page) => {
-                router.get(window.route('admin.jobs.index', { page }));
+                router.get(`/admin/jobs?page=${page}`);
               }}
             />
           </CardContent>

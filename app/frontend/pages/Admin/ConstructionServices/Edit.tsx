@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../../components/layouts/AdminLayout';
 import { AdminConstructionServicesEditProps } from '../../../types/admin';
 import {
@@ -39,9 +39,9 @@ const Edit: React.FC<AdminConstructionServicesEditProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(window.route('admin.construction_services.update', data.id), {
+    put(`/admin/construction_services/${data.id}`, {
       onSuccess: () => {
-        // Optionally update local state or show a success message
+        router.visit('/admin/construction_services');
       },
       onError: (err) => {
         console.error('Error updating service:', err);
@@ -60,7 +60,7 @@ const Edit: React.FC<AdminConstructionServicesEditProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {flash.notice && (
+            {flash && (
               <div
                 className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
                 role="alert"
@@ -68,7 +68,7 @@ const Edit: React.FC<AdminConstructionServicesEditProps> = ({
                 <span className="block sm:inline">{flash.notice}</span>
               </div>
             )}
-            {flash.alert && (
+            {flash && (
               <div
                 className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
                 role="alert"

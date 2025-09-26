@@ -107,10 +107,7 @@ describe('Input Component', () => {
       render(<Input label="Email" errors={['Invalid email']} />);
 
       const input = screen.getByLabelText('Email');
-      expect(input).toHaveClass(
-        'border-destructive',
-        'focus-visible:ring-destructive'
-      );
+      expect(input).toHaveClass('border-red-500', 'focus-visible:ring-red-500');
     });
 
     it('hides hint when errors are present', () => {
@@ -130,7 +127,7 @@ describe('Input Component', () => {
       render(<Input label="Email" errors={[]} hint="Enter your email" />);
 
       const input = screen.getByLabelText('Email');
-      expect(input).not.toHaveClass('border-destructive');
+      expect(input).not.toHaveClass('border-red-500');
       expect(screen.getByText('Enter your email')).toBeInTheDocument();
     });
   });
@@ -148,7 +145,7 @@ describe('Input Component', () => {
       render(<Input label="Password" hint="Password hint" />);
 
       const hint = screen.getByText('Password hint');
-      expect(hint).toHaveClass('text-sm', 'text-muted-foreground');
+      expect(hint).toHaveClass('text-sm', 'text-gray-500');
     });
 
     it('shows hint only when label is provided', () => {
@@ -277,11 +274,11 @@ describe('Input Component', () => {
       const input = screen.getByRole('textbox');
       expect(input).toHaveClass(
         'flex',
-        'h-9',
+        'h-10',
         'w-full',
         'rounded-md',
         'border',
-        'border-input'
+        'border-gray-300'
       );
     });
 
@@ -292,7 +289,7 @@ describe('Input Component', () => {
       expect(input).toHaveClass(
         'focus-visible:outline-none',
         'focus-visible:ring-1',
-        'focus-visible:ring-ring'
+        'focus-visible:ring-blue-500'
       );
     });
 

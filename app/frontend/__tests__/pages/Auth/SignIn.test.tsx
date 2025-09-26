@@ -211,7 +211,7 @@ describe('SignIn', () => {
       ).toBeInTheDocument();
 
       const emailField = screen.getByLabelText('Email address');
-      expect(emailField).toHaveClass('border-destructive');
+      expect(emailField).toHaveClass('border-red-500');
     });
 
     it('displays password validation errors', () => {
@@ -227,7 +227,7 @@ describe('SignIn', () => {
       expect(screen.getByText('Password is required')).toBeInTheDocument();
 
       const passwordField = screen.getByLabelText('Password');
-      expect(passwordField).toHaveClass('border-destructive');
+      expect(passwordField).toHaveClass('border-red-500');
     });
 
     it('displays multiple errors for the same field', () => {

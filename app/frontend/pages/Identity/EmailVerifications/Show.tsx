@@ -8,7 +8,7 @@ const EmailVerificationShow: React.FC<PageProps> = () => {
   return (
     <AuthLayout
       title="Email Verified"
-      description="Your email address has been successfully verified."
+      description="Your email address has been successfully verified. You can now access all features."
     >
       <div className="text-center space-y-6">
         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
@@ -44,14 +44,14 @@ const EmailVerificationShow: React.FC<PageProps> = () => {
 
           <Link
             href="/sessions"
-            className="block text-sm font-medium text-blue-600 hover:text-blue-500"
+            className="block text-sm font-medium text-blue-600 hover:text-blue-800"
           >
             Manage Sessions
           </Link>
         </div>
 
         <div className="pt-4 border-t border-gray-200">
-          <div className="bg-green-50 p-4 rounded-md">
+          <div className="bg-gray-50 p-4 rounded-md">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
@@ -67,10 +67,10 @@ const EmailVerificationShow: React.FC<PageProps> = () => {
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-800">
+                <h3 className="text-sm font-medium text-gray-800">
                   What&apos;s next?
                 </h3>
-                <div className="mt-2 text-sm text-green-700">
+                <div className="mt-2 text-sm text-gray-700">
                   <ul className="list-disc list-inside space-y-1">
                     <li>Your account is now fully activated</li>
                     <li>

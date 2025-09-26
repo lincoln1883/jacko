@@ -9,7 +9,7 @@ Create Jamaica's premier digital marketplace connecting skilled tradespeople wit
 To democratize access to skilled trades opportunities across Jamaica by providing a trusted, data-driven platform that validates expertise, facilitates connections, and elevates the professional standards of the construction and trades industry.
 
 ### 1.3 Success Metrics
-- **Primary**: 10,000+ verified tradesperson profiles within 12 months
+- **Primary**: 10,000+ verified supplier profiles within 12 months
 - **Secondary**: 1,000+ successful project matches in year one
 - **Tertiary**: 85%+ client satisfaction rate, 70%+ repeat usage rate
 
@@ -86,7 +86,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 
 #### 4.1.1 User Registration & Profiles
 
-**Tradesperson Profiles:**
+**Supplier Profiles:**
 - Personal information (name, contact, location, availability)
 - Professional credentials (HEART/NSTA certificates, licenses, apprenticeship records)
 - Skills taxonomy (40+ predefined categories: electrical, plumbing, carpentry, masonry, etc.)
@@ -129,7 +129,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 ### 4.2 Enhanced Features - Version 2
 
 #### 4.2.1 Advanced Matching Algorithm
-- **AI-powered recommendations**: Machine learning for optimal tradesperson-project matching
+- **AI-powered recommendations**: Machine learning for optimal supplier-project matching
 - **Success prediction**: Historical data analysis for project success likelihood
 - **Workload balancing**: Distribute opportunities across experience levels
 - **Geographic optimization**: Minimize travel time and costs
@@ -215,7 +215,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 
 ### 6.2 Key User Flows
 
-#### 6.2.1 Tradesperson Onboarding
+#### 6.2.1 Supplier Onboarding
 1. Registration with phone/email verification
 2. Profile creation wizard with skill selection
 3. Certificate upload and verification process
@@ -263,7 +263,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 - **Graduate incentives**: Reduced fees for TVET graduates in first year
 
 ### 7.3 Financial Projections (Year 1)
-- **Target users**: 5,000 tradespeople, 1,000 regular clients
+- **Target users**: 5,000 suppliers, 1,000 regular clients
 - **Transaction volume**: $2M USD in total project value
 - **Platform revenue**: $200,000 USD (10% effective commission rate)
 - **Break-even timeline**: Month 18-24
@@ -273,7 +273,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 ### 8.1 Launch Strategy
 - **Pilot phase**: Kingston Metropolitan Area focus
 - **Partnership approach**: HEART/NSTA institutions, construction associations
-- **Dual-sided growth**: Simultaneous tradesperson and client acquisition
+- **Dual-sided growth**: Simultaneous supplier and client acquisition
 - **Word-of-mouth amplification**: Referral incentive programs
 
 ### 8.2 Marketing Channels
@@ -309,13 +309,13 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 ## 10. Success Criteria & KPIs
 
 ### 10.1 User Acquisition Metrics
-- Monthly active tradespeople: Target 2,500 by month 12
+- Monthly active suppliers: Target 2,500 by month 12
 - Monthly active clients: Target 500 by month 12
 - Registration conversion rate: >60% profile completion
 - Geographic coverage: 5+ parishes by month 12
 
 ### 10.2 Engagement Metrics
-- Profile views per tradesperson: 50+ monthly
+- Profile views per supplier: 50+ monthly
 - Message response rate: >80% within 24 hours
 - Project completion rate: >90% of accepted projects
 - User retention: >60% monthly active users return
@@ -339,21 +339,21 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 - Basic verification system implementation
 - Payment processing integration
 - Kingston market pilot launch
-- 500 initial tradesperson profiles target
+- 500 initial supplier profiles target
 
 ### 11.2 Phase 2: Feature Enhancement (Months 5-8)
 - Advanced search and filtering capabilities
 - In-platform messaging and booking systems
 - Review and rating system launch
 - Mobile optimization and PWA development
-- 2,000 tradesperson profiles target
+- 2,000 supplier profiles target
 
 ### 11.3 Phase 3: Scale & Optimize (Months 9-12)
 - AI matching algorithm implementation
 - Analytics dashboard development
 - Geographic expansion to 3 additional parishes
 - Premium subscription tier launch
-- 5,000 tradesperson profiles target
+- 5,000 supplier profiles target
 
 ### 11.4 Phase 4: Advanced Features (Months 13-18)
 - Project management tools integration
@@ -366,7 +366,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 
 ### 12.1 User Profile System
 
-#### 12.1.1 Tradesperson Profile Requirements
+#### 12.1.1 Supplier Profile Requirements
 **Basic Information:**
 - Full name, photo, contact details
 - Parish and specific location (with privacy controls)
@@ -443,10 +443,10 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 - Workload balancing for equitable opportunity distribution
 
 #### 12.2.2 Discovery Features
-- **Featured profiles**: Rotating spotlight on quality tradespeople
+- **Featured profiles**: Rotating spotlight on quality suppliers
 - **New graduate showcase**: Dedicated section for recent TVET graduates
 - **Specialist directory**: Niche skills and rare expertise highlighting
-- **Local favorites**: Parish-specific popular tradespeople
+- **Local favorites**: Parish-specific popular suppliers
 - **Success stories**: Case studies and testimonials
 
 ### 12.3 Communication Platform
@@ -486,7 +486,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 - 5-star rating system with detailed categories (quality, timeliness, communication, value)
 - Written review requirements for ratings below 4 stars
 - Photo evidence encouraged for completed work
-- Response system for tradespeople to address concerns
+- Response system for suppliers to address concerns
 
 **Performance Monitoring:**
 - Project completion rate tracking
@@ -513,7 +513,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 - Fraud detection and prevention systems
 
 #### 12.5.2 Financial Tools
-**For Tradespeople:**
+**For Suppliers:**
 - Earnings tracking and financial reporting
 - Tax preparation assistance and record keeping
 - Invoice generation and payment reminders
@@ -546,7 +546,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 
 ### 13.2 Content Moderation
 **Profile Review Process:**
-- Manual review of all new tradesperson profiles
+- Manual review of all new supplier profiles
 - Automated screening for inappropriate content
 - Regular audit of existing profiles for accuracy
 - Community reporting system for quality issues
@@ -562,7 +562,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 ### 13.3 Legal & Compliance
 **Platform Terms:**
 - Clear terms of service and privacy policies
-- User agreement for both tradespeople and clients
+- User agreement for both suppliers and clients
 - Dispute resolution procedures and arbitration
 - Limitation of liability and insurance requirements
 - Intellectual property protection for user content
@@ -578,8 +578,8 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 
 ### 14.1 Brand Positioning
 **Value Propositions:**
-- **For Tradespeople**: "Showcase your skills, grow your business, build your reputation"
-- **For Clients**: "Find verified, skilled tradespeople you can trust"
+- **For Suppliers**: "Showcase your skills, grow your business, build your reputation"
+- **For Clients**: "Find verified, skilled suppliers you can trust"
 - **For Industry**: "Modernizing Jamaica's construction and trades sector"
 
 **Brand Personality:**
@@ -590,7 +590,7 @@ To democratize access to skilled trades opportunities across Jamaica by providin
 
 ### 14.2 User Acquisition Strategy
 
-#### 14.2.1 Tradesperson Acquisition
+#### 14.2.1 Supplier Acquisition
 **TVET Institution Partnerships:**
 - Graduate placement program partnerships
 - Career fair participation and sponsorships
