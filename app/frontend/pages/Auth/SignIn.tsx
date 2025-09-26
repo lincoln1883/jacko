@@ -50,7 +50,7 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
           <div className="text-sm">
             <Link
               href="/identity/password_reset/new"
-              className="font-medium text-primary hover:text-primary/80"
+              className="font-medium text-blue-600 hover:text-blue-800"
             >
               Forgot your password?
             </Link>
@@ -62,11 +62,11 @@ const SignIn: React.FC<AuthPageProps> = ({ errors, email_hint }) => {
         </Button>
 
         <div className="text-center">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
             <Link
               href="/sign_up"
-              className="font-medium text-primary hover:text-primary/80"
+              className="font-medium text-blue-600 hover:text-blue-800"
             >
               Sign up
             </Link>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
+import { router } from '@inertiajs/react';
 import ClientEdit from '../../../pages/Profile/ClientEdit';
 
 // Mock Inertia
@@ -15,6 +16,14 @@ vi.mock('@inertiajs/react', () => ({
       {children}
     </a>
   ),
+  router: {
+    visit: vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    patch: vi.fn(),
+    delete: vi.fn(),
+  },
 }));
 
 // Mock components
@@ -418,16 +427,16 @@ describe('ClientEdit', () => {
         screen.getByRole('heading', { level: 1, name: /edit your profile/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('heading', { level: 2, name: /account type/i })
+        screen.getByRole('heading', { level: 3, name: /account type/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('heading', { level: 2, name: /basic information/i })
+        screen.getByRole('heading', { level: 3, name: /basic information/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('heading', { level: 2, name: /contact preferences/i })
+        screen.getByRole('heading', { level: 3, name: /contact preferences/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('heading', { level: 2, name: /about your projects/i })
+        screen.getByRole('heading', { level: 3, name: /about your projects/i })
       ).toBeInTheDocument();
     });
 
@@ -479,7 +488,7 @@ describe('ClientEdit', () => {
       fireEvent.click(switchButton);
 
       // This should trigger navigation to the supplier edit page with switch_role param
-      expect(window.location.href).toBe(
+      expect(router.visit).toHaveBeenCalledWith(
         '/profile/supplier/edit?switch_role=true'
       );
     });

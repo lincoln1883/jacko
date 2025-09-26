@@ -27,7 +27,7 @@ describe('Button Component', () => {
       render(<Button>Default</Button>);
 
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('bg-primary', 'text-primary-foreground');
+      expect(button).toHaveClass('bg-blue-600', 'text-white');
       expect(button).toHaveClass('h-9', 'px-4', 'py-2');
     });
   });
@@ -38,10 +38,10 @@ describe('Button Component', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass(
-        'bg-primary',
-        'text-primary-foreground',
+        'bg-blue-600',
+        'text-white',
         'shadow',
-        'hover:bg-primary/90'
+        'hover:bg-blue-700'
       );
     });
 
@@ -50,9 +50,9 @@ describe('Button Component', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass(
-        'bg-destructive',
-        'text-destructive-foreground',
-        'hover:bg-destructive/90'
+        'bg-red-600',
+        'text-white',
+        'hover:bg-red-700'
       );
     });
 
@@ -62,9 +62,9 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
       expect(button).toHaveClass(
         'border',
-        'border-input',
-        'bg-background',
-        'hover:bg-accent'
+        'border-gray-300',
+        'bg-white',
+        'hover:bg-gray-100'
       );
     });
 
@@ -73,9 +73,9 @@ describe('Button Component', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass(
-        'bg-secondary',
-        'text-secondary-foreground',
-        'hover:bg-secondary/80'
+        'bg-gray-200',
+        'text-gray-900',
+        'hover:bg-gray-300'
       );
     });
 
@@ -83,10 +83,7 @@ describe('Button Component', () => {
       render(<Button variant="ghost">Ghost</Button>);
 
       const button = screen.getByRole('button');
-      expect(button).toHaveClass(
-        'hover:bg-accent',
-        'hover:text-accent-foreground'
-      );
+      expect(button).toHaveClass('hover:bg-gray-100', 'hover:text-gray-900');
     });
 
     it('applies link variant styling', () => {
@@ -94,7 +91,7 @@ describe('Button Component', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass(
-        'text-primary',
+        'text-blue-600',
         'underline-offset-4',
         'hover:underline'
       );
@@ -417,7 +414,7 @@ describe('Button Component', () => {
       expect(button).toHaveClass(
         'focus-visible:outline-none',
         'focus-visible:ring-1',
-        'focus-visible:ring-ring'
+        'focus-visible:ring-blue-500'
       );
     });
 
@@ -430,7 +427,7 @@ describe('Button Component', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass('custom-class');
-      expect(button).toHaveClass('border', 'border-input'); // Outline variant classes
+      expect(button).toHaveClass('border', 'border-gray-300'); // Outline variant classes
     });
   });
 

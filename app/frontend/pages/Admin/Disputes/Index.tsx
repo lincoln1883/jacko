@@ -39,13 +39,19 @@ const Index: React.FC<AdminDisputesIndexProps> = ({
     }
   };
 
-  const handleStatusChange = (status: string) => {
-    router.get(
-      window.route('admin.disputes.index', {
-        status: status === 'all' ? undefined : status,
-      }),
-      { preserveState: true }
-    );
+  const filterAndPaginate = (status: string | null, page: number) => {
+    const queryParams = new URLSearchParams();
+    if (status) {
+      queryParams.append('status', status);
+    }
+    if (page > 1) {
+      queryParams.append('page', page.toString());
+    }
+    router.get(`/admin/disputes?${queryParams.toString()}`);
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    filterAndPaginate(newStatus === 'all' ? null : newStatus, 1);
   };
 
   const statusOptions = [
@@ -114,7 +120,7 @@ const Index: React.FC<AdminDisputesIndexProps> = ({
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={window.route('admin.disputes.show', dispute.id)}
+                          href={`/admin/disputes/${dispute.id}`}
                           className="text-blue-600 hover:underline"
                         >
                           View / Resolve
@@ -129,9 +135,7 @@ const Index: React.FC<AdminDisputesIndexProps> = ({
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={(page) => {
-                router.get(window.route('admin.disputes.index', { page }), {
-                  preserveState: true,
-                });
+                filterAndPaginate(null, page);
               }}
             />
           </CardContent>

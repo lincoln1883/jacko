@@ -44,19 +44,19 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
         <div className="text-center space-y-2">
           <Link
             href="/sign_in"
-            className="text-sm font-medium text-primary hover:text-primary/80"
+            className="text-sm font-medium text-blue-600 hover:text-blue-800"
           >
             ← Back to Sign In
           </Link>
         </div>
       </form>
 
-      <div className="mt-6 pt-6 border-t border-border">
-        <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md border border-blue-200 dark:border-blue-800">
+      <div className="mt-6 pt-6 border-t border-gray-200">
+        <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                className="h-5 w-5 text-gray-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -68,10 +68,10 @@ const PasswordResetNew: React.FC<PageProps> = ({ errors }) => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              <h3 className="text-sm font-medium text-gray-800">
                 What happens next?
               </h3>
-              <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+              <div className="mt-2 text-sm text-gray-700">
                 <p>
                   If your email address is registered and verified, you&apos;ll
                   receive an email with instructions to reset your password. The

@@ -6,7 +6,8 @@ class HomeController < ApplicationController
   before_action :redirect_to_profile_if_incomplete, if: :user_signed_in?
 
   def index
-    # Always render Home/Index and let React component handle routing
+    # Render home page for all users - authenticated and unauthenticated
+    # Users can navigate to their dashboards via links/navigation
     render inertia: "Home/Index"
   end
 

@@ -85,7 +85,7 @@ const Index: React.FC<AdminUsersIndexProps> = ({ users, pagination }) => {
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={window.route('admin.users.show', user.id)}
+                          href={`/admin/users/${user.id}`}
                           className="text-blue-600 hover:underline"
                         >
                           View / Edit
@@ -100,7 +100,7 @@ const Index: React.FC<AdminUsersIndexProps> = ({ users, pagination }) => {
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={(page) => {
-                router.get(window.route('admin.users.index', { page }));
+                router.get(`/admin/users?page=${page}`);
               }}
             />
           </CardContent>

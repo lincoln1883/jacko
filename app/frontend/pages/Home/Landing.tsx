@@ -86,7 +86,7 @@ const Landing: React.FC = () => {
   ];
 
   return (
-    <GuestLayout title="Jacko - Connect with Skilled Professionals">
+    <GuestLayout title="Jacko">
       {/* Hero Section */}
       <Hero
         title="Connect with Skilled Tradespeople"
@@ -102,16 +102,16 @@ const Landing: React.FC = () => {
       />
 
       {/* Features for Tradespeople */}
-      <div id="features" className="py-16 sm:py-24 bg-muted/30">
+      <div id="features" className="py-16 sm:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-4">
-              <Wrench className="w-8 h-8 text-primary mr-3" />
-              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              <Wrench className="w-8 h-8 text-blue-600 mr-3" />
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 For Tradespeople
               </h2>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Grow your business with a professional platform designed for
               skilled tradespeople
             </p>
@@ -132,16 +132,16 @@ const Landing: React.FC = () => {
       </div>
 
       {/* Features for Clients */}
-      <div className="py-16 sm:py-24">
+      <div className="py-16 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-4">
-              <Home className="w-8 h-8 text-primary mr-3" />
-              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              <Home className="w-8 h-8 text-blue-600 mr-3" />
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 For Clients
               </h2>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Find the right professional for your project with confidence and
               ease
             </p>
@@ -162,16 +162,16 @@ const Landing: React.FC = () => {
       </div>
 
       {/* How It Works */}
-      <div className="py-16 sm:py-24 bg-muted/30">
+      <div className="py-16 sm:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-4">
-              <Zap className="w-8 h-8 text-primary mr-3" />
-              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              <Zap className="w-8 h-8 text-blue-600 mr-3" />
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 How It Works
               </h2>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Getting started is simple. Follow these three easy steps to begin
               your journey
             </p>
@@ -182,18 +182,18 @@ const Landing: React.FC = () => {
               <div key={index} className="relative text-center">
                 {/* Step number */}
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full text-sm font-bold">
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-full text-sm font-bold">
                     {index + 1}
                   </div>
                 </div>
 
                 {/* Step content */}
-                <div className="bg-card border border-border rounded-2xl p-8 pt-12 hover:border-primary/30 transition-colors duration-300">
-                  <step.icon className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-foreground mb-3">
+                <div className="bg-white border border-gray-200 rounded-2xl p-8 pt-12 hover:border-blue-300 transition-colors duration-300">
+                  <step.icon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -201,7 +201,7 @@ const Landing: React.FC = () => {
                 {/* Connector line */}
                 {index < howItWorksSteps.length - 1 && (
                   <div className="hidden lg:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-16">
-                    <div className="h-0.5 bg-gradient-to-r from-primary to-primary/30"></div>
+                    <div className="h-0.5 bg-blue-600"></div>
                   </div>
                 )}
               </div>
@@ -211,20 +211,20 @@ const Landing: React.FC = () => {
       </div>
 
       {/* Testimonials */}
-      <div className="py-16 sm:py-24">
+      <div className="py-16 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
               Trusted by Professionals and Clients
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               See what our community has to say about their experience with
               Jacko
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="bg-card border border-border rounded-2xl p-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -233,29 +233,27 @@ const Landing: React.FC = () => {
                   />
                 ))}
               </div>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-gray-700 mb-4">
                 &quot;Jacko helped me find consistent work and grow my plumbing
                 business. The clients are serious and the payment system is
                 reliable.&quot;
               </p>
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-primary font-semibold">JM</span>
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-gray-800 font-semibold">JM</span>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-foreground">
+                  <div className="text-sm font-medium text-gray-900">
                     John Mitchell
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    Licensed Plumber
-                  </div>
+                  <div className="text-xs text-gray-600">Licensed Plumber</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-card border border-primary/20 rounded-2xl p-8 relative">
+            <div className="bg-white border border-blue-200 rounded-2xl p-8 relative">
               <div className="absolute -top-2 -right-2">
-                <div className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
+                <div className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                   Featured
                 </div>
               </div>
@@ -267,27 +265,25 @@ const Landing: React.FC = () => {
                   />
                 ))}
               </div>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-gray-700 mb-4">
                 &quot;Found an amazing electrician through Jacko for our home
                 renovation. Professional, punctual, and excellent quality
                 work.&quot;
               </p>
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-accent-foreground font-semibold">
-                    SM
-                  </span>
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-blue-800 font-semibold">SM</span>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-foreground">
+                  <div className="text-sm font-medium text-gray-900">
                     Sarah Martinez
                   </div>
-                  <div className="text-xs text-muted-foreground">Homeowner</div>
+                  <div className="text-xs text-gray-600">Homeowner</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-2xl p-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -296,24 +292,20 @@ const Landing: React.FC = () => {
                   />
                 ))}
               </div>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-gray-700 mb-4">
                 &quot;As a carpenter, Jacko has connected me with clients who
                 value quality craftsmanship. The platform is easy to use and
                 professional.&quot;
               </p>
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-secondary-foreground font-semibold">
-                    RT
-                  </span>
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-gray-800 font-semibold">RT</span>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-foreground">
+                  <div className="text-sm font-medium text-gray-900">
                     Robert Taylor
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    Master Carpenter
-                  </div>
+                  <div className="text-xs text-gray-600">Master Carpenter</div>
                 </div>
               </div>
             </div>

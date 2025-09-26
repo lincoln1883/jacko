@@ -5,18 +5,17 @@ Rails.application.routes.draw do
   # Removed global review routes
 
   namespace :admin do
-    get "construction_services/index"
-    get "construction_services/new"
-    get "construction_services/create"
-    get "construction_services/edit"
-    get "construction_services/update"
-    get "construction_services/destroy"
-    get "users/index"
-    get "users/show"
-    get "users/update"
+    # get "construction_services/index"
+    # get "construction_services/new"
+    # get "construction_services/create"
+    # get "construction_services/edit"
+    # get "construction_services/update"
+    # get "construction_services/destroy"
+    # get "users/index"
+    # get "users/update"
     resources :verification_requests, only: [:index, :show, :update]
     resources :disputes, only: [:index, :show, :update]
-    resource :dashboard, only: [:show]
+    resource :dashboard, controller: "dashboard", only: [:show]
     resources :users, only: [:index, :show, :update]
     resources :jobs
     resources :construction_services
@@ -25,7 +24,7 @@ Rails.application.routes.draw do
   resources :jobs do
     resources :bids, only: [:new, :create, :update]
     resources :reviews, only: [:new, :create]
-    resources :disputes, only: [:new, :create]
+    resources :disputes, only: [:new, :create, :show]
   end
 
   resource :pricing_calculator, controller: "pricing_calculator", only: [:show, :create] do
@@ -64,6 +63,9 @@ Rails.application.routes.draw do
 
   # Public profile viewing routes
   get "suppliers/:id", to: "supplier_profiles#public_show", as: :public_supplier_profile
+
+  get "client_dashboard", to: "client_dashboard#index", as: :client_dashboard
+  get "supplier_dashboard", to: "supplier_dashboard#index", as: :supplier_dashboard
 
   root "home#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

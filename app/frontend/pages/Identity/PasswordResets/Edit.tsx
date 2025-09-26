@@ -64,7 +64,7 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
         <div className="text-center">
           <Link
             href="/sign_in"
-            className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            className="text-sm font-medium text-blue-600 hover:text-blue-800"
           >
             ← Back to Sign In
           </Link>
@@ -72,11 +72,11 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
       </form>
 
       <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="bg-green-50 p-4 rounded-md">
+        <div className="bg-gray-50 p-4 rounded-md">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-green-400"
+                className="h-5 w-5 text-gray-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -88,10 +88,10 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-green-800">
+              <h3 className="text-sm font-medium text-gray-800">
                 Almost there!
               </h3>
-              <div className="mt-2 text-sm text-green-700">
+              <div className="mt-2 text-sm text-gray-700">
                 <p>
                   After you set your new password, you&apos;ll be redirected to
                   the sign in page where you can log in with your updated
@@ -104,11 +104,11 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
       </div>
 
       <div className="mt-4">
-        <div className="bg-blue-50 p-4 rounded-md">
+        <div className="bg-gray-50 p-4 rounded-md">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-blue-400"
+                className="h-5 w-5 text-gray-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -120,10 +120,10 @@ const PasswordResetEdit: React.FC<PageProps> = ({ errors }) => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">
+              <h3 className="text-sm font-medium text-gray-800">
                 Password Security Tips
               </h3>
-              <div className="mt-2 text-sm text-blue-700">
+              <div className="mt-2 text-sm text-gray-700">
                 <ul className="list-disc list-inside space-y-1">
                   <li>
                     Use a unique password that you don&apos;t use elsewhere

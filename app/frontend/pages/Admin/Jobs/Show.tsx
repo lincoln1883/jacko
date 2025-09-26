@@ -35,7 +35,7 @@ const Show: React.FC<AdminJobShowProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(window.route('admin.jobs.update', data.id), {
+    put(`/admin/jobs/${data.id}`, {
       onSuccess: () => {
         // Optionally update local state or show a success message
       },
@@ -47,7 +47,7 @@ const Show: React.FC<AdminJobShowProps> = ({
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this job?')) {
-      destroy(window.route('admin.jobs.destroy', data.id));
+      destroy(`/admin/jobs/${data.id}`);
     }
   };
 

@@ -1,15 +1,11 @@
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
-import RubyPlugin from 'vite-plugin-ruby'
-import path from 'path'
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vite';
+import RubyPlugin from 'vite-plugin-ruby';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    RubyPlugin(),
-  ],
+  plugins: [react(), tailwindcss(), RubyPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'app/frontend'),
@@ -29,5 +25,5 @@ export default defineConfig({
     }),
   },
   // Enable asset inlining for small files
-  assetsInclude: ['**/*.svg'],
-})
+  assetsInclude: ['**/*.{jpg,jpeg,png,gif,webp,svg}'],
+});

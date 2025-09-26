@@ -4,7 +4,7 @@ class Admin::DashboardController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_admin!
 
-  def index
+  def show
     @user_count = User.count
     @supplier_count = User.supplier.count
     @client_count = User.client.count
@@ -12,7 +12,7 @@ class Admin::DashboardController < ApplicationController
     @open_jobs_count = Job.open.count
     @pending_disputes_count = Dispute.pending.count
 
-    render inertia: "Admin/Dashboard/Index", props: {
+    render inertia: "Admin/DashboardPage", props: {
       userCount: @user_count,
       supplierCount: @supplier_count,
       clientCount: @client_count,

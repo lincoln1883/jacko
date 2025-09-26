@@ -42,16 +42,27 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({
   // For unauthenticated users, or non-admin roles, render the regular authenticated layout structure.
   // If there's no authenticated user, the backend should redirect to login for pages using AppLayout.
   if (!pageUser) {
-    return null; // Or render a GuestLayout/redirect to login explicitly if not handled by middleware
+    // Render a minimalist layout for unauthenticated users, or redirect
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col font-sans antialiased text-gray-800">
+        <Head title={title} />
+        <Navigation variant="guest" user={null} session={null} />
+
+        <main className="flex-1 p-8 overflow-auto bg-gray-50">
+          <div className={`${className || ''}`}>{children}</div>
+        </main>
+        <ToastContainer position="bottom-right" />
+      </div>
+    );
   }
 
   return (
     <>
       <Head title={title} />
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50 flex flex-col font-sans antialiased text-gray-800">
         <Navigation user={pageUser} session={pageSession} />
 
-        <main>
+        <main className="flex-1 p-8 overflow-auto bg-gray-50">
           <div className={`${className || ''}`}>
             {children} {/* Children for non-admin authenticated users */}
           </div>

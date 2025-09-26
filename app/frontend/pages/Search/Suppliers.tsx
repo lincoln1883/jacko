@@ -4,6 +4,7 @@ import { AppLayout } from '@/components/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card'; // Removed unused CardHeader, CardTitle
 import {
   Search,
   Filter,
@@ -14,11 +15,11 @@ import {
   ChevronLeft,
   ChevronRight,
   User as UserIcon,
-  MapPin, // New import
+  MapPin,
 } from 'lucide-react';
 import { SkillsMultiSelect } from '@/components/ui/skills-multi-select';
-import { Select } from '@/components/ui/select'; // New import
-import { Label } from '@/components/ui/label'; // New import
+import { Select } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface Skill {
   id: number;
@@ -54,13 +55,13 @@ interface SupplierProfile {
   has_avatar: boolean;
   avatar_url: string | null;
   avatar_thumbnail_url: string | null;
-  parish: { id: number; name: string } | null; // New: Parish data
-  street_address: string | null; // New: Location data
-  city_town: string | null; // New: Location data
-  postal_code: string | null; // New: Location data
-  service_radius_km: number | null; // New: Service area data
-  service_area_notes: string | null; // New: Service area data
-  additional_parishes: string[]; // New: Service area data
+  parish: { id: number; name: string } | null;
+  street_address: string | null;
+  city_town: string | null;
+  postal_code: string | null;
+  service_radius_km: number | null;
+  service_area_notes: string | null;
+  additional_parishes: string[];
 }
 
 interface SkillsByCategory {
@@ -90,8 +91,8 @@ interface SearchParams {
   experience_range?: string[];
   page?: string;
   per_page?: string;
-  parish_id?: string; // New: Parish ID
-  service_radius_km?: string; // New: Service radius
+  parish_id?: string;
+  service_radius_km?: string;
 }
 
 interface PaginationMeta {
@@ -109,7 +110,7 @@ interface SearchSupplierProps {
   skills_by_category: SkillsByCategory;
   availability_options: AvailabilityOption[];
   experience_options: ExperienceOption[];
-  parish_options: ParishOption[]; // New: Parish options
+  parish_options: ParishOption[];
   pagination: PaginationMeta;
 }
 
@@ -134,10 +135,10 @@ export default function SearchSupplier({
   );
   const [selectedParishId, setSelectedParishId] = useState<string>(
     search_params.parish_id || ''
-  ); // New state for parish
+  );
   const [serviceRadiusKm, setServiceRadiusKm] = useState<string>(
     search_params.service_radius_km || ''
-  ); // New state for service radius
+  );
   const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = (page = 1) => {
@@ -185,8 +186,9 @@ export default function SearchSupplier({
     setSelectedSkills([]);
     setSelectedAvailability([]);
     setSelectedExperience([]);
-    setSelectedParishId(''); // New: Clear parish
-    setServiceRadiusKm(''); // New: Clear service radius
+    setSelectedParishId('');
+    setServiceRadiusKm('');
+    handleSearch(1); // Re-run search after clearing filters to refresh results
   };
 
   const toggleAvailability = (value: string) => {
@@ -206,19 +208,19 @@ export default function SearchSupplier({
     selectedAvailability.length > 0 ||
     selectedExperience.length > 0 ||
     searchQuery.trim().length > 0 ||
-    selectedParishId !== '' || // New: Check for active parish filter
-    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0); // New: Check for active radius filter
+    selectedParishId !== '' ||
+    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0);
 
   const goToPage = (page: number) => {
     handleSearch(page);
   };
 
   const ProfileCard = ({ profile }: { profile: SupplierProfile }) => (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+    <Card className="shadow-md p-6 flex flex-col h-full">
       {/* Profile Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden">
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
             {profile.has_avatar && profile.avatar_thumbnail_url ? (
               <img
                 src={profile.avatar_thumbnail_url}
@@ -226,18 +228,24 @@ export default function SearchSupplier({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <UserIcon className="w-6 h-6 text-blue-600" />
+              <UserIcon className="w-6 h-6 text-gray-500" />
             )}
           </div>
           <div>
             <h3 className="font-semibold text-lg text-gray-900">
               {profile.company_name || 'Professional Supplier'}
             </h3>
-            <p className="text-gray-600">{profile.user.email}</p>
+            <p className="text-sm text-gray-600">{profile.user.email}</p>
           </div>
         </div>
         <Badge
-          className={`bg-${profile.availability_color}-100 text-${profile.availability_color}-800`}
+          className={`text-xs px-2 py-1 rounded-full ${
+            profile.availability_status === 'available'
+              ? 'bg-green-100 text-green-800'
+              : profile.availability_status === 'busy'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-red-100 text-red-800'
+          }`}
         >
           {profile.display_availability}
         </Badge>
@@ -245,52 +253,61 @@ export default function SearchSupplier({
 
       {/* Bio */}
       {profile.bio && (
-        <p className="text-gray-700 mb-4 line-clamp-2">{profile.bio}</p>
+        <p className="text-gray-700 mb-4 line-clamp-3 flex-grow">
+          {profile.bio}
+        </p>
       )}
 
       {/* Skills */}
       <div className="mb-4">
         <div className="flex flex-wrap gap-2">
           {profile.primary_skills.slice(0, 4).map((skill) => (
-            <Badge key={skill.id} variant="outline" className="text-xs">
+            <Badge
+              key={skill.id}
+              variant="secondary"
+              className="text-xs font-medium bg-blue-50 text-blue-700"
+            >
               {skill.name}
             </Badge>
           ))}
           {profile.skills.length > 4 && (
-            <Badge variant="outline" className="text-xs">
+            <Badge
+              variant="secondary"
+              className="text-xs font-medium bg-blue-50 text-blue-700"
+            >
               +{profile.skills.length - 4} more
             </Badge>
           )}
         </div>
       </div>
 
-      {/* Location (New) */}
+      {/* Location */}
       {(profile.parish || profile.street_address || profile.city_town) && (
         <div className="flex items-center text-sm text-gray-600 mb-4">
-          <MapPin className="w-4 h-4 mr-1" />
+          <MapPin className="w-4 h-4 mr-1 text-gray-500" />
           {[profile.city_town, profile.parish?.name].filter(Boolean).join(', ')}
         </div>
       )}
 
       {/* Experience and Rate */}
-      <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+      <div className="flex items-center justify-between text-sm text-gray-700 mb-4">
         <div className="flex items-center">
-          <Award className="w-4 h-4 mr-1" />
+          <Award className="w-4 h-4 mr-1 text-gray-500" />
           {profile.display_experience}
         </div>
         <div className="flex items-center">
-          <DollarSign className="w-4 h-4 mr-1" />
+          <DollarSign className="w-4 h-4 mr-1 text-gray-500" />
           {profile.display_hourly_rate}
         </div>
       </div>
 
       {/* Contact Info */}
-      <div className="flex items-center justify-between border-t pt-4">
+      <div className="flex items-center justify-between border-t border-gray-200 pt-4 mt-auto">
         <div className="flex space-x-4">
           {profile.phone && (
             <a
               href={`tel:${profile.phone}`}
-              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
             >
               <Phone className="w-4 h-4 mr-1" />
               Call
@@ -301,18 +318,18 @@ export default function SearchSupplier({
               href={profile.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200"
             >
               <Globe className="w-4 h-4 mr-1" />
               Website
             </a>
           )}
         </div>
-        <Link href={`/supplier/${profile.id}`}>
+        <Link href={`/suppliers/${profile.id}`}>
           <Button size="sm">View Profile</Button>
         </Link>
       </div>
-    </div>
+    </Card>
   );
 
   const Pagination = () => {
@@ -323,7 +340,7 @@ export default function SearchSupplier({
 
     return (
       <div className="flex items-center justify-between mt-8">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-700">
           Showing {(current_page - 1) * pagination.per_page + 1} to{' '}
           {Math.min(current_page * pagination.per_page, total_count)} of{' '}
           {total_count} results
@@ -335,6 +352,7 @@ export default function SearchSupplier({
             size="sm"
             onClick={() => goToPage(prev_page!)}
             disabled={!prev_page}
+            className="flex items-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" />
             Previous
@@ -370,6 +388,7 @@ export default function SearchSupplier({
             size="sm"
             onClick={() => goToPage(next_page!)}
             disabled={!next_page}
+            className="flex items-center gap-1"
           >
             Next
             <ChevronRight className="w-4 h-4" />
@@ -393,7 +412,7 @@ export default function SearchSupplier({
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             {searchQuery
               ? `Search Results for "${searchQuery}"`
-              : 'Browse Tradespeople'}
+              : 'Browse Suppliers'}
           </h1>
           <p className="text-gray-600">
             Found {pagination.total_count} professional
@@ -403,149 +422,153 @@ export default function SearchSupplier({
         </div>
 
         {/* Search and Filters Bar */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-8">
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search for services, skills, or company names..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            </div>
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              variant={showFilters ? 'default' : 'outline'}
-              className="px-6"
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-              {hasActiveFilters && (
-                <Badge className="ml-2 bg-blue-100 text-blue-800">
-                  {selectedSkills.length +
-                    selectedAvailability.length +
-                    selectedExperience.length +
-                    (selectedParishId !== '' ? 1 : 0) +
-                    (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0
-                      ? 1
-                      : 0)}
-                </Badge>
-              )}
-            </Button>
-            <Button onClick={() => handleSearch()}>Search</Button>
-          </div>
-
-          {/* Filters Panel - Similar to Index page */}
-          {showFilters && (
-            <div className="border-t pt-4 space-y-4">
-              {/* Location Filter */}
-              <div>
-                <Label className="text-sm font-semibold mb-3 flex items-center">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  Location
-                </Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Select
-                    id="parish_id"
-                    label="Parish"
-                    value={selectedParishId}
-                    onChange={(e) => setSelectedParishId(e.target.value)}
-                    options={parish_options.map((p) => ({
-                      label: p.label,
-                      value: p.value.toString(),
-                    }))}
-                    placeholder="Select a parish"
-                  />
-                  <Input
-                    id="service_radius_km"
-                    label="Service Radius (km)"
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={serviceRadiusKm}
-                    onChange={(e) => setServiceRadiusKm(e.target.value)}
-                    placeholder="E.g., 50"
-                    hint="Distance from primary location"
-                  />
-                </div>
-              </div>
-
-              {/* Skills Filter */}
-              <div>
-                <SkillsMultiSelect
-                  skillsByCategory={skills_by_category}
-                  selectedSkills={selectedSkills}
-                  onSkillsChange={setSelectedSkills}
-                  label="Skills & Services"
-                  hint="Filter by specific skills and services"
+        <Card className="mb-8 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4 mb-4 items-end">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search for services, skills, or company names..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
-
-              {/* Availability and Experience Filters */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-semibold mb-2 flex items-center">
-                    Availability
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {availability_options.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => toggleAvailability(option.value)}
-                        className={`px-3 py-1 rounded-full border text-sm ${
-                          selectedAvailability.includes(option.value)
-                            ? 'bg-blue-500 text-white border-blue-500'
-                            : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-semibold mb-2 flex items-center">
-                    Experience Level
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {experience_options.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => toggleExperience(option.value)}
-                        className={`px-3 py-1 rounded-full border text-sm ${
-                          selectedExperience.includes(option.value)
-                            ? 'bg-blue-500 text-white border-blue-500'
-                            : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Filter Actions */}
-              <div className="flex gap-2 pt-2 border-t">
-                <Button onClick={() => handleSearch()} size="sm">
-                  Apply Filters
-                </Button>
-                <Button
-                  onClick={clearFilters}
-                  variant="outline"
-                  size="sm"
-                  disabled={!hasActiveFilters}
-                >
-                  Clear All
-                </Button>
-              </div>
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                variant={showFilters ? 'default' : 'outline'}
+                className="px-6 flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                Filters
+                {hasActiveFilters && (
+                  <Badge className="ml-2 bg-blue-100 text-blue-800">
+                    {selectedSkills.length +
+                      selectedAvailability.length +
+                      selectedExperience.length +
+                      (selectedParishId !== '' ? 1 : 0) +
+                      (serviceRadiusKm !== '' && parseInt(serviceRadiusKm) > 0
+                        ? 1
+                        : 0)}
+                  </Badge>
+                )}
+              </Button>
+              <Button onClick={() => handleSearch()} className="px-6">
+                Search
+              </Button>
             </div>
-          )}
-        </div>
+
+            {/* Filters Panel */}
+            {showFilters && (
+              <div className="border-t border-gray-200 pt-4 mt-4 space-y-4">
+                {/* Location Filter */}
+                <div>
+                  <Label className="text-sm font-semibold mb-3 flex items-center text-gray-700">
+                    <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                    Location
+                  </Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Select
+                      id="parish_id"
+                      label="Parish"
+                      value={selectedParishId}
+                      onChange={(e) => setSelectedParishId(e.target.value)}
+                      options={parish_options.map((p) => ({
+                        label: p.label,
+                        value: p.value.toString(),
+                      }))}
+                      placeholder="Select a parish"
+                    />
+                    <Input
+                      id="service_radius_km"
+                      label="Service Radius (km)"
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={serviceRadiusKm}
+                      onChange={(e) => setServiceRadiusKm(e.target.value)}
+                      placeholder="E.g., 50"
+                      hint="Distance from primary location"
+                    />
+                  </div>
+                </div>
+
+                {/* Skills Filter */}
+                <div>
+                  <SkillsMultiSelect
+                    skillsByCategory={skills_by_category}
+                    selectedSkills={selectedSkills}
+                    onSkillsChange={setSelectedSkills}
+                    label="Skills & Services"
+                    hint="Filter by specific skills and services"
+                  />
+                </div>
+
+                {/* Availability and Experience Filters */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-semibold mb-2 flex items-center text-gray-700">
+                      Availability
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {availability_options.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => toggleAvailability(option.value)}
+                          className={`px-3 py-1 rounded-full border text-sm transition-colors duration-200 ${
+                            selectedAvailability.includes(option.value)
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-semibold mb-2 flex items-center text-gray-700">
+                      Experience Level
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {experience_options.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => toggleExperience(option.value)}
+                          className={`px-3 py-1 rounded-full border text-sm transition-colors duration-200 ${
+                            selectedExperience.includes(option.value)
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Filter Actions */}
+                <div className="flex gap-2 pt-4 border-t border-gray-200">
+                  <Button onClick={() => handleSearch()} size="sm">
+                    Apply Filters
+                  </Button>
+                  <Button
+                    onClick={clearFilters}
+                    variant="outline"
+                    size="sm"
+                    disabled={!hasActiveFilters}
+                  >
+                    Clear All
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Results */}
         {profiles.length > 0 ? (
@@ -558,21 +581,23 @@ export default function SearchSupplier({
             <Pagination />
           </>
         ) : (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Search className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No results found
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Try adjusting your search criteria or filters to find more
-              results.
-            </p>
-            <Button onClick={clearFilters} variant="outline">
-              Clear All Filters
-            </Button>
-          </div>
+          <Card className="text-center py-12 shadow-lg">
+            <CardContent>
+              <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Search className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No results found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Try adjusting your search criteria or filters to find more
+                results.
+              </p>
+              <Button onClick={clearFilters} variant="outline">
+                Clear All Filters
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </div>
     </AppLayout>
