@@ -39,13 +39,22 @@
 # Ignore CI service files.
 /.github
 
-# Ignore Kamal files.
-/config/deploy*.yml
+# Ignore Kamal files (deployment config should be in environment)
 /.kamal
 
 # Ignore development files
 /.devcontainer
+docker-compose*
 
 # Ignore Docker-related files
 /.dockerignore
-/Dockerfile*
+/Dockerfile.dev
+
+# Ignore test files
+/test
+/spec
+/coverage
+
+# Ignore documentation
+*.md
+/docs
